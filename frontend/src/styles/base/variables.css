@@ -1,0 +1,56 @@
+:root {
+  /* Colors */
+  --color-primary: #3182CE;
+  --color-success: #48BB78;
+  --color-warning: #F6AD55;
+  --color-danger: #F56565;
+  --color-info: #4299E1;
+  
+  /* Background colors */
+  --bg-white: #FFFFFF;
+  --bg-gray-50: #F7FAFC;
+  --bg-gray-100: #EDF2F7;
+  --bg-gray-200: #E2E8F0;
+  
+  /* Text colors */
+  --text-primary: #2D3748;
+  --text-secondary: #4A5568;
+  --text-muted: #718096;
+  
+  /* Border colors */
+  --border-color: #E2E8F0;
+  
+  /* Spacing */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  
+  /* Grid breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  
+  /* Component specific */
+  --header-height: 64px;
+  --sidebar-width: 300px;
+  
+  /* DVF specific */
+  --dvf-selection-bg: #E3F2FD;
+  --dvf-arrondissement-bg: #F1F8E9;
+  --dvf-premium-bg: #FCE4EC;
+  --dvf-outlier-bg: #FFF3E0;
+} 

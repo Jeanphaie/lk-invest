@@ -1,0 +1,138 @@
+/* Replace Tailwind directives with standard CSS imports */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+:root {
+  --primary-color: #3182ce;
+  --secondary-color: #2c5282;
+  --background-color: #f8fafc;
+  --text-color: #2d3748;
+  --border-color: #e2e8f0;
+  --hover-color: #4299e1;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --border-radius: 12px;
+  --transition-speed: 0.3s;
+  --max-width: 1200px;
+  --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
+    'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
+    'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  height: 100%;
+}
+
+body {
+  color: rgb(33, 33, 33);
+  background: #f5f5f5;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#__next {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Animations globales */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Styles de base pour les éléments communs */
+button {
+  transition: all var(--transition-speed) ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+input, select {
+  transition: all var(--transition-speed) ease;
+}
+
+/* Responsive design de base */
+@media (max-width: 768px) {
+  :root {
+    --border-radius: 8px;
+  }
+}
+
+/* Préférences de réduction de mouvement */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.marker-outlier {
+  box-shadow: 0 0 8px 2px #ff6347;
+  border: 2px solid #ff6347;
+  z-index: 10;
+}
+
+.project-cover-photo {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  border: 2px solid #3182ce;
+  background: #f8f9fa;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.project-cover-photo:hover {
+  transform: scale(1.04);
+  box-shadow: 0 8px 24px rgba(49,130,206,0.25);
+  border-color: #2563eb;
+}
+
+#project-header-sticky {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 40 !important;
+  background: rgba(255,255,255,0.97) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  /* Pas de overflow caché sur les parents */
+}
+
+.flex,
+.flex-col,
+.min-h-screen,
+.w-full {
+  overflow: visible !important;
+}
+
+.collapse {
+  visibility: visible !important;
+}
+

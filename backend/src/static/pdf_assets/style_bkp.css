@@ -1,0 +1,617 @@
+@page {
+    size: A4;
+    margin: 0mm;
+}
+
+body {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: #4A3C31;
+    line-height: 1.5;
+    background-color: #F7F0E6;
+    margin: 0;
+}
+
+/* Cover Page */
+.cover-page {
+    width: 210mm;
+    height: 297mm;
+    background: #F7F0E6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: stretch;
+    padding: 0;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+.cover-main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
+}
+
+.cover-page > * {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cover-page .logo-container,
+.cover-page .cover-content,
+.cover-page .image-container,
+.cover-page .contact-info {
+    margin: 0;
+    padding: 0;
+}
+
+.cover-page .cover-content {
+    margin: 10mm 0 10mm 0;
+    padding: 0;
+}
+
+.cover-page .image-container {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.cover-page .cover_image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.cover-page .logo-container {
+    margin-top: 18mm;
+    margin-bottom: 8mm;
+}
+
+.cover-page .logo {
+    width: 120px;
+    height: auto;
+    object-fit: contain;
+}
+
+.cover-page .cover-content::before,
+.cover-page .cover-content::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 1px;
+    background-color: #666;
+}
+
+.cover-page .cover-content::before {
+    top: 0;
+}
+
+.cover-page .cover-content::after {
+    bottom: 0;
+}
+
+.cover-title-block {
+    width: 80%;
+    background: #fff;
+    border-radius: 2mm;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border: 2px solid #b9b1a7;
+    text-align: center;
+    margin-bottom: 8mm;
+    padding: 8mm 4mm 2mm 4mm;
+    position: relative;
+    z-index: 2;
+}
+
+.cover-title-block h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 38px;
+    font-weight: bold;
+    color: #222;
+    margin: 0 0 2mm 0;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.cover-title-block .cover-subtitle {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 16px;
+    color: #4A4A4A;
+    margin: 0 0 2mm 0;
+    font-weight: 400;
+}
+
+.cover-image-block {
+    width: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.cover-image-block .cover_image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 0;
+    margin: 0;
+}
+
+.cover-contact-row {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    position: absolute;
+    bottom: 18mm;
+    left: 0;
+    right: 0;
+    padding: 0 18mm;
+    box-sizing: border-box;
+}
+
+.cover-contact-row .contact-column {
+    text-align: left;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 13px;
+    color: #222;
+    font-weight: 600;
+}
+
+.cover-contact-row .contact-name {
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 1mm;
+    text-transform: uppercase;
+}
+
+.cover-contact-row .contact-email {
+    margin-bottom: 1mm;
+}
+
+.cover-contact-row .contact-email a {
+    color: #222;
+    text-decoration: none;
+}
+
+.cover-contact-row .contact-tel {
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Table of Contents */
+.toc-page {
+    page: toc;
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    text-align: center;
+    background-color: #F7F0E6;
+    padding: 10mm 15mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.toc-page h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 36px;
+    font-weight: bold;
+    color: #1A1A1A;
+    margin: 0 0 15mm 0;
+    line-height: 1.2;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+/* Section Break Pages */
+.section-break {
+    position: relative;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 8mm 8mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.break-content {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4mm;
+    padding: 8mm;
+    text-align: center;
+}
+
+.section-break h1 {
+    font-family: 'Times New Roman', serif;
+    font-size: 36px;
+    font-weight: bold;
+    color: #5D4037;
+    margin: 0 0 15mm 0;
+    text-transform: uppercase;
+    letter-spacing: 0;
+}
+
+.section-break p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 16px;
+    color: #4A3C31;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.section-break p.price {
+    font-size: 20px;
+    margin: 10mm 0;
+}
+
+.section-break p + p {
+    margin-top: 5mm;
+}
+
+/* Property Description */
+.property_description {
+    position: relative;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 8mm 8mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.description-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20mm;
+}
+
+.text-block {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4mm;
+    padding: 8mm;
+    text-align: center;
+}
+
+.text-overlay h1 {
+    font-family: 'Times New Roman', serif;
+    font-size: 36px;
+    font-weight: bold;
+    color: #5D4037;
+    margin: 0 0 15mm 0;
+    text-transform: uppercase;
+    letter-spacing: 0;
+}
+
+.text-overlay p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 16px;
+    color: #4A3C31;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.text-overlay p strong {
+    font-weight: bold;
+}
+
+.text-overlay p + p {
+    margin-top: 5mm;
+}
+
+.image-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15mm;
+}
+
+.image-row {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4mm;
+    padding: 4mm;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6mm;
+    margin-bottom: 15mm;
+}
+
+.bottom-row {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4mm;
+    padding: 4mm;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 6mm;
+}
+
+.polaroid {
+    text-align: center;
+}
+
+.polaroid img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    margin-bottom: 10mm;
+}
+
+.polaroid .caption {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    color: #4A3C31;
+    margin: 0;
+}
+
+.floor-plan img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    object-fit: contain;
+    margin-bottom: 10mm;
+}
+
+.floor-plan .caption {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    color: #4A3C31;
+    margin: 0;
+}
+
+/* Renovation Project */
+.renovation-project,
+.renovation-project-2 {
+    position: relative;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 8mm 8mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.project-content {
+    background-color: #FFFFFF;
+    border-radius: 4mm;
+    padding: 8mm;
+    margin: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.full-width-image {
+    margin-top: 15mm;
+    text-align: center;
+}
+
+.full-width-image img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    margin-bottom: 5mm;
+}
+
+/* Business Plan */
+.business-plan {
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 8mm 8mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.business-plan h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 36px;
+    font-weight: bold;
+    color: #1A1A1A;
+    margin: 0 0 10mm 0;
+    line-height: 1.1;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+/* Tables */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 12px;
+    color: #1A1A1A;
+}
+
+.table-bordered {
+    border: 1px solid #666;
+}
+
+.table th {
+    background-color: #C4A484;
+    font-weight: bold;
+    text-align: center;
+    padding: 1mm;
+    border: 1px solid #666;
+}
+
+.table td {
+    padding: 1mm;
+    border: 1px solid #666;
+}
+
+.table tr:nth-child(odd) {
+    background-color: #F5F5F5;
+}
+
+.table tr:nth-child(even) {
+    background-color: #FFFFFF;
+}
+
+/* KPI Cards */
+.kpi-cards {
+    width: 100%;
+    margin-bottom: 5mm;
+    overflow: hidden;
+}
+
+.kpi-card-large {
+    background-color: #e8e8e8;
+    padding: 3mm;
+    text-align: center;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: #1A1A1A;
+    border: 2px solid #666;
+    box-shadow: 1mm 1mm 2mm rgba(0, 0, 0, 0.2);
+    line-height: 1.3;
+    box-sizing: border-box;
+}
+
+.kpi-card-large.cash-emphasis {
+    background-color: #d4e4d4;
+    border-color: #88aa88;
+}
+
+/* Utility Classes */
+.highlight {
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+.italic {
+    font-style: italic;
+}
+
+/* Summary Page (En Bref) */
+.summary-page {
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 8mm 8mm;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.summary-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/data/lki/uploads/building-background.png');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.summary-content {
+    position: relative;
+    z-index: 1;
+    background-color: white;
+    border-radius: 10mm;
+    padding: 15mm;
+    width: 80%;
+    box-shadow: 0 0 10mm rgba(0, 0, 0, 0.1);
+}
+
+.summary-page h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 46px;
+    font-weight: bold;
+    color: #1A1A1A;
+    margin: 0 0 15mm 0;
+    text-align: center;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #666;
+    padding-bottom: 5mm;
+}
+
+.summary-page .summary-item {
+    margin: 10mm 0;
+    text-align: center;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.summary-page .summary-item:not(:last-child) {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10mm;
+}
+
+.summary-page .highlight {
+    color: #1A1A1A;
+    font-weight: bold;
+}
+
+/* Si besoin, pour centrer certains blocs internes : */
+.centered-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.break-content,
+.summary-content,
+.text-block {
+    padding: 8mm;
+    border-radius: 4mm;
+}
+
+.image-row,
+.image-gallery,
+.bottom-row {
+    padding: 4mm;
+    gap: 6mm;
+}
+
+/* --- TEST COVER CENTRAGE --- */
+.test-cover-page {
+  width: 210mm;
+  height: 297mm;
+  min-height: 297mm;
+  min-width: 210mm;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background: #f7f0e6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+
+.page-break {
+  page-break-after: always;
+  break-after: page;
+  height: 0;
+  width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+} 

@@ -1,0 +1,1 @@
+// Ce fichier est désormais vide (plus de fonction business plan ici) 

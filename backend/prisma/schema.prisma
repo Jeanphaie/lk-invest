@@ -1,0 +1,106 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Project {
+  id                     Int      @id @default(autoincrement()) @map("project_id")
+  projectTitle           String   @map("project_title")
+  createdAt              DateTime @default(now()) @map("created_at")
+  updatedAt              DateTime @updatedAt @map("updated_at")
+  inputsGeneral          Json     @map("inputs_general")
+  inputsDescriptionBien  Json?    @map("inputs_description_bien")
+  resultsDescriptionBien Json?    @map("results_description_bien")
+  inputsRenovationBien   Json?    @map("inputs_renovation_bien")
+  resultsRenovationBien  Json?    @map("results_renovation_bien")
+  inputsDvf              Json?    @map("inputs_dvf")
+  resultsDvfMetadata     Json?    @map("results_dvf_metadata")
+  inputsBusinessPlan     Json?    @map("inputs_business_plan")
+  resultsBusinessPlan    Json?    @map("results_business_plan")
+  
+  photos                 Json?    @map("photos")
+  
+  pdfConfig              Json?    @map("pdf_config")
+  
+  dvfTransactions        DvfTransaction[]
+  dvfSeries              DvfSeries[]
+  dvfDistributions       DvfDistribution[]
+  dvfPremiumTransactions dvfPremiumTransaction[]
+}
+
+model DvfTransaction {
+  id          String   @id @default(uuid())
+  projectId   Int
+  data        Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project     Project  @relation(fields: [projectId], references: [id])
+}
+
+model DvfSeries {
+  id          String   @id @default(uuid())
+  projectId   Int
+  type        String
+  data        Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project     Project  @relation(fields: [projectId], references: [id])
+}
+
+model DvfDistribution {
+  id          String   @id @default(uuid())
+  projectId   Int
+  data        Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project     Project  @relation(fields: [projectId], references: [id])
+}
+
+model DVF {
+  id                      Int       @id @default(autoincrement())
+  primary_key            String    @unique
+  id_mutation           String
+  date_mutation         String
+  nature_mutation       String
+  valeur_fonciere      Float?
+  adresse_numero       String?
+  adresse_nom_voie    String?
+  code_postal         String?
+  nom_commune        String?
+  id_parcelle        String?
+  lot1_numero        String?
+  lot2_numero        String?
+  lot3_numero        String?
+  nombre_lots        Int?
+  type_local         String?
+  surface_reelle_bati Float?
+  nombre_pieces_principales Int?
+  surface_terrain    Float?
+  longitude          Float?
+  latitude           Float?
+  prix_m2            Float?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @default(now())
+
+  @@index([code_postal])
+  @@index([latitude, longitude])
+  @@index([date_mutation])
+
+  @@map("DVF")
+}
+
+model dvfPremiumTransaction {
+  id        Int      @id @default(autoincrement())
+  projectId Int
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+} 

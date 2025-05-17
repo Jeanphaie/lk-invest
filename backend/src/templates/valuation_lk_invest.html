@@ -1,0 +1,119 @@
+<!-- Page 1 -->
+<div class="section section-break">
+  <div class="break-content">
+    <h1>2 - Valorisation LK Invest</h1>
+    <p>Modèle interne pour valoriser le potentiel de revente</p>
+    <div class="methodology">
+      <h3>Méthodologie :</h3>
+      <ul>
+        <li>Collecte des ventes DVF dans un rayon de {{multiply inputsDvf.rayon 100}} m et dans l'arrondissement depuis 2019.</li>
+        <li>Calcul d'une moyenne simple des prix/m² pour chaque groupe.</li>
+        <li>Exclusion des outliers (prix < {{outlier_lower_bound_percent}}% ou > {{outlier_upper_bound_coeff}} × la moyenne).</li>
+        <li>Comparaison avec les prix moyens de l'arrondissement et les 10% des transactions les plus élevées.</li>
+      </ul>
+    </div>
+    <p>Pour cette adresse, l'étude porte sur <strong>{{resultsDvfMetadata.arrondissement_total_count}}</strong> transactions dont <strong>{{resultsDvfMetadata.selection_total_count}}</strong> dans notre rayon et <strong>{{resultsDvfMetadata.premium_total_count}}</strong> parmi les 10% les plus chères.</p>
+    <div class="valorisation-lk-cards">
+      <div class="valorisation-lk-card">
+        <span class="label">Autour du lieu</span>
+        <span class="label">rayon : {{multiply inputsDvf.rayon 100}} m</span>
+        <span class="value">{{formatKCurrency dvf_sel_final_avg 1}}</span>
+      </div>
+      <div class="valorisation-lk-card">
+        <span class="label">Premium</span>
+        <span class="label">(Top 10%)</span>
+        <span class="value">{{formatKCurrency dvf_premium_final_avg 1}}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Page 2 -->
+<div class="valorisation-bien dvf-page">
+  <div class="project-content">
+    <h2>Carte et données DVF ({{multiply inputsDvf.rayon 100}} m)</h2>
+    <div class="dvf-map-desc-container">
+      <div class="map-description-row">
+        <div class="map-container"> 
+          <img src="https://maps.googleapis.com/maps/api/staticmap?center={{lat}},{{lng}}&zoom=15&size=400x300&maptype=roadmap&key=AIzaSyDrxyRde3ZTmrpmid5De5Wo33YjAx2MvT0" alt="Carte DVF">
+        </div>
+        <div class="neighborhood-description">
+          <h3>Description du quartier :</h3>
+          <p>{{description_quartier}}</p>
+        </div>
+      </div>
+      <div class="dvf-list">
+        <h3>Extrait des transactions DVF</h3>
+        <table>
+          <thead>
+            <tr>
+              <th class="col-date">Date</th>
+              <th class="col-adresse">Adresse</th>
+              <th class="col-cp">CP</th>
+              <th class="col-valeur">Valeur<br/>(k€)</th>
+              <th class="col-pieces">Pièces</th>
+              <th class="col-surface">Surface<br/>(m²)</th>
+              <th class="col-prixm2">Prix/m²<br/>(k€)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{{dvf_table_html}}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Page 3 -->
+<!-- Section des tendances -->
+<section class="valorisation-bien trends-page">
+  <div class="project-content">
+    <div class="trend-header-block" style="background:#fff;border-radius:12px;box-shadow:0 1px 6px rgba(44,44,44,0.04);padding:18px 24px 10px 24px;margin-bottom:12px;">
+      <h1 style="margin-bottom:8px;">Analyse des prix au m²<br/>(2019-2024)</h1>
+      <div style="font-size:1.08rem;color:#5C4033;text-align:center;max-width:700px;margin:0 auto;">
+        Les données DVF révèlent une baisse générale des prix depuis 2022, <b>mais les biens premium affichent une résilience remarquable, maintenant une moyenne stable.</b>
+      </div>
+    </div>
+    <div class="trend-main-block" style="display:flex;flex-direction:row;gap:18px;align-items:center;margin-bottom:12px;">
+      <div class="card-stack" style="display:flex;flex-direction:column;gap:12px;min-width:160px;align-items:stretch;justify-content:center;margin:auto 0;">
+        <div class="highlight-block" style="background:#f7f0e6;color:#5C4033;border:2px solid #e0d3b8;border-radius:12px;box-shadow:0 1px 6px rgba(44,44,44,0.04);padding:18px 12px;text-align:center;font-size:1.18rem;font-weight:bold;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <span style="font-size:1.35rem;font-weight:900;color:#2A2A2A;">{{formatKCurrency dvf_sel_final_avg 1}}</span>
+          <span style="font-size:1.01rem;margin-top:2px;">Autour du lieu</span>
+        </div>
+        <div class="highlight-block premium" style="background:#e8d7c3;color:#5C4033;border:2px solid #e0d3b8;border-radius:12px;box-shadow:0 1px 6px rgba(44,44,44,0.04);padding:18px 12px;text-align:center;font-size:1.18rem;font-weight:bold;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <span style="font-size:1.35rem;font-weight:900;color:#2A2A2A;">{{ formatKCurrency dvf_premium_final_avg 1}}</span>
+          <span style="font-size:1.01rem;margin-top:2px;">Premium (Top 10%)</span>
+        </div>
+      </div>
+      <div class="trend-table" style="flex:1;min-width:0;">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:60px;">Année</th>
+              <th style="width:70px;">Sélection<br/>(Nb)</th>
+              <th style="width:70px;">Arrond.<br/>(Nb)</th>
+              <th style="width:70px;">Premium<br/>(Nb)</th>
+            </tr>
+          </thead>
+          <tbody>{{{trend_table_html}}}</tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Graphiques côte à côte -->
+    <div class="charts-row">
+      <div class="polaroid-chart">
+        <img src="{{trend_chart_url}}" alt="Évolution des prix">
+        <div class="caption">Évolution des prix</div>
+      </div>
+      <div class="polaroid-chart">
+        <img src="{{distribution_chart_url}}" alt="Comparaison des quartiers">
+        <div class="caption">Nombre de biens par tranche de prix</div>
+      </div>
+    </div>
+    <!-- Conclusion -->
+    <div class="conclusion">
+      <p>==&gt; Rénovation premium pour une revente à {{formatKCurrency prix_m2_prix_vente_pondere_m2 1}} k€/m2 (en dessous de la moyenne premium du quartier)</p>
+    </div>
+  </div>
+</section>

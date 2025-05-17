@@ -1,0 +1,482 @@
+<!-- templates/financial_data.html -->
+<div class="section section-break">
+    <div class="break-content">
+        <h1>4 - Rentabilité</h1>
+        <p>Hypothèses financières et cash flow</p>
+    </div>
+</div>
+<div class="section business-plan">
+    <style>
+        .business-plan {
+            width: 210mm;
+            min-height: 297mm;
+            background: #F7F0E6;
+            padding: 8mm 6mm 4mm 6mm;
+            box-sizing: border-box;
+            font-family: 'Georgia', serif;
+            font-size: 18px;
+        }
+
+        .business-plan .columns-container {
+            display: flex;
+            gap: 1mm;
+            margin-bottom: 4mm;
+        }
+
+        .business-plan .section-1-left,
+        .business-plan .section-1-intermediate {
+            flex: 1 1 0;
+        }
+
+        .business-plan .bloc {
+            background: #fff;
+            border-radius: 7px;
+            border: 1px solid #e0e0e0;
+            padding: 4mm 3mm 2mm 3mm;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.04);
+            margin-bottom: 4mm;
+        }
+
+        .business-plan h1 {
+            font-size: 2.5em;
+            margin-bottom: 8mm;
+        }
+
+        .business-plan h6 {
+            font-size: 1.25em;
+            font-weight: bold;
+            margin: 0 0 2mm 0;
+            color: #2A2A2A;
+            text-align: left;
+        }
+
+        .business-plan table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.15em;
+        }
+
+        .business-plan td {
+            border: 1px solid #e0e0e0;
+            padding: 6px 12px;
+            text-align: right;
+        }
+
+        .business-plan td:first-child {
+            text-align: left;
+            background: #f7f7f7;
+            font-weight: 500;
+        }
+
+        .business-plan tr:last-child td {
+            font-weight: bold;
+            background: #eaf6ff;
+        }
+
+        @media print {
+            .business-plan {
+                width: 100vw;
+                min-height: 100vh;
+                padding: 4mm 2mm;
+                font-size: 15px;
+            }
+
+            .business-plan .columns-container {
+                gap: 1.5mm;
+            }
+
+            .business-plan .bloc {
+                padding: 2mm 1.5mm 1mm 1.5mm;
+                margin-bottom: 2mm;
+            }
+
+            .business-plan table {
+                font-size: 1em;
+            }
+        }
+    </style>
+    <div class="project-content">
+        <h1>Business Plan</h1>
+        <div class="columns-container">
+            <div class="section-1-left">
+                <div class="bloc bloc-input">
+                    <h6>Acquisition</h6>
+                    <table class="table table-bordered table-sm table">
+                        <tbody>
+                            <tr>
+                                <td>Superficie (m²)</td>
+                                <td><span class="input-field-static">{{surface_carrez_apres_travaux}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Terrasse (m²)</td>
+                                <td><span class="input-field-static">{{surface_terrasse_apres_travaux}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Pondération Terrasse</td>
+                                <td><span class="input-field-static">{{coef_ponderation}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Superficie Ponderée (m²)</td>
+                                <td><span class="input-field-static">{{surface_ponderee_apres_travaux}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Prix achat</td>
+                                <td><span class="input-field-static">{{formatKCurrency couts_acquisition.prix_achat 0}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Frais notaire (%)</td>
+                                <td><span class="input-field-static">{{formatPercentage frais_notaire_percent 1}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Frais agence (%)</td>
+                                <td><span class="input-field-static">{{formatPercentage frais_agence_achat_percent 1}}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bloc bloc-input">
+                    <h6>Portage (Financement)</h6>
+                    <table class="table table-bordered table-sm table">
+                        <tbody>
+                            <tr>
+                                <td>Crédit foncier</td>
+                                <td><span class="input-field-static">{{formatKCurrency financement.montants.credit_foncier_output_amount 0}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Fonds propres</td>
+                                <td><span class="input-field-static">{{formatKCurrency financement.montants.fonds_propres_output_amount 0}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Crédit accompagnement</td>
+                                <td><span class="input-field-static">{{formatKCurrency financement.montants.credit_accompagnement_output_amount 0}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Taux de crédit (%)</td>
+                                <td><span class="input-field-static">{{formatPercentage financement_taux_credit_percent 2}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Commission (%)</td>
+                                <td><span class="input-field-static">{{formatPercentage financement_commission_percent 2}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Honoraires techniques</td>
+                                <td><span class="input-field-static">{{cout_honoraires_tech_input_amount}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Prorata foncier</td>
+                                <td><span class="input-field-static">{{cout_prorata_foncier_input_amount}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Diagnostics</td>
+                                <td><span class="input-field-static">{{cout_diagnostics_input_amount}}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bloc bloc-input">
+                    <h6>Travaux</h6>
+                    <table class="table table-bordered table-sm table">
+                        <tbody>
+                            <tr>
+                                <td>Coût travaux/m²</td>
+                                <td><span class="input-field-static">{{formatKCurrency cout_travaux_m2 0}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Aménagement terrasse</td>
+                                <td><span class="input-field-static">{{formatKCurrency cout_terrasse_input_amount 0}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Mobilier</td>
+                                <td><span class="input-field-static">{{formatKCurrency cout_mobilier_input_amount 0}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Salaire MO (%)</td>
+                                <td><span class="input-field-static">{{formatPercentage cout_maitrise_oeuvre_percent 2}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Aléa travaux (%)</td>
+                                <td><span class="input-field-static">{{formatPercentage cout_alea_percent 2}}</span></td>
+                            </tr>
+                            <tr>
+                                <td>Démolition</td>
+                                <td><span class="input-field-static">{{formatKCurrency cout_demolition_input_amount 0}}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bloc bloc-input">
+                <table class="table table-bordered table-sm table">
+                    <tbody>
+                        <tr><td class="italic">Montant prêt ({{formatPercentage pct_credit_foncier_utilise 1}})</td><td class="italic">{{formatKCurrency financement.montants_utilises.credit_foncier_output_amount 0}}</td></tr>
+                        <tr><td class="italic">Fonds propres ({{formatPercentage pct_fonds_propres_utilise 1}})</td><td class="italic">{{formatKCurrency financement.montants_utilises.fonds_propres_output_amount 0}}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+            <div class="section-1-intermediate">
+                <div class="bloc bloc-intermediate">
+                    <table class="table table-bordered table-sm table">
+                        <tbody>
+                            <tr>
+                                <td class="italic">Prix m² acquisition (pondéré)</td>
+                                <td class="italic">{{formatKCurrency prix_m2.prix_achat_pondere_m2 1}}</td>
+                            </tr>
+                            <tr>
+                                <td class="italic">Prix m² acquisition (carrez)</td>
+                                <td class="italic">{{formatKCurrency prix_m2.prix_achat_carrez_m2 1}}</td>
+                            </tr>
+                            <tr>
+                                <td class="italic">Prix m² revient (pondéré)</td>
+                                <td class="italic">{{formatKCurrency prix_m2.prix_revient_pondere_m2 1}}</td>
+                            </tr>
+                            <tr>
+                                <td class="italic">Prix m² revient (carrez)</td>
+                                <td class="italic">{{formatKCurrency prix_m2.prix_revient_carrez_m2 1}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bloc bloc-intermediate">
+                    <h6>Coût d'acquisition</h6>
+                    <table class="table table-bordered table-sm table">
+                        <tbody>
+                            <tr>
+                                <td>Acquisition</td>
+                                <td>{{formatKCurrency couts_acquisition.prix_achat 0}}</td>
+                            </tr>
+                            <tr>
+                                <td>Commission</td>
+                                <td>{{formatKCurrency couts_acquisition.frais_agence_achat_output_amount 0}}</td>
+                            </tr>
+                            <tr>
+                                <td>Frais notaire</td>
+                                <td>{{formatKCurrency couts_acquisition.frais_notaire_output_amount 0}}</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td>Total achat</td>
+                                <td>{{formatKCurrency couts_acquisition.total_acquisition 0}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bloc bloc-intermediate">
+                    <h6>Coût travaux</h6>
+                    <table class="table table-bordered table-sm table">
+                        <tbody>
+                            <tr>
+                                <td>Intérieur habitable</td>
+                                <td>{{formatKCurrency couts_travaux.total_output_amount 0}}</td>
+                            </tr>
+                            <tr>
+                                <td>Terrasse</td>
+                                <td>{{formatKCurrency couts_travaux.terrasse_output_amount 0}}</td>
+                            </tr>
+                            <tr>
+                                <td>Mobilier</td>
+                                <td>{{formatKCurrency couts_travaux.mobilier_output_amount 0}}</td>
+                            </tr>
+                            <tr>
+                                <td>Démolition</td>
+                                <td>{{formatKCurrency couts_travaux.demolition_output_amount 0}}</td>
+                            </tr>
+                            <tr>
+                                <td>Aléa</td>
+                                <td>{{formatKCurrency couts_travaux.alea_output_amount 0}}</td>
+                            </tr>
+                            <tr>
+                                <td>MOE suivi</td>
+                                <td>{{formatKCurrency couts_travaux.maitrise_oeuvre_output_amount 0}}</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td>Total travaux</td>
+                                <td>{{formatKCurrency couts_travaux.total_travaux 0}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bloc bloc-intermediate">
+                    <h6>Frais financement</h6>
+                    <table class="table table-bordered table-sm table">
+                        <tbody>
+                            <tr>
+                                <td>Intérêts prêt</td>
+                                <td>{{formatKCurrency financement.couts.interets_pret_output_amount 0}}</td>
+                            </tr>
+                            <tr>
+                                <td>Accompagnement prêt</td>
+                                <td>{{formatKCurrency financement.couts.commission_accompagnement_output_amount 0}}</td>
+                            </tr>
+                            <tr>
+                                <td>Frais dossier</td>
+                                <td>{{formatKCurrency financement.couts.frais_dossier_output_amount 0}}</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td>Total financement</td>
+                                <td>{{formatKCurrency financement.couts.total_couts_financiers 0}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bloc bloc-intermediate">
+                    <h6>Frais divers</h6>
+                    <table class="table table-bordered table-sm table">
+                        <tbody>
+                            <tr>
+                                <td>Hon. techniques</td>
+                                <td>{{formatKCurrency couts_divers.honoraires_tech_output_amount 0}}</td>
+                            </tr>
+                            <tr>
+                                <td>Prorata foncier</td>
+                                <td>{{formatKCurrency couts_divers.prorata_foncier_output_amount 0}}</td>
+                            </tr>
+                            <tr>
+                                <td>Diagnostics</td>
+                                <td>{{formatKCurrency couts_divers.diagnostics_output_amount 0}}</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td>Total frais divers</td>
+                                <td>{{formatKCurrency couts_divers.total_divers 0}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section business-plan-2">
+    <div class="project-content">
+        <h1>Données financières</h1>
+        <ul>
+            <li>Financement mixte entre crédit foncier - crédit accompagnement et fonds propres</li>
+            <li>Coût du crédit environ {{formatKCurrency financement.couts.total_couts_financiers 0}}</li>
+            <li>Durée du projet {{duree_projet}} jours</li>
+        </ul>
+        <p>==> ROI {{formatPercentage resultats.rentabilite 0}} et environ {{formatKCurrency resultats.marge_nette 0}} cash net</p>
+        <div class="bloc bloc-intermediate italic">
+            <h6>Coûts Financiers</h6>
+            <table class="business-plan-2-table table-bordered table-sm credit-costs-table design-1">
+                <thead>
+                    <tr>
+                        <th class="name-col">Période</th>
+                        <th class="value-col">Jours</th>
+                        <th class="value-col">Crédit foncier utilisé</th>
+                        <th class="value-col">Fonds propres utilisés</th>
+                        <th class="value-col">Crédit accomp. utilisé</th>
+                        <th class="value-col">Intérêts foncier</th>
+                        <th class="value-col">Intérêts accomp.</th>
+                        <th class="value-col">Commission</th>
+                        <th class="value-col">Coût financier total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each trimestre_details}}
+                    <tr>
+                        <td class="name-col">{{trimestre}}</td>
+                        <td class="value-col">{{jours}}</td>
+                        <td class="value-col">{{formatKCurrency credit_foncier_utilise 0}}</td>
+                        <td class="value-col">{{formatKCurrency fonds_propres_utilise 0}}</td>
+                        <td class="value-col">{{formatKCurrency credit_accompagnement_utilise 0}}</td>
+                        <td class="value-col">{{formatKCurrency interets_foncier 0}}</td>
+                        <td class="value-col">{{formatKCurrency interets_accompagnement 0}}</td>
+                        <td class="value-col">{{formatKCurrency commission_accompagnement 0}}</td>
+                        <td class="value-col">{{formatKCurrency cout_financier_trimestre 0}}</td>
+                    </tr>
+                    {{/each}}
+                    <tr class="total-row">
+                        <td class="name-col"><strong>Total</strong></td>
+                        <td class="value-col">{{total_jours}}</td>
+                        <td class="value-col">{{formatKCurrency total_credit_foncier_utilise 0}}</td>
+                        <td class="value-col">{{formatKCurrency total_fonds_propres_utilise 0}}</td>
+                        <td class="value-col">{{formatKCurrency total_credit_accompagnement_utilise 0}}</td>
+                        <td class="value-col">{{formatKCurrency total_interets_foncier 0}}</td>
+                        <td class="value-col">{{formatKCurrency total_interets_accompagnement 0}}</td>
+                        <td class="value-col">{{formatKCurrency total_commission_accompagnement 0}}</td>
+                        <td class="value-col">{{formatKCurrency total_cout_financier_trimestre 0}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="bloc">
+            <div class="bloc-result">
+                <h6>Prorata des Coûts</h6>
+                <table class="business-plan-2-table table-bordered table-sm prorata-table">
+                    <thead>
+                        <tr>
+                            <th class="name-col">Catégorie</th>
+                            <th class="value-col">Montant</th>
+                            <th class="value-col">%</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="name-col">Achat</td>
+                            <td class="value-col amount-value">{{formatKCurrency couts_acquisition.total_acquisition 0}}</td>
+                            <td class="value-col percent-value">{{formatPercentage prorata.acquisition 1}}</td>
+                        </tr>
+                        <tr>
+                            <td class="name-col">Travaux</td>
+                            <td class="value-col amount-value">{{formatKCurrency couts_travaux.total_travaux 0}}</td>
+                            <td class="value-col percent-value">{{formatPercentage prorata.travaux 1}}</td>
+                        </tr>
+                        <tr>
+                            <td class="name-col">Financement</td>
+                            <td class="value-col amount-value">{{formatKCurrency financement.couts.total_couts_financiers 0}}</td>
+                            <td class="value-col percent-value">{{formatPercentage prorata.financement 1}}</td>
+                        </tr>
+                        <tr>
+                            <td class="name-col">Divers</td>
+                            <td class="value-col amount-value">{{formatKCurrency couts_divers.total_divers 0}}</td>
+                            <td class="value-col percent-value">{{formatPercentage prorata.frais_divers 1}}</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td class="name-col">Coût global</td>
+                            <td class="value-col amount-value">{{formatKCurrency couts_total 0}}</td>
+                            <td class="value-col percent-value"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 10mm;" class="kpi-cards">
+                <div class="kpi-card-large">Coût global<br><span>{{formatKCurrency couts_total 0}}</span></div>
+            </div>
+        </div>
+        <div class="bp2-hypo-kpi-row">
+            <div class="hypotheses-vente bloc">
+                <div class="bloc-input">
+                    <h6>Hypothèses de Vente</h6>
+                    <table class="business-plan-2-table table-bordered table-sm">
+                        <tbody>
+                            <tr>
+                                <td class="name-col">Prix benchmark (€/m²)</td>
+                                <td class="value-col"><span class="input-field-static">{{formatKCurrency prix_benchmark 1}}</span></td>
+                            </tr>
+                            <tr>
+                                <td class="name-col">Pondération</td>
+                                <td class="value-col"><span class="input-field-static">{{formatNumber coef_ponderation 1}}</span></td>
+                            </tr>
+                            <tr>
+                                <td class="name-col">Frais agence vente (%)</td>
+                                <td class="value-col"><span class="input-field-static">{{frais_agence_vente_percent}}</span></td>
+                            </tr>
+                            <tr>
+                                <td class="name-col">Prix m² vente (pondéré)</td>
+                                <td class="value-col"><span class="input-field-static"><strong>{{formatKCurrency prix_m2.prix_vente_pondere_m2 1}}</strong></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="bp2-fai-hfa-col">
+                <div class="kpi-card-large">Prix FAI<br><span>{{formatKCurrency resultats.prix_fai 0}}</span></div>
+                <div class="kpi-card-large">Prix HFA<br><span>{{formatKCurrency resultats.prix_hfa 0}}</span></div>
+            </div>
+        </div>
+        <div class="kpi-cards">
+            <div class="kpi-card-large cash-emphasis"><strong>Cash généré</strong></br></br></br><span>{{formatKCurrency resultats.marge_nette 0}}</span></div>
+            <div class="kpi-card-large primary"><strong>Rentabilité</strong> </br><i style="font-style: normal;">profit / vente nette</i><br></br><span>{{formatPercentage resultats.rentabilite 0}}</span></div>
+            <div class="kpi-card-large roi-emphasis"><strong>ROI</strong></br><i style="font-style: normal;">profit / cout</i><br></br><span>{{formatPercentage resultats.rentabilite 0}}</span></div>
+        </div>
+    </div>
+</div>

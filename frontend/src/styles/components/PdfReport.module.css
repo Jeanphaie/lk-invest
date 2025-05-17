@@ -1,0 +1,79 @@
+.pdfDynSection {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  padding: 2.5rem 2rem 2rem 2rem;
+  background: #f9fafb;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  max-width: 900px;
+}
+
+.pdfDynSection h3 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: #2d3748;
+}
+
+.pdfDynRow {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-bottom: 2.2rem;
+  flex-wrap: wrap;
+}
+
+.pdfDynCol {
+  flex: 1 1 0;
+  min-width: 220px;
+}
+
+.pdfDynLabel {
+  font-size: 1.05rem;
+  color: #4a5568;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  display: block;
+}
+
+.pdfDynInput, .pdfDynTextarea {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 1.08rem;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+  transition: border 0.2s;
+}
+
+.pdfDynInput:focus, .pdfDynTextarea:focus {
+  border-color: #3182ce;
+  outline: none;
+}
+
+.pdfDynTextarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.pdfDynDefault {
+  font-size: 0.98rem;
+  color: #a0aec0;
+  font-style: italic;
+  margin-top: 0.1rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 900px) {
+  .pdfDynRow {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .pdfDynCol {
+    min-width: 0;
+  }
+} 

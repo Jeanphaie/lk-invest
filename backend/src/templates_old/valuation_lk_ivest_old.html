@@ -1,0 +1,110 @@
+<div class="section section-break">
+    <div class="break-content">
+        <h1>2 - Valorisation LK Invest</h1>
+        <p>Modèle interne pour valoriser le potentiel de revente</p>
+        <!-- DEBUG RAYON: {{rayon}} -->
+        <div class="methodology">
+            <h3>Méthodologie :</h3>
+            <ul>
+                <li>Collecte des ventes DVF dans un rayon de {{rayon}} km et dans l'arrondissement depuis 2019.</li>
+                <li>Calcul d'une moyenne simple des prix/m² pour chaque groupe.</li>
+                <li>Exclusion des outliers (prix < {{outlier_lower_bound_percent}}% ou> {{outlier_upper_bound_coeff}} × la moyenne).</li>
+                <li>Comparaison avec les prix moyens de l'arrondissement et les 10% des transactions les plus elevées</li>
+            </ul>
+        </div>
+        <p>Pour cette adresse, l'étude porte sur {{total_arrondissement_transactions}} transactions dont {{selection_cleaned_transactions}} dans notre rayon et {{total_premium_transactions}} parmi les 10% les plus chères</p>
+        <div class="averages">
+            <p class="highlight premium">Autour du lieu :<br>rayon : {{rayon}}<br><br><strong>{{weighted_avg_price_m2}}</strong></p>
+            <p class="highlight premium">Premium<br>(Top 10 %) : <br><br><strong>{{premium_avg}}</strong></p>
+        </div>
+    </div>
+</div>
+<!-- Page 8 -->
+<div class="valorisation-bien">
+    <div class="project-content">
+        <h2>Carte et données DVF ({{rayon}}km)</h2>
+        <div class="map-description-row">
+            <div class="map-container">
+                <img src="https://maps.googleapis.com/maps/api/staticmap?center={{lat}},{{lng}}&zoom=15&size=400x300&maptype=roadmap&key=AIzaSyDrxyRde3ZTmrpmid5De5Wo33YjAx2MvT0" alt="Carte DVF">
+            </div>
+            <div class="neighborhood-description">
+                <h3>Description du quartier :</h3>
+                <p>{{description}}</p>
+            </div>
+        </div>
+        <div class="dvf-list">
+            <h3>Extrait des transactions DVF</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Adresse</th>
+                        <th>CP</th>
+                        <th>Valeur (k€)</th>
+                        <th>Pièces</th>
+                        <th>Surface (m²)</th>
+                        <th>Prix/m² (k€)</th>
+                    </tr>
+                </thead>
+                <tbody>{{dvf_table_html}}</tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Page 9 -->
+<div class="valorisation-bien vintage">
+    <div class="project-content">
+  
+      <div class="white-box text-overlay">
+        <h1>Analyse des prix au m² (2019-2024)</h1>
+        <p>
+          Les données DVF révèlent une baisse générale des prix depuis 2022,
+          mais <strong>les biens premium affichent une résilience remarquable, maintenant une moyenne stable</strong>.
+        </p>
+      </div>
+  
+      <div class="flex-row">
+        <div class="white-box highlight-block">
+          <p>Autour du lieu :</p>
+          <strong>{{weighted_avg_price_m2}}</strong>
+        </div>
+        <div class="white-box highlight-block premium">
+          <p>Premium (Top 10 %) :</p>
+          <strong>{{premium_avg}}</strong>
+        </div>
+      </div>
+  
+      <div class="white-box trend-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Année</th>
+              <th>Sélection Cleaned (Nb)</th>
+              <th>Sélection / (Nb)</th>
+              <th>Arrond. Cleaned / (Nb)</th>
+              <th>Arrond. / (Nb)</th>
+              <th>Premium / (Nb)</th>
+            </tr>
+          </thead>
+          <tbody>{{trend_table_html}}</tbody>
+        </table>
+      </div>
+  
+      <div class="flex-row charts-row">
+        <div class="white-box polaroid-chart">
+          <img src="{{trend_chart_path}}" alt="Évolution des prix/m²">
+          <p class="caption">Évolution des prix/m² (2019–2024)</p>
+        </div>
+        <div class="white-box polaroid-chart">
+          <img src="{{histogram_path}}" alt="Nombre de transactions">
+          <p class="caption">Nombre de transactions par groupe</p>
+        </div>
+      </div>
+  
+      <div class="white-box conclusion">
+        <p>==> Rénovation premium pour une revente à {{prix_m2_vente}}/m² (en dessous de la moyenne premium du quartier)</p>
+      </div>
+  
+    </div>
+  </div>
+  

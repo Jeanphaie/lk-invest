@@ -1,0 +1,2373 @@
+<!-- templates/property_description.html -->
+<div class="section section-break">
+    <div class="break-content">
+        <h1>1 - Le Bien</h1>
+        <p>Acquisition à {prix_achat} Frais d'agence inclus</p>
+        <p>==> {prix_m2}/m2</p>
+        <p>Soit un prix inférieur à la moyenne du secteur marché : {final_avg}/m2</p>
+    </div>
+</div>
+<div class="section property_description vintage">
+    <div class="description-content">
+        <div class="text-overlay">
+            <h1>Haut Potentiel Rénovation</h1>
+            <p><strong>{adresse}</strong> – {superficie_totale} m² Carrez</p>
+            {atouts}
+        </div>
+        <div class="image-gallery">
+            <div class="polaroid">
+                <img src="/data/marchand-biens/backend/static/uploads/Vdt_avant_01.png" alt="Room 1">
+                <p class="caption">Salon 1</p>
+            </div>
+            <div class="polaroid">
+                <img src="/data/marchand-biens/backend/static/uploads/Vdt_avant_02.png" alt="Room 2">
+                <p class="caption">Salon 2</p>
+            </div>
+            <div class="polaroid">
+                <img src="/data/marchand-biens/backend/static/uploads/Vdt_avant_03.png" alt="Room 3">
+                <p class="caption">Cuisine</p>
+            </div>
+            <div class="polaroid">
+                <img src="/data/marchand-biens/backend/static/uploads/Vdt_avant_04.png" alt="Room 4">
+                <p class="caption">Cuisine</p>
+            </div>
+            <div class="floor-plan">
+                <img src="/data/marchand-biens/backend/static/uploads/Vdt_avant_05.png" alt="Floor Plan">
+                <p class="caption">Plan – Configuration flexible</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Renovation Project (Page 5) -->
+<div class="section renovation-project vintage">
+    <div class="project-content">
+        <div class="text-overlay">
+            <h1>Projet de Rénovation</h1>
+            <h2>{theme}</h2>
+            {renovation_explain}
+        </div>
+        <div class="image-gallery">
+            <div class="full-width-image">
+                <img src="/data/marchand-biens/backend/static/uploads/Vdt_3D_01.webp" alt="Room 5">
+                <p class="caption">Vue 3D – Salon rénové</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Renovation Project 2 (Page 6) -->
+<div class="section renovation-project-2 vintage">
+    <div class="project-content">
+        <div class="text-overlay">
+            <h1>Projet de Rénovation</h1>
+            {renovation_explain_2}
+        </div>
+        <div class="image-gallery">
+            <div class="polaroid">
+                <img src="/data/marchand-biens/backend/static/uploads/Vdt_3D_03.webp" alt="Room 5">
+                <p class="caption">Vue 3D – Cuisine moderne</p>
+            </div>
+            <div class="polaroid">
+                <img src="/data/marchand-biens/backend/static/uploads/Vdt_3D_02.webp" alt="Room 5">
+                <p class="caption">Vue 3D – Salon lumineux</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@page {
+    size: A4;
+    margin: 0mm;
+}
+
+body {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: #2A2A2A; /* Darker gray for better readability */
+    line-height: 1.5;
+    background-color: #F7F0E6; /* Vintage cream background */
+    margin: 0;
+}
+
+/* Cover Page (Page 1) */
+.cover-page {
+    page: cover;
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    text-align: center;
+    background-color: #F7F0E6;
+    padding: 5mm 15mm 0 15mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+}
+
+.cover-page .logo-container {
+    margin-bottom: 2mm;
+}
+
+.cover-page .logo {
+    width: 150px;
+    height: auto;
+}
+
+.cover-page .cover-content {
+    margin-bottom: 2mm;
+    position: relative;
+    padding: 5mm 8mm;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2));
+    border-top: 2px double #5C4033; /* Vintage brown */
+    border-bottom: 2px double #5C4033;
+    border-left: none;
+    border-right: none;
+}
+
+.cover-page .cover-content::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #5C4033;
+    opacity: 0.5;
+    transform: rotate(45deg);
+    top: -6px;
+    left: 50%;
+    margin-left: -5px;
+}
+
+.cover-page .cover-content-frame-bottom {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #5C4033;
+    opacity: 0.5;
+    transform: rotate(45deg);
+    bottom: -6px;
+    left: 50%;
+    margin-left: -5px;
+}
+
+.cover-page h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 46px;
+    font-weight: bold;
+    color: #2A2A2A;
+    margin: 0;
+    line-height: 1.1;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 3mm 5mm;
+    display: inline-block;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.cover-page h2 {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    color: #4A4A4A;
+    margin: 4px 0 0 0;
+    line-height: 1.4;
+    letter-spacing: 1.5px;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cover-page .logo-divider {
+    width: 100px;
+    height: 2px;
+    background-color: #5C4033;
+    margin: 4mm auto;
+    opacity: 0.6;
+    position: relative;
+}
+
+.cover-page .logo-divider::before,
+.cover-page .logo-divider::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    width: 100px;
+    height: 1px;
+    background-color: #5C4033;
+    opacity: 0.6;
+}
+
+.cover-page .logo-divider::before {
+    left: 0;
+}
+
+.cover-page .logo-divider::after {
+    top: 5px;
+}
+
+.cover-page .logo-divider-crosshair {
+    width: 12px;
+    height: 12px;
+    border: 1px solid #5C4033;
+    opacity: 0.6;
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.cover-page .title-divider {
+    width: 140px;
+    height: 2px;
+    background-color: #5C4033;
+    margin: 5mm auto 4mm auto;
+    opacity: 0.6;
+    position: relative;
+}
+
+.cover-page .title-divider::before,
+.cover-page .title-divider::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    width: 140px;
+    height: 1px;
+    background-color: #5C4033;
+    opacity: 0.6;
+}
+
+.cover-page .title-divider::before {
+    left: 0;
+}
+
+.cover-page .title-divider::after {
+    top: 5px;
+}
+
+.cover-page .title-divider-diamond-left,
+.cover-page .title-divider-diamond-right {
+    position: absolute;
+    top: -3px;
+    width: 8px;
+    height: 8px;
+    background-color: #5C4033;
+    opacity: 0.6;
+    transform: rotate(45deg);
+}
+
+.cover-page .title-divider-diamond-left {
+    left: -4px;
+}
+
+.cover-page .title-divider-diamond-right {
+    right: -4px;
+}
+
+.cover-page .title-divider-crosshair {
+    width: 12px;
+    height: 12px;
+    border: 1px solid #5C4033;
+    opacity: 0.6;
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.cover-page .image-container {
+    width: calc(100% + 30mm);
+    margin: 0 -15mm;
+}
+
+.cover-page .cover_image {
+    width: 100%;
+    height: 550px;
+    object-fit: cover;
+    display: block;
+    margin-bottom: 0;
+}
+
+.cover-page .contact-info {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 2mm 0 2mm 0;
+    page-break-inside: avoid;
+}
+
+.cover-page .contact-column {
+    width: 45%;
+    text-align: center;
+}
+
+.cover-page .contact-column p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #5C4033;
+    margin: 0;
+    line-height: 1.3;
+    letter-spacing: 1px;
+}
+
+.cover-page .contact-column a {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #5C4033;
+    text-decoration: none;
+    display: block;
+    line-height: 1.3;
+    letter-spacing: 1px;
+}
+
+.cover-page .contact-column a:hover {
+    text-decoration: underline;
+}
+
+/* Table of Contents (Page 2) */
+.toc-page {
+    page: toc;
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    text-align: center;
+    background-color: #F7F0E6;
+    padding: 10mm 15mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.toc-page .logo-container {
+    margin-bottom: 15mm;
+    text-align: center;
+}
+
+.toc-page .logo {
+    width: 150px;
+    height: auto;
+}
+
+.toc-title {
+    max-width: 80%;
+    margin: 0 auto;
+    padding-top: 80mm;
+    padding-bottom: 15mm;
+    position: relative;
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20mm 0;
+}
+
+.toc-page .toc-content {
+    max-width: 100%;
+    margin: 0;
+    padding-top: 40mm;
+}
+
+.toc-page h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 36px;
+    font-weight: bold;
+    color: #2A2A2A;
+    margin: 0 0 15mm 0;
+    line-height: 1.2;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.toc-page ul {
+    list-style: none;
+    padding: 0;
+    margin: 30mm;
+}
+
+.toc-page li {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2A2A2A;
+    margin: 10mm 0;
+    line-height: 1.4;
+    letter-spacing: 1px;
+    text-align: left;
+}
+
+/* Section Break Pages (Page 3, etc.) */
+.section-break {
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 10mm 15mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.section-break::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/data/marchand-biens/backend/static/pdf_assets/backround_break.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: 0;
+}
+
+.section-break .break-content {
+    max-width: 80%;
+    position: relative;
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 20mm 15mm;
+    border-radius: 5mm;
+    box-shadow: 0 2mm 4mm rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.section-break h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 40px;
+    font-weight: bold;
+    color: #2A2A2A;
+    margin: 0 0 10mm 0;
+    line-height: 1.2;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    position: relative;
+}
+
+.section-break h1::after {
+    content: '';
+    position: absolute;
+    bottom: -5mm;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50mm;
+    height: 1px;
+    background-color: #5C4033;
+    opacity: 0.5;
+}
+
+.section-break p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 18px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 5mm 0;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+}
+
+/* Property Description (Pages 4-6) */
+.property_description {
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 10mm 15mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.property_description::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/data/marchand-biens/backend/static/pdf_assets/backround_break.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.property_description .description-content {
+    position: relative;
+    z-index: 2;
+}
+
+.property_description h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 28px;
+    font-weight: bold;
+    color: #2A2A2A;
+    margin: 0 0 8mm 0;
+    line-height: 1.2;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+.property_description p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 3mm 0;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+    text-align: justify;
+}
+
+.property_description .image-container {
+    position: relative;
+    width: 100%;
+    height: 180mm;
+    margin-top: 10mm;
+}
+
+.property_description .image-container .img-wrapper {
+    position: absolute;
+    border: 1px solid #5C4033;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.property_description .image-container .img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.property_description .image-container .img1 {
+    width: 125mm;
+    height: 100mm;
+    top: -5mm;
+    left: -5mm;
+    z-index: 3;
+}
+
+.property_description .image-container .img2 {
+    width: 100mm;
+    height: 100mm;
+    top: 0;
+    right: 0mm;
+    z-index: 4;
+}
+
+.property_description .image-container .img3 {
+    width: 100mm;
+    height: 100mm;
+    bottom: 10mm;
+    right: -5mm;
+    z-index: 1;
+}
+
+.property_description .image-container .img4 {
+    width: 125mm;
+    height: 100mm;
+    bottom: 0mm;
+    left: -10mm;
+    z-index: 0;
+}
+
+.property_description .image-container .img5 {
+    width: 440px;
+    height: 330px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+}
+
+.property_description .footer {
+    position: absolute;
+    bottom: 5mm;
+    left: 15mm;
+    right: 15mm;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 12px;
+    color: #5C4033;
+    line-height: 1.4;
+    letter-spacing: 0.5px;
+}
+
+/* Renovation Project (Pages 5-6) */
+.renovation-project {
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 10mm 15mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.renovation-project::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/data/marchand-biens/backend/static/pdf_assets/backround_break.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.renovation-project .project-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.renovation-project h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 28px;
+    font-weight: bold;
+    color: #2A2A2A;
+    margin: 0 0 8mm 0;
+    line-height: 1.2;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+.renovation-project h2 {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2A2A2A;
+    margin: 5mm 0 3mm 0;
+    line-height: 1.4;
+    letter-spacing: 0.5px;
+    text-align: left;
+}
+
+.renovation-project p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 3mm 0;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+    text-align: justify
+}
+/* Renovation Project (Pages 5-6) - Continued */
+.renovation-project ul {
+    list-style-type: disc;
+    padding-left: 5mm;
+    margin: 0;
+}
+
+.renovation-project li {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 2mm 0;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    text-align: justify;
+}
+
+.renovation-project .grid-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5mm;
+    flex-grow: 1;
+    width: 100%;
+    height: calc(100% - 50mm);
+}
+
+.renovation-project .row {
+    display: flex;
+    gap: 5mm;
+    height: 120mm;
+}
+
+.renovation-project .image {
+    width: 120mm;
+    height: 110mm;
+}
+
+.renovation-project .image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 1px solid #5C4033;
+}
+
+.renovation-project .text {
+    width: 80mm;
+    height: 95mm;
+}
+
+.renovation-project .row:first-child {
+    flex-direction: row;
+}
+
+.renovation-project .row:last-child .image img {
+    width: 125mm;
+    height: 110mm;
+    object-fit: fill;
+}
+
+/* Renovation Project 2 (Page 6) */
+.renovation-project-2 {
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 10mm 15mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.renovation-project-2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/data/marchand-biens/backend/static/pdf_assets/backround_break.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.renovation-project-2 .project-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.renovation-project-2 h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 28px;
+    font-weight: bold;
+    color: #2A2A2A;
+    margin: 0 0 8mm 0;
+    line-height: 1.2;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+.renovation-project-2 h2 {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2A2A2A;
+    margin: 5mm 0 3mm 0;
+    line-height: 1.4;
+    letter-spacing: 0.5px;
+    text-align: left;
+}
+
+.renovation-project-2 p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 3mm 0;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+    text-align: justify;
+}
+
+.renovation-project-2 ul {
+    list-style-type: disc;
+    padding-left: 5mm;
+    margin: 0;
+}
+
+.renovation-project-2 li {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 2mm 0;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    text-align: justify;
+}
+
+.renovation-project-2 .grid-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5mm;
+    flex-grow: 1;
+    width: 100%;
+    height: calc(100% - 50mm);
+}
+
+.renovation-project-2 .row {
+    display: flex;
+    gap: 5mm;
+    height: 120mm;
+}
+
+.renovation-project-2 .row:first-child .images-container {
+    position: relative;
+    width: 120mm;
+    height: 110mm;
+}
+
+.renovation-project-2 .row:first-child .images-container .large-image {
+    width: 100mm;
+    height: 60mm;
+    transform: rotate(20deg);
+    z-index: 1;
+    margin-top: 20mm;
+}
+
+.renovation-project-2 .row:first-child .images-container .small-image {
+    position: absolute;
+    width: 110mm;
+    height: 60mm;
+    bottom: -10mm;
+    right: 5mm;
+    transform: rotate(-10deg);
+    z-index: 0;
+}
+
+.renovation-project-2 .row:first-child .images-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 1px solid #5C4033;
+}
+
+.renovation-project-2 .row:first-child .text {
+    width: 80mm;
+    height: 95mm;
+    text-align: justify;
+    hyphens: auto;
+}
+
+.renovation-project-2 .row:last-child .image {
+    width: 150mm;
+    height: 95mm;
+    margin-top: 20mm;
+}
+
+.renovation-project-2 .row:last-child .image img {
+    width: 100%;
+    height: 90%;
+    object-fit: cover;
+    border: 1px solid #5C4033;
+}
+
+.renovation-project-2 .row:last-child .text {
+    width: 50mm;
+    height: 70mm;
+    text-align: justify;
+    text-justify: auto;
+    hyphens: auto;
+    margin-top: 20mm;
+}
+
+/* Valorisation Bien (Pages 7-8) */
+.valorisation-bien {
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 10mm 15mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.valorisation-bien::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/data/marchand-biens/backend/static/pdf_assets/backround_break.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.valorisation-bien .project-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 5mm;
+    padding: 0;
+}
+
+.valorisation-bien h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 36px;
+    font-weight: bold;
+    color: #2A2A2A;
+    margin: 0 0 5mm 0;
+    line-height: 1.1;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+.valorisation-bien h2 {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 25px;
+    font-weight: bold;
+    color: #2A2A2A;
+    margin: 0 0 5mm 0;
+    line-height: 1.4;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.valorisation-bien h3 {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #2A2A2A;
+    margin: 0 0 3mm 0;
+    line-height: 1.4;
+    letter-spacing: 1px;
+    text-align: left;
+}
+
+.valorisation-bien p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 3mm 0;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+    text-align: justify;
+}
+
+.valorisation-bien .objective {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 5mm 0;
+    line-height: 1.5;
+    letter-spacing: 1px;
+    text-align: justify;
+}
+
+.valorisation-bien ul {
+    list-style-type: disc;
+    padding-left: 5mm;
+    margin: 0;
+}
+
+.valorisation-bien li {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 2mm 0;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    text-align: justify;
+}
+
+/* Page 7 Specific Styles */
+.valorisation-bien .methodology {
+    background-color: #FFF;
+    padding: 3mm;
+    border-radius: 2mm;
+    box-shadow: 0 1mm 2mm rgba(0, 0, 0, 0.1);
+}
+
+.valorisation-bien .methodology p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 0 0 2mm 0;
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+    text-align: justify;
+}
+
+.valorisation-bien .methodology ul {
+    list-style-type: disc;
+    padding-left: 5mm;
+    margin: 0;
+}
+
+.valorisation-bien .methodology li {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 0 0 1mm 0;
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+    text-align: justify;
+}
+
+.valorisation-bien .map-description-row {
+    display: flex;
+    gap: 5mm;
+    margin-bottom: 5mm;
+}
+
+.valorisation-bien .map-container {
+    width: 50%;
+    height: 80mm;
+    border: 1px solid #5C4033;
+}
+
+.valorisation-bien .map-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.valorisation-bien .neighborhood-description {
+    width: 50%;
+    background-color: #FFF;
+    padding: 3mm;
+    border-radius: 2mm;
+    box-shadow: 0 1mm 2mm rgba(0, 0, 0, 0.1);
+}
+
+.valorisation-bien .neighborhood-description p:first-child {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 0 0 1mm 0;
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+    text-align: justify;
+}
+
+.valorisation-bien .neighborhood-description p:last-child {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+    text-align: justify;
+}
+
+.valorisation-bien .dvf-list p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 0 0 2mm 0;
+    line-height: 1.4;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.valorisation-bien .dvf-list table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 10px;
+    color: #2A2A2A;
+    background-color: #FFF;
+    border: 1px solid #5C4033;
+    border-radius: 2mm;
+    overflow: hidden;
+}
+
+.valorisation-bien .dvf-list table thead th {
+    background-color: #C4A484;
+    font-weight: bold;
+    text-align: center;
+    padding: 1mm;
+    border: 1px solid #5C4033;
+}
+
+.valorisation-bien .dvf-list table tbody tr:nth-child(odd) {
+    background-color: #F5F5F5;
+}
+
+.valorisation-bien .dvf-list table tbody tr:nth-child(even) {
+    background-color: #FFFFFF;
+}
+
+.valorisation-bien .dvf-list table td {
+    padding: 1mm;
+    border: 1px solid #5C4033;
+}
+
+.valorisation-bien .dvf-list table td:nth-child(1),
+.valorisation-bien .dvf-list table td:nth-child(3),
+.valorisation-bien .dvf-list table td:nth-child(4),
+.valorisation-bien .dvf-list table td:nth-child(5),
+.valorisation-bien .dvf-list table td:nth-child(6) {
+    text-align: center;
+}
+
+.valorisation-bien .dvf-list table td:nth-child(2) {
+    text-align: left;
+}
+
+.valorisation-bien .dvf-list table td:nth-child(7) {
+    text-align: right;
+}
+
+.valorisation-bien .dvf-list table th:nth-child(1),
+.valorisation-bien .dvf-list table td:nth-child(1) {
+    width: 15%;
+}
+
+.valorisation-bien .dvf-list table th:nth-child(2),
+.valorisation-bien .dvf-list table td:nth-child(2) {
+    width: 30%;
+}
+
+.valorisation-bien .dvf-list table th:nth-child(3),
+.valorisation-bien .dvf-list table td:nth-child(3) {
+    width: 10%;
+}
+
+.valorisation-bien .dvf-list table th:nth-child(4),
+.valorisation-bien .dvf-list table td:nth-child(4) {
+    width: 15%;
+}
+
+.valorisation-bien .dvf-list table th:nth-child(5),
+.valorisation-bien .dvf-list table td:nth-child(5) {
+    width: 10%;
+}
+
+.valorisation-bien .dvf-list table th:nth-child(6),
+.valorisation-bien .dvf-list table td:nth-child(6) {
+    width: 10%;
+}
+
+.valorisation-bien .dvf-list table th:nth-child(7),
+.valorisation-bien .dvf-list table td:nth-child(7) {
+    width: 10%;
+}
+
+.valorisation-bien .dvf-list table tr.outlier-row {
+    background-color: #FFEBEE !important;
+    color: #D32F2F !important;
+}
+
+/* Page 8 Specific Styles (Tendances des données DVF) */
+.valorisation-bien .charts-row {
+    display: flex;
+    gap: 5mm;
+    margin-bottom: 5mm;
+}
+
+.valorisation-bien .trend-chart,
+.valorisation-bien .transaction-histogram {
+    width: 92.5mm;
+    height: 80mm;
+}
+
+.valorisation-bien .trend-chart p,
+.valorisation-bien .transaction-histogram p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 0 0 2mm 0;
+    line-height: 1.4;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.valorisation-bien .trend-chart img,
+.valorisation-bien .transaction-histogram img {
+    width: 100%;
+    height: 70mm;
+    object-fit: contain;
+}
+
+.valorisation-bien .trend-averages-row {
+    display: flex;
+    gap: 5mm;
+    margin-bottom: 5mm;
+}
+
+.valorisation-bien .trend-table {
+    width: 60%;
+}
+
+.valorisation-bien .trend-table p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 0 0 2mm 0;
+    line-height: 1.4;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.valorisation-bien .trend-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 10px;
+    color: #2A2A2A;
+    background-color: #FFF;
+    border: 1px solid #5C4033;
+    border-radius: 2mm;
+    overflow: hidden;
+}
+
+.valorisation-bien .trend-table table thead th {
+    background-color: #C4A484;
+    font-weight: bold;
+    text-align: center;
+    padding: 1mm;
+    border: 1px solid #5C4033;
+}
+
+.valorisation-bien .trend-table table tbody tr:nth-child(odd) {
+    background-color: #F5F5F5;
+}
+
+.valorisation-bien .trend-table table tbody tr:nth-child(even) {
+    background-color: #FFFFFF;
+}
+
+.valorisation-bien .trend-table table td {
+    padding: 1mm;
+    border: 1px solid #5C4033;
+    text-align: center;
+}
+
+.valorisation-bien .trend-table table th:nth-child(1),
+.valorisation-bien .trend-table table td:nth-child(1) {
+    width: 25%;
+}
+
+.valorisation-bien .trend-table table th:nth-child(2),
+.valorisation-bien .trend-table table td:nth-child(2) {
+    width: 25%;
+}
+
+.valorisation-bien .trend-table table th:nth-child(3),
+.valorisation-bien .trend-table table td:nth-child(3) {
+    width: 25%;
+}
+
+.valorisation-bien .trend-table table th:nth-child(4),
+.valorisation-bien .trend-table table td:nth-child(4) {
+    width: 25%;
+}
+
+.valorisation-bien .trend-table table tr.outlier-row {
+    background-color: #FFEBEE !important;
+    color: #D32F2F !important;
+}
+
+.valorisation-bien .averages {
+    width: 40%;
+}
+
+.valorisation-bien .averages p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 12px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 0 0 1mm 0;
+    line-height: 1.2;
+    letter-spacing: 1px;
+    text-align: left;
+}
+
+/* Valorisation Casafari (Page 9) */
+.valorisation-bien.vintage {
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 15mm 20mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.valorisation-bien.vintage::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/data/marchand-biens/backend/static/pdf_assets/backround_break.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: 0;
+}
+
+.valorisation-bien.vintage .project-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 5mm;
+}
+
+.valorisation-bien.vintage .text-overlay {
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 10mm 15mm;
+    border: 2px solid #5C4033;
+    max-height: 60mm;
+    overflow: hidden;
+    text-align: center;
+}
+
+.valorisation-bien.vintage h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 32px;
+    font-weight: bold;
+    color: #5C4033;
+    margin: 0 0 5mm 0;
+    line-height: 1.2;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.valorisation-bien.vintage h2 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 20px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 0 0 5mm 0;
+    line-height: 1.4;
+    letter-spacing: 0.8px;
+    font-style: italic;
+}
+
+.valorisation-bien.vintage p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 3mm 0;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+}
+
+.valorisation-bien.vintage .charts-row {
+    display: flex;
+    gap: 5mm;
+    margin-bottom: 5mm;
+    justify-content: center;
+}
+
+.valorisation-bien.vintage .trend-chart,
+.valorisation-bien.vintage .transaction-histogram {
+    background-color: #FFF;
+    padding: 5mm 5mm 10mm 5mm;
+    border: 1px solid #5C4033;
+    width: 80mm;
+    height: 80mm;
+    box-sizing: border-box;
+}
+
+.valorisation-bien.vintage .trend-chart img,
+.valorisation-bien.vintage .transaction-histogram img {
+    width: 100%;
+    height: 50mm;
+    object-fit: contain;
+    display: block;
+}
+
+.valorisation-bien.vintage .caption {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 12px;
+    color: #5C4033;
+    margin-top: 3mm;
+    text-align: center;
+    font-style: italic;
+}
+
+.valorisation-bien.vintage .trend-averages-row {
+    display: flex;
+    gap: 5mm;
+    margin-bottom: 5mm;
+}
+
+.valorisation-bien.vintage .trend-table {
+    flex: 2;
+}
+
+.valorisation-bien.vintage .trend-table h3 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: #5C4033;
+    margin: 0 0 3mm 0;
+    line-height: 1.4;
+    letter-spacing: 0.8px;
+    text-align: center;
+}
+
+.valorisation-bien.vintage .trend-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 10px;
+    color: #2A2A2A;
+    background-color: #FFF;
+    border: 1px solid #5C4033;
+}
+
+.valorisation-bien.vintage .trend-table table thead th {
+    background-color: #C4A484;
+    font-weight: bold;
+    text-align: center;
+    padding: 1mm;
+    border: 1px solid #5C4033;
+}
+
+.valorisation-bien.vintage .trend-table table tbody tr:nth-child(odd) {
+    background-color: #F5F5F5;
+}
+
+.valorisation-bien.vintage .trend-table table tbody tr:nth-child(even) {
+    background-color: #FFFFFF;
+}
+
+.valorisation-bien.vintage .trend-table table td {
+    padding: 1mm;
+    border: 1px solid #5C4033;
+    text-align: center;
+}
+
+.valorisation-bien.vintage .trend-table table th:nth-child(1),
+.valorisation-bien.vintage .trend-table table td:nth-child(1) {
+    width: 15%;
+}
+
+.valorisation-bien.vintage .trend-table table th:nth-child(2),
+.valorisation-bien.vintage .trend-table table td:nth-child(2) {
+    width: 20%;
+}
+
+.valorisation-bien.vintage .trend-table table th:nth-child(3),
+.valorisation-bien.vintage .trend-table table td:nth-child(3) {
+    width: 20%;
+}
+
+.valorisation-bien.vintage .trend-table table th:nth-child(4),
+.valorisation-bien.vintage .trend-table table td:nth-child(4) {
+    width: 20%;
+}
+
+.valorisation-bien.vintage .trend-table table th:nth-child(5),
+.valorisation-bien.vintage .trend-table table td:nth-child(5) {
+    width: 15%;
+}
+
+.valorisation-bien.vintage .trend-table table th:nth-child(6),
+.valorisation-bien.vintage .trend-table table td:nth-child(6) {
+    width: 10%;
+}
+
+.valorisation-bien.vintage .trend-table table tr.outlier-row {
+    background-color: #FFEBEE !important;
+    color: #D32F2F !important;
+}
+
+.valorisation-bien.vintage .averages {
+    flex: 1;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 5mm;
+    border: 1px solid #5C4033;
+}
+
+.valorisation-bien.vintage .averages h3 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: #5C4033;
+    margin: 0 0 3mm 0;
+    line-height: 1.4;
+    letter-spacing: 0.8px;
+    text-align: center;
+}
+
+.valorisation-bien.vintage .averages p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 3mm 0;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.valorisation-bien.vintage .averages p.highlight {
+    background-color: #F5E8D3;
+    padding: 2mm;
+    border-radius: 2mm;
+    font-size: 16px;
+}
+
+.valorisation-bien.vintage .averages p.premium {
+    background-color: #C4A484;
+    color: #FFF;
+    font-weight: bold;
+}
+
+.valorisation-bien.vintage .conclusion {
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 10mm 15mm;
+    border: 2px solid #5C4033;
+    margin-top: 5mm;
+    text-align: center;
+}
+
+.valorisation-bien.vintage .conclusion h3 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: #5C4033;
+    margin: 0 0 3mm 0;
+    line-height: 1.4;
+    letter-spacing: 0.8px;
+}
+
+.valorisation-bien.vintage .conclusion p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 0;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+}
+
+/* Business Plan (Page 11) */
+.business-plan {
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 10mm 15mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.business-plan::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/data/marchand-biens/backend/static/pdf_assets/backround_break.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.business-plan .project-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.business-plan h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 36px;
+    font-weight: bold;
+    color: #2A2A2A;
+    margin: 0 0 10mm 0;
+    line-height: 1.1;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+.business-plan .columns-container {
+    display: flex;
+    flex-direction: row;
+    gap: 5mm;
+    flex-grow: 1;
+    width: 100%;
+    height: calc(100% - 50mm);
+}
+
+.bloc {
+    margin-bottom: 5mm;
+}
+
+.bloc-input {
+    margin-bottom: 5mm;
+}
+
+.bloc-intermediate {
+    margin-bottom: 5mm;
+}
+
+.hypotheses-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5mm;
+}
+
+.hypothese-section {
+    flex: 1;
+}
+
+.business-plan h6 {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: #2A2A2A;
+    margin: 0 0 3mm 0;
+    line-height: 1.4;
+    letter-spacing: 1px;
+    text-align: left;
+}
+
+.business-plan .table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 12px;
+    color: #2A2A2A;
+    background-color: rgba(255, 255, 255, 0.9); /* Add a subtle white background with slight transparency */
+    border-radius: 2mm; /* Rounded corners for a polished look */
+    box-shadow: 0 1mm 2mm rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.business-plan .table-bordered {
+    border: 1px solid #5C4033;
+}
+
+.business-plan .table tr {
+    display: flex;
+}
+
+.business-plan .table td {
+    padding: 1.5mm 2mm;
+    border: 1px solid #5C4033;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.business-plan .table td:first-child {
+    flex: 2;
+    text-align: left;
+    font-weight: bold;
+    color: #2A2A2A;
+    background-color: #F5F5F5;
+}
+
+.business-plan .table td:last-child {
+    flex: 1;
+    text-align: right;
+    font-weight: normal;
+    color: #4A4A4A;
+    font-family: 'Roboto Mono', monospace; /* Change to Roboto Mono for better readability */
+    font-size: 12px;
+}
+
+.business-plan .table .total-row td {
+    font-weight: bold;
+    background-color: #E8E8E8;
+    color: #2A2A2A;
+}
+
+.business-plan .table .total-row td:last-child {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.business-plan .section-1-left {
+    width: 90mm;
+    overflow: hidden;
+}
+
+.business-plan .section-1-intermediate {
+    width: 90mm;
+    overflow: hidden;
+}
+
+.business-plan .input-field-static {
+    display: inline-block;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    color: #4A4A4A;
+    text-align: right;
+}
+
+/* Business Plan 2 (Page 12) */
+.business-plan-2 {
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 10mm 15mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.business-plan-2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/data/marchand-biens/backend/static/pdf_assets/backround_break.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.business-plan-2 .project-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+}
+
+.business-plan-2 h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 32px;
+    font-weight: bold;
+    color: #2A2A2A;
+    margin: 0 0 8mm 0;
+    line-height: 1.1;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+.business-plan-2 h2 {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: #2A2A2A;
+    margin: 0 0 5mm 0;
+    line-height: 1.4;
+    letter-spacing: 1px;
+    text-align: left;
+}
+
+.business-plan-2 h6 {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: #2A2A2A;
+    margin: 0 0 3mm 0;
+    line-height: 1.2;
+}
+
+.business-plan-2 ul {
+    list-style-type: disc;
+    padding-left: 5mm;
+    margin: 0 0 5mm 0;
+}
+
+.business-plan-2 li {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 12px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 0 0 2mm 0;
+    line-height: 1.2;
+    letter-spacing: 1px;
+}
+
+.business-plan-2 p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #2A2A2A;
+    margin: 0 0 5mm 0;
+    line-height: 1.2;
+}
+
+.business-plan-2 .kpi-cards {
+    width: 100%;
+    margin-bottom: 5mm;
+    overflow: hidden;
+}
+
+.business-plan-2 .kpi-card-large {
+    background-color: #E8E8E8;
+    padding: 3mm;
+    text-align: center;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: #2A2A2A;
+    border: 2px solid #5C4033;
+    box-shadow: 1mm 1mm 2mm rgba(0, 0, 0, 0.2);
+    line-height: 1.3;
+    box-sizing: border-box;
+}
+
+.business-plan-2 .bloc:first-child .kpi-cards .kpi-card-large {
+    width: 100%;
+    display: block;
+    min-height: 15mm;
+}
+
+.business-plan-2 .project-content > .hypotheses-vente .kpi-cards .kpi-card-large {
+    width: 30%;
+    display: block;
+}
+
+.business-plan-2 .project-content > .kpi-cards {
+    width: 100%;
+    display: inline-block;
+    margin-right: 15mm;
+    vertical-align: top;
+    min-height: 22mm;
+}
+
+.business-plan-2 .project-content > .kpi-cards .kpi-card-large {
+    width: 30%;
+    display: inline-block;
+    margin-right: 7mm;
+    vertical-align: top;
+    min-height: 22mm;
+}
+
+.business-plan-2 .project-content > .kpi-cards .kpi-card-large:last-child {
+    margin-right: 0;
+}
+
+.business-plan-2 .kpi-card-large.cash-emphasis {
+    background-color: #D4E4D4;
+    border-color: #88AA88;
+}
+
+.business-plan-2 .kpi-card-large.primary,
+.business-plan-2 .kpi-card-large.roi-emphasis {
+    background-color: #E8E8E8;
+}
+
+.business-plan-2 .bloc {
+    margin-bottom: 5mm;
+    width: 100%;
+    overflow: hidden;
+}
+
+.business-plan-2 .business-plan-2-table {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 12px;
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #5C4033;
+}
+
+.business-plan-2 .business-plan-2-table th,
+.business-plan-2 .business-plan-2-table td {
+    padding: 1mm 2mm;
+    border: 1px solid #5C4033;
+}
+
+.business-plan-2 .business-plan-2-table th {
+    background-color: #E8E8E8;
+    font-weight: bold;
+    text-align: center;
+}
+
+.business-plan-2 .business-plan-2-table td {
+    background-color: #FFF;
+}
+
+.business-plan-2 .business-plan-2-table td.name-col {
+    font-weight: bold;
+    color: #2A2A2A;
+    text-align: left;
+    background-color: #F5F5F5;
+}
+
+.business-plan-2 .business-plan-2-table td.value-col {
+    font-weight: normal;
+    color: #4A4A4A;
+    text-align: right;
+}
+
+.business-plan-2 .prorata-table th,
+.business-plan-2 .prorata-table td {
+    width: 33.33%;
+}
+
+.business-plan-2 .prorata-table .category-col {
+    width: 40%;
+}
+
+.business-plan-2 .prorata-table .amount-col {
+    width: 35%;
+}
+
+.business-plan-2 .prorata-table .percent-col {
+    width: 25%;
+}
+
+.business-plan-2 .credit-costs-table th,
+.business-plan-2 .credit-costs-table td {
+    width: 16.66%;
+}
+
+.business-plan-2 .credit-costs-table th:first-child,
+.business-plan-2 .credit-costs-table td:first-child {
+    width: 25%;
+}
+
+.business-plan-2 .business-plan-2-table .total-row td {
+    background-color: #E8E8E8;
+    font-weight: bold;
+}
+
+.business-plan-2 .hypotheses-vente {
+    display: flex;
+    flex-direction: row;
+    gap: 5mm;
+    margin-bottom: 5mm;
+    width: 100%;
+}
+
+.business-plan-2 .hypotheses-vente .bloc-input {
+    flex: 0 0 65%;
+    margin-bottom: 0;
+}
+
+.business-plan-2 .hypotheses-vente .kpi-cards {
+    flex: 0 0 30%;
+    display: flex;
+    flex-direction: column;
+    gap: 3mm;
+}
+
+/* Property Description (Vintage Style) */
+.property_description.vintage {
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 15mm 20mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.property_description.vintage::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/data/marchand-biens/backend/static/pdf_assets/backround_break.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: 0;
+}
+
+.property_description.vintage .description-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.property_description.vintage .text-overlay {
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 10mm 15mm;
+    margin-bottom: 10mm;
+    border: 2px solid #5C4033;
+    max-height: 80mm;
+    overflow: hidden;
+}
+
+.property_description.vintage h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 32px;
+    font-weight: bold;
+    color: #5C4033;
+    margin: 0 0 5mm 0;
+    line-height: 1.2;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.property_description.vintage h2 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 20px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 0 0 5mm 0;
+    line-height: 1.4;
+    letter-spacing: 0.8px;
+    text-align: center;
+    font-style: italic;
+}
+
+.property_description.vintage p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 3mm 0;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.property_description.vintage .image-gallery {
+    flex-grow: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5mm;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.property_description.vintage .polaroid {
+    background-color: #FFF;
+    padding: 5mm 5mm 10mm 5mm;
+    border: 1px solid #5C4033;
+    width: 60mm;
+    height: 80mm;
+    box-sizing: border-box;
+}
+
+.property_description.vintage .polaroid img {
+    width: 100%;
+    height: 60mm;
+    object-fit: cover;
+    display: block;
+}
+
+.property_description.vintage .floor-plan {
+    width: 60mm;
+    height: 80mm;
+    background-color: #FFF;
+    padding: 5mm 5mm 10mm 5mm;
+    border: 1px solid #5C4033;
+    box-sizing: border-box;
+}
+
+.property_description.vintage .floor-plan img {
+    width: 100%;
+    height: 60mm;
+    object-fit: contain;
+    display: block;
+}
+
+.property_description.vintage .caption {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 12px;
+    color: #5C4033;
+    margin-top: 3mm;
+    text-align: center;
+    font-style: italic;
+}
+
+/* Renovation Project (Page 5) */
+.renovation-project.vintage {
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 15mm 20mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.renovation-project.vintage::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/data/marchand-biens/backend/static/pdf_assets/backround_break.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: 0;
+}
+
+.renovation-project.vintage .project-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.renovation-project.vintage .text-overlay {
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 10mm 15mm;
+    margin-bottom: 10mm;
+    border: 2px solid #5C4033;
+    max-height: 100mm;
+    overflow: hidden;
+}
+
+.renovation-project.vintage h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 32px;
+    font-weight: bold;
+    color: #5C4033;
+    margin: 0 0 5mm 0;
+    line-height: 1.2;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.renovation-project.vintage h2 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 20px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 0 0 5mm 0;
+    line-height: 1.4;
+    letter-spacing: 0.8px;
+    text-align: center;
+    font-style: italic;
+}
+
+.renovation-project.vintage p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 3mm 0;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.renovation-project.vintage ul {
+    list-style-type: disc;
+    padding-left: 15mm;
+    margin: 5mm 0;
+    text-align: left;
+}
+
+.renovation-project.vintage li {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 2mm 0;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+}
+
+.renovation-project.vintage .image-gallery {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.renovation-project.vintage .full-width-image {
+    background-color: #FFF;
+    padding: 5mm;
+    border: 1px solid #5C4033;
+    width: 100%;
+    max-width: 170mm;
+    box-sizing: border-box;
+}
+
+.renovation-project.vintage .full-width-image img {
+    width: 100%;
+    height: 120mm;
+    object-fit: cover;
+    display: block;
+}
+
+.renovation-project.vintage .caption {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 12px;
+    color: #5C4033;
+    margin-top: 3mm;
+    text-align: center;
+    font-style: italic;
+}
+
+/* Renovation Project 2 (Page 6) */
+.renovation-project-2.vintage {
+    position: relative;
+    height: 297mm;
+    width: 210mm;
+    background-color: #F7F0E6;
+    padding: 15mm 20mm;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: always;
+}
+
+.renovation-project-2.vintage::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/data/marchand-biens/backend/static/pdf_assets/backround_break.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: 0;
+}
+
+.renovation-project-2.vintage .project-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.renovation-project-2.vintage .text-overlay {
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 10mm 15mm;
+    margin-bottom: 10mm;
+    border: 2px solid #5C4033;
+    max-height: 100mm;
+    overflow: hidden;
+}
+
+.renovation-project-2.vintage h1 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 32px;
+    font-weight: bold;
+    color: #5C4033;
+    margin: 0 0 5mm 0;
+    line-height: 1.2;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.renovation-project-2.vintage h2 {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 20px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 0 0 5mm 0;
+    line-height: 1.4;
+    letter-spacing: 0.8px;
+    text-align: center;
+    font-style: italic;
+}
+
+.renovation-project-2.vintage p {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 3mm 0;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.renovation-project-2.vintage ul {
+    list-style-type: disc;
+    padding-left: 15mm;
+    margin: 5mm 0;
+    text-align: left;
+}
+
+.renovation-project-2.vintage li {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2A2A2A;
+    margin: 2mm 0;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+}
+
+.renovation-project-2.vintage .image-gallery {
+    flex-grow: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10mm;
+    justify-content: center;
+    align-items: center;
+}
+
+.renovation-project-2.vintage .polaroid {
+    background-color: #FFF;
+    padding: 5mm 5mm 10mm 5mm;
+    border: 1px solid #5C4033;
+    width: 80mm;
+    height: 100mm;
+    box-sizing: border-box;
+    box-shadow: 2mm 2mm 3mm rgba(0, 0, 0, 0.2);
+}
+
+.renovation-project-2.vintage .polaroid img {
+    width: 100%;
+    height: 70mm;
+    object-fit: cover;
+    display: block;
+}
+
+.renovation-project-2.vintage .caption {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 12px;
+    color: #5C4033;
+    margin-top: 3mm;
+    text-align: center;
+    font-style: italic;
+}

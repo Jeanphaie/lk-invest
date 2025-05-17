@@ -1,0 +1,1518 @@
+@page {
+  size: A4;
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #F7F0E6;
+  font-family: 'Georgia', serif;
+  color: #2A2A2A;
+}
+
+/* PAGE 1 – COUVERTURE */
+.cover-page {
+  width: 210mm;
+  height: 297mm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 5mm 20mm 15mm;
+  background-color: #F7F0E6;
+}
+
+.logo {
+  width: 150px;
+  margin-bottom: 5mm;
+}
+
+.cover-title-block {
+  background-color: #EFEFEF;
+  width: 100%;
+  text-align: center;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.line-with-diamond {
+  width: 100%;
+  max-width: 680px;
+  height: 1px;
+  background-color: #5C4033;
+  position: relative;
+  margin: 8px 0;
+}
+
+.diamond {
+  width: 10px;
+  height: 10px;
+  background-color: #5C4033;
+  position: absolute;
+  top: -4.5px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.title-content {
+  max-width: 600px;
+}
+
+.main-title-box {
+  background: #FFF;
+  display: inline-block;
+  padding: 10px 30px;
+  margin-bottom: 5px;
+}
+
+.main-title {
+  font-size: 42px;
+  font-weight: 900;
+  color: #2A2A2A;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 22px;
+  color: #4A4A4A;
+}
+
+.cover-image {
+  width: 210mm;
+  height: 140mm;
+  margin-top: 8mm;
+  overflow: hidden;
+  margin-left: -20mm;
+  margin-right: -20mm;
+}
+
+.cover-image img {
+  width: 210mm;
+  height: 140mm;
+  object-fit: cover;
+  display: block;
+}
+
+
+.contact-section {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding-top: 8mm;
+  font-size: 22px;
+  font-weight: bold;
+  color: #722F21;
+}
+
+.contact {
+  text-align: center;
+  line-height: 1.5;
+}
+
+.contact span {
+  display: block;
+}
+
+/* PAGE 2 – EN BREF */
+.summary-page {
+  width: 210mm;
+  height: 297mm;
+  padding: 20mm;
+  background-color: #F7F0E6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.summary-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('http://163.172.32.45:3001/uploads/backround_break.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.05;
+  z-index: 0;
+}
+
+.summary-content {
+  position: relative;
+  z-index: 1;
+  background: #FFF;
+  padding: 15mm;
+  border-radius: 10px;
+  max-width: 160mm;
+  text-align: center;
+  box-shadow: 0 0 5px rgba(0,0,0,0.03);
+}
+
+.summary-content h1 {
+  font-size: 42px;
+  font-weight: 900;
+  color: #2A2A2A;
+  margin-bottom: 10px;
+}
+
+.divider {
+  width: 60px;
+  height: 1px;
+  background-color: #5C4033;
+  margin: 0 auto 16px;
+}
+
+.summary-content p {
+  font-size: 20px;
+  line-height: 1.5;
+  margin: 10px 0;
+}
+
+/* PAGE 3 – LE BIEN */
+.property-section {
+  width: 210mm;
+  height: 297mm;
+  background-color: #F7F0E6;
+  padding: 15mm 20mm;
+  box-sizing: border-box;
+  page-break-after: always;
+  position: relative;
+}
+
+.property-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('http://163.172.32.45:3001/uploads/backround_break.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.05;
+  z-index: 0;
+}
+
+.property-summary-content {
+  position: relative;
+  z-index: 1;
+  background: #FFF;
+  border-radius: 10px;
+  padding: 20px 25px;
+  text-align: center;
+  max-width: 160mm;
+  margin: 60mm auto 0;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.03);
+}
+
+.property-summary-content h1 {
+  font-size: 42px;
+  font-weight: 900;
+  color: #2A2A2A;
+}
+
+.property-summary-separator {
+  width: 50px;
+  border: 1px solid #5C4033;
+  margin: 10px auto 20px;
+}
+
+.property-summary-content p {
+  font-size: 20px;
+  margin: 8px 0;
+}
+
+/* PAGE 4 – VINTAGE POLAROIDS */
+.property-vintage {
+  width: 210mm;
+  height: 297mm;
+  padding: 10mm 15mm;
+  background-color: #F7F0E6;
+  position: relative;
+  box-sizing: border-box;
+  page-break-after: always;
+}
+
+.property-vintage::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('http://163.172.32.45:3001/uploads/backround_break.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.05;
+  z-index: 0;
+}
+
+.vintage-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.vintage-text {
+  background: rgba(255,255,255,0.95);
+  padding: 8mm;
+  border: 1px solid #5C4033;
+  text-align: center;
+  margin-bottom: 10mm;
+}
+
+.vintage-text h1 {
+  font-size: 42px;
+  font-weight: 900;
+  color: #5C4033;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.vintage-text .address {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.vintage-text p {
+  font-size: 20px;
+  line-height: 1.5;
+}
+
+.vintage-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 10mm;
+  align-items: center;
+}
+
+.polaroid-row {
+  display: flex;
+  justify-content: center;
+  gap: 8mm;
+}
+
+.polaroid-box {
+  background: #FFF;
+  border: 1px solid #5C4033;
+  width: 58mm;
+  height: 75mm;
+  padding: 5mm;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.polaroid-box img {
+  width: 100%;
+  height: 56mm;
+  object-fit: cover;
+}
+
+.caption {
+  font-size: 22px;
+  color: #5C4033;
+  text-align: center;
+  margin-top: 3mm;
+  font-style: italic;
+}
+
+/* PAGES 5–6 – RÉNOVATION */
+.property-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('http://163.172.32.45:3001/uploads/backround_break.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.05;
+  z-index: 0;
+}
+
+.property-text-block {
+  background: #FFF;
+  padding: 10px 15px;
+  border: 1px solid #5C4033;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.property-text-block h1 {
+  font-size: 42px;
+  font-weight: 900;
+  color: #5C4033;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.property-text-block h2 {
+  font-size: 22px;
+  color: #333;
+  margin-bottom: 6px;
+  font-weight: normal;
+}
+
+.property-renovation-details {
+  text-align: left;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.property-full-width-image {
+  text-align: center;
+  margin-top: 10mm;
+}
+
+.property-full-width-image img {
+  max-width: 160mm;
+  height: auto;
+}
+
+.property-caption {
+  font-size: 22px;
+  color: #4A4A4A;
+  background-color: #ffffff;
+  font-style: italic;
+  margin-top: -28px;
+  max-width: 100mm;
+  text-align: center;
+}
+
+.property-image-gallery {
+  display: flex;
+  justify-content: center;
+  gap: 45px 60px;
+  margin-top: 25%;
+}
+
+.img-wrapper {
+  background: #FFF;
+  border: 1px solid #5C4033;
+  width: 75mm;
+  height: 110mm;
+  box-sizing: border-box;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+}
+
+.img-wrapper img {
+  width: 100%;
+  height: 80mm;
+  object-fit: cover;
+  margin-bottom: 8px;
+}
+
+.img-wrapper .caption {
+  font-size: 22px;
+  color: #4A4A4A;
+  font-style: italic;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* === PAGE SECTION === */
+/* === Général === */
+
+/* === PAGE SECTION === */
+.section-break,
+.valorisation-bien {
+  width: 210mm;
+  height: 297mm;
+  padding: 20mm;
+  background-color: #F7F0E6;
+  box-sizing: border-box;
+  position: relative;
+  page-break-after: always;
+}
+.section-break::before,
+.valorisation-bien::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('http://163.172.32.45:3001/uploads/backround_break.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.05;
+  z-index: 0;
+}
+
+/* === CONTENU GÉNÉRAL === */
+.break-content,
+.project-content {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  border-radius: 10px;
+  padding: 15mm;
+  box-shadow: 0 0 5px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 10mm;
+}
+.break-content h1,
+.project-content h1 {
+  font-size: 42px;
+  font-weight: 900;
+  color: #5C4033;
+  text-transform: uppercase;
+  margin: 0 auto 10px auto;
+  text-align: center;
+}
+.project-content h2 {
+  font-size: 28px;
+  font-weight: bold;
+  color: #5C4033;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.project-content h3,
+.methodology h3 {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #2A2A2A;
+}
+
+/* === TEXTES & LISTES === */
+p {
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 0 0 10px 0;
+  text-align: center;
+}
+.methodology ul {
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 0 10px 0;
+  padding-left: 20px;
+}
+.methodology li {
+  margin-bottom: 5px;
+}
+
+/* === CARTES ET DESCRIPTION === */
+.map-description-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10mm;
+}
+.map-container {
+  flex: 1;
+}
+.map-container img {
+  width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+  object-fit: contain;
+}
+.neighborhood-description {
+  background-color: rgba(255,255,255,0.9);
+  padding: 10mm;
+  border-radius: 8px;
+  flex: 1;
+  font-size: 16px;
+  border: 1px solid #5C4033;
+}
+
+/* === TABLEAU DVF === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-top: 10px;
+}
+th, td {
+  border: 1px solid #999;
+  padding: 6px 10px;
+  text-align: center;
+}
+th {
+  background-color: #EFEFEF;
+  color: #5C4033;
+  font-weight: bold;
+}
+
+/* === CARDS MOYENNES === */
+.highlight {
+  font-size: 20px;
+  color: #2A2A2A;
+  text-align: center;
+}
+.highlight strong {
+  font-size: 24px;
+  color: #000;
+}
+.highlight.premium {
+  color: #5C4033;
+}
+
+/* === TREND SECTION – GRID STRUCTURE === */
+.trend-grid {
+  display: grid;
+  grid-template-columns: 30% 70%;
+  gap: 10mm;
+  align-items: flex-start;
+}
+.card-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8mm;
+}
+.highlight-block {
+  background: #F0E6DA;
+  border: 1px solid #5C4033;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 18px;
+  box-sizing: border-box;
+}
+.highlight-block.premium {
+  background: #EADBD2;
+}
+.highlight-block strong {
+  font-size: 24px;
+  color: #000;
+}
+
+/* === TABLEAU TENDANCES === */
+.trend-table {
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.04);
+  overflow-x: auto;
+}
+.trend-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.trend-table th,
+.trend-table td {
+  border: 1px solid #999;
+  padding: 6px 8px;
+  text-align: center;
+}
+.trend-table th {
+  background-color: #EFEFEF;
+  color: #5C4033;
+  font-weight: bold;
+}
+
+/* === GRAPHIQUES === */
+.charts-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10mm;
+  margin-top: 10mm;
+}
+.polaroid-chart {
+  background: white;
+  border: 1px solid #5C4033;
+  width: 49%;
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+.polaroid-chart img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+.polaroid-chart .caption {
+  font-size: 14px;
+  color: #4A4A4A;
+  font-style: italic;
+  margin-top: 6px;
+}
+
+/* === CONCLUSION === */
+.conclusion {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px dashed #5C4033;
+  padding: 10px 16px;
+  text-align: center;
+  font-size: 16px;
+  border-radius: 6px;
+  margin-top: 10mm;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.03);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* === Structure Générale === */
+
+/* === PAGE FINANCIÈRE (ENCAPSULÉE) === */
+.business-plan,
+.business-plan-2 {
+  width: 210mm;
+  height: 297mm;
+  padding: 20mm;
+  background-color: #F7F0E6;
+  box-sizing: border-box;
+  page-break-after: always;
+  position: relative;
+}
+
+.business-plan .project-content,
+.business-plan-2 .project-content {
+  position: relative;
+  background: #fff;
+  padding: 15mm;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 2mm;
+  z-index: 1;
+}
+
+.business-plan .project-content h1,
+.business-plan-2 .project-content h1 {
+  font-size: 36px;
+  font-weight: 900;
+  color: #5C4033;
+  text-transform: uppercase;
+  text-align: left;
+  margin-bottom: 0mm;
+}
+
+.business-plan-2 .project-content h2 {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 0mm;
+}
+
+.business-plan-2 .project-content ul {
+  font-size: 14px;
+  margin-bottom: 0mm;
+  padding-left: 20px;
+}
+
+.business-plan-2 .project-content p {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 0mm;
+  margin-bottom: 0mm;
+}
+
+/* === Disposition colonnes */
+.columns-container {
+  display: flex;
+  gap: 10mm;
+  align-items: flex-start;
+}
+
+.section-1-left,
+.section-1-intermediate {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10mm;
+}
+
+/* === Blocs standard */
+.bloc {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 5mm;
+  border-radius: 6px;
+  box-shadow: 0 0 3px rgba(0,0,0,0.03);
+  margin-bottom: 0mm;
+}
+
+.bloc h6 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+/* === Tableaux === */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.table th,
+.table td {
+  border: 1px solid #ccc;
+  padding: 4px 6px;
+  text-align: right;
+}
+
+.table td:first-child {
+  text-align: left;
+}
+
+.total-row td {
+  font-weight: bold;
+  background-color: #e6f7ff;
+}
+
+/* === Tableaux financiers === */
+.business-plan-2-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.business-plan-2-table th,
+.business-plan-2-table td {
+  border: 1px solid #ccc;
+  padding: 3px 5px;
+  vertical-align: top;
+}
+
+.business-plan-2-table th.name-col,
+.business-plan-2-table td.name-col {
+  text-align: left;
+  width: 40%;
+}
+
+.business-plan-2-table th.value-col,
+.business-plan-2-table td.value-col {
+  text-align: right;
+  width: 20%;
+}
+
+/* === KPI Cards === */
+.kpi-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5mm;
+  margin-top: 10mm;
+}
+
+.kpi-card,
+.kpi-card-large {
+  flex: 1;
+  min-width: 40mm;
+  padding: 6mm;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.kpi-card span,
+.kpi-card-large span {
+  display: block;
+  margin-top: 2mm;
+  font-size: 14pt;
+  font-weight: bold;
+}
+
+/* === Styles divers === */
+.input-field-static {
+  display: inline-block;
+  min-width: 20mm;
+  text-align: right;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.business-plan-wrapper {
+  width: 210mm;
+  height: 297mm;
+  background-color: #F7F0E6;
+  padding: 20mm;
+  box-sizing: border-box;
+  page-break-after: always;
+  position: relative;
+}
+
+.business-plan-wrapper .project-content {
+  background: #fff;
+  padding: 15mm;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 10mm;
+}
+
+.business-plan-wrapper h1 {
+  font-size: 28pt;
+  font-weight: bold;
+  color: #2A2A2A;
+  text-align: left;
+  margin-bottom: 5mm;
+}
+
+.business-plan-wrapper h6 {
+  font-size: 12pt;
+  margin-bottom: 3mm;
+  font-weight: 600;
+  color: #2A2A2A;
+}
+
+.business-plan-wrapper .columns-container {
+  display: flex;
+  gap: 8mm;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.business-plan-wrapper .section-1-left,
+.business-plan-wrapper .section-1-intermediate {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6mm;
+}
+
+.business-plan-wrapper .bloc {
+  background-color: white;
+  border: 1px solid #5C4033;
+  padding: 6mm;
+  border-radius: 6px;
+  box-shadow: 0 0 3px rgba(0,0,0,0.03);
+}
+
+.business-plan-wrapper .table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10pt;
+}
+
+.business-plan-wrapper .table th,
+.business-plan-wrapper .table td {
+  border: 1px solid #aaa;
+  padding: 3mm 4mm;
+  vertical-align: middle;
+  text-align: right;
+}
+
+.business-plan-wrapper .table td:first-child {
+  text-align: left;
+  font-weight: 500;
+}
+
+.business-plan-wrapper .total-row td {
+  background-color: #EAEAEA;
+  font-weight: bold;
+}
+
+.business-plan-wrapper .italic {
+  font-style: italic;
+}
+
+.business-plan-wrapper .input-field-static {
+  display: inline-block;
+  min-width: 20mm;
+  text-align: right;
+}
+
+
+
+
+.business-plan {
+  width: 210mm;
+  height: 297mm;
+  background-color: #F7F0E6;
+  padding: 20mm;
+  box-sizing: border-box;
+  position: relative;
+  page-break-after: always;
+}
+
+.business-plan .project-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12mm;
+  position: relative;
+  z-index: 1;
+}
+
+.business-plan h1 {
+  font-size: 28pt;
+  font-weight: 900;
+  text-align: left;
+  color: #2A2A2A;
+  margin: 0 0 5mm;
+}
+
+/* Colonnes */
+.business-plan .columns-container {
+  display: flex;
+  gap: 8mm;
+  align-items: flex-start;
+}
+
+.business-plan .section-1-left,
+.business-plan .section-1-intermediate {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8mm;
+}
+
+/* Blocs */
+.business-plan .bloc {
+  padding: 0;
+  border: none;
+  background-color: transparent;
+}
+
+/* Titres dans les blocs */
+.business-plan .bloc h6 {
+  font-size: 11pt;
+  font-weight: bold;
+  margin: 0 0 3mm;
+  color: #2A2A2A;
+}
+
+/* Table */
+.business-plan .table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10.5pt;
+  table-layout: fixed;
+}
+
+.business-plan .table td {
+  border: 1px solid #5C4033;
+  padding: 4px 6px;
+  vertical-align: middle;
+}
+
+.business-plan .table td:first-child {
+  background-color: #EFEFEF;
+  color: #000;
+  font-weight: 600;
+  text-align: left;
+}
+
+.business-plan .table td:last-child {
+  background-color: #FFF;
+  text-align: right;
+  font-weight: 500;
+  color: #000;
+}
+
+.business-plan .total-row td {
+  background-color: #F0F0F0 !important;
+  font-weight: bold !important;
+}
+
+/* Encapsulation variables inline */
+.business-plan .input-field-static {
+  display: inline-block;
+  min-width: 20mm;
+  text-align: right;
+}
+.business-plan .project-content,
+.business-plan-2 .project-content {
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+
+.business-plan-2 {
+  position: relative;
+  height: 297mm;
+  width: 210mm;
+  background-color: #F7F0E6;
+  padding: 10mm 15mm;
+  box-sizing: border-box;
+  page-break-inside: avoid;
+  page-break-after: always;
+}
+.business-plan-2::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/data/marchand-biens/backend/static/pdf_assets/backround_break.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.1;
+  z-index: 0;
+}
+.business-plan-2 .project-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 0;
+}
+.business-plan-2 h1 {
+  font-family: 'Garamond', 'Georgia', serif;
+  font-size: 32px;
+  font-weight: bold;
+  color: #2A2A2A;
+  margin: 0 0 8mm 0;
+  line-height: 1.1;
+  text-transform: uppercase;
+  text-align: left;
+}
+.business-plan-2 h2 {
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  color: #2A2A2A;
+  margin: 0 0 5mm 0;
+  line-height: 1.4;
+  letter-spacing: 1px;
+  text-align: left;
+}
+.business-plan-2 h6 {
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  color: #2A2A2A;
+  margin: 0 0 3mm 0;
+  line-height: 1.2;
+}
+.business-plan-2 ul {
+  list-style-type: disc;
+  padding-left: 5mm;
+  margin: 0 0 5mm 0;
+}
+.business-plan-2 li {
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+  color: #2A2A2A;
+  margin: 0 0 2mm 0;
+  line-height: 1.2;
+  letter-spacing: 1px;
+}
+.business-plan-2 p {
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  color: #2A2A2A;
+  margin: 0 0 5mm 0;
+  line-height: 1.2;
+}
+.business-plan-2 .bloc {
+  margin-bottom: 1.5mm;
+}
+.business-plan-2 .kpi-cards {
+  margin-bottom: 1.5mm;
+}
+.business-plan-2 .business-plan-2-table {
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-size: 12px;
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #5C4033;
+}
+.business-plan-2 .business-plan-2-table th,
+.business-plan-2 .business-plan-2-table td {
+  padding: 1mm 2mm;
+  border: 1px solid #5C4033;
+}
+.business-plan-2 .business-plan-2-table th {
+  background-color: #E8E8E8;
+  font-weight: bold;
+  text-align: center;
+}
+.business-plan-2 .business-plan-2-table td {
+  background-color: #FFF;
+}
+.business-plan-2 .business-plan-2-table td.name-col {
+  font-weight: bold;
+  color: #2A2A2A;
+  text-align: left;
+  background-color: #F5F5F5;
+}
+.business-plan-2 .business-plan-2-table td.value-col {
+  font-weight: normal;
+  color: #4A4A4A;
+  text-align: right;
+}
+.business-plan-2 .business-plan-2-table .total-row td {
+  background-color: #E8E8E8;
+  font-weight: bold;
+}
+.business-plan-2 .kpi-card-large {
+  background-color: #E8E8E8;
+  padding: 3mm;
+  text-align: center;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  color: #2A2A2A;
+  border: 2px solid #5C4033;
+  box-shadow: 1mm 1mm 2mm rgba(0, 0, 0, 0.08);
+  line-height: 1.3;
+  box-sizing: border-box;
+  min-width: 55mm;
+  min-height: 18mm;
+  flex: 1 1 30%;
+  margin-bottom: 0;
+}
+.business-plan-2 .kpi-card-large.cash-emphasis {
+  background-color: #D4E4D4;
+  border-color: #88AA88;
+}
+.business-plan-2 .kpi-card-large.primary {
+  background-color: #E8E8E8;
+  border-color: #5C4033;
+}
+.business-plan-2 .kpi-card-large.roi-emphasis {
+  background-color: #E8E8E8;
+  border-color: #5C4033;
+}
+@media print {
+  .business-plan-2 {
+    padding: 6mm 6mm;
+  }
+  .business-plan-2 .kpi-card-large {
+    min-width: 40mm;
+    font-size: 12px;
+    padding: 2mm;
+  }
+  .business-plan-2 .bloc {
+    margin-bottom: 1.5mm;
+  }
+  .business-plan-2 .kpi-cards {
+    gap: 2.5mm;
+    margin-bottom: 1.5mm;
+  }
+}
+
+/* === HYPOTHESES + KPI FAI/HFA EN LIGNE === */
+.bp2-hypo-kpi-row {
+  display: flex;
+  flex-direction: row;
+  gap: 6mm;
+  align-items: flex-start;
+  margin-bottom: 1.5mm;
+}
+.bp2-hypo-kpi-row .hypotheses-vente {
+  flex: 1 1 60%;
+  margin-bottom: 0;
+}
+.bp2-hypo-kpi-row .bp2-fai-hfa-col {
+  flex: 0 0 38mm;
+  display: flex;
+  flex-direction: column;
+  gap: 3mm;
+}
+.bp2-fai-hfa-col .kpi-card-large {
+  min-width: 0;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+@media print {
+  .bp2-hypo-kpi-row {
+    gap: 3mm;
+    margin-bottom: 1.5mm;
+  }
+  .bp2-fai-hfa-col .kpi-card-large {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+.valorisation-lk-cards {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 32px;
+  margin-bottom: 16px;
+}
+
+.valorisation-lk-card {
+  flex: 1 1 0;
+  background: #f7f0e6;
+  border: 2px solid #5c4033;
+  border-radius: 12px;
+  padding: 24px 18px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #2a2a2a;
+  box-shadow: 0 1px 6px rgba(44,44,44,0.04);
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.valorisation-lk-card .label {
+  font-size: 1rem;
+  color: #5c4033;
+  font-weight: normal;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.valorisation-lk-card .value {
+  font-size: 2.1rem;
+  color: #2a2a2a;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+/* === Mise en page ultra-ciblée pour la page DVF === */
+.valorisation-bien.dvf-page {
+  padding: 5mm !important;
+  width: 100% !important;
+}
+.dvf-page .project-content {
+  background: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100%;
+  max-width: 100%;
+}
+.dvf-page .dvf-map-desc-container {
+  background: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100%;
+  max-width: 100%;
+}
+.dvf-page .map-description-row {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  height: 230px;
+  min-height: 230px;
+}
+.dvf-page .map-container,
+.dvf-page .neighborhood-description {
+  flex: 1 1 50%;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+}
+.dvf-page .map-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #e0eaf2;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+}
+.dvf-page .neighborhood-description {
+  background: #fff !important;
+  border-radius: 8px !important;
+  border: 1px solid #e0e0e0 !important;
+  padding: 16px 18px 16px 18px !important;
+  font-size: 1.05rem;
+  color: #222;
+  box-shadow: 0 1px 6px rgba(44,44,44,0.04);
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.dvf-page .neighborhood-description h3 {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #222;
+  margin: 0 0 4px 0;
+  padding: 0;
+}
+.dvf-page .neighborhood-description p {
+  font-size: 1.05rem;
+  color: #222;
+  margin: 0;
+  text-align: left;
+}
+/* Tableau sobre comme précédemment */
+.dvf-page .dvf-map-desc-container table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.93rem;
+  margin-top: 0;
+  background: none;
+}
+.dvf-page .dvf-map-desc-container th,
+.dvf-page .dvf-map-desc-container td {
+  border: 1px solid #e0e0e0;
+  padding: 2.5px 4px;
+  text-align: center;
+  background: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.1;
+}
+.dvf-page .dvf-map-desc-container th {
+  background-color: #ececec;
+  color: #222;
+  font-weight: bold;
+  font-size: 0.97rem;
+  line-height: 1.15;
+  height: 32px;
+  border-bottom: 2px solid #d0d0d0;
+}
+.dvf-page .dvf-map-desc-container th.col-date,
+.dvf-page .dvf-map-desc-container th.col-adresse,
+.dvf-page .dvf-map-desc-container th.col-cp,
+.dvf-page .dvf-map-desc-container td.col-date,
+.dvf-page .dvf-map-desc-container td.col-adresse,
+.dvf-page .dvf-map-desc-container td.col-cp {
+  background: #f5f5f5 !important;
+}
+.dvf-page .dvf-map-desc-container tr.outlier-row td {
+  background: #ffeaea !important;
+  color: #b80000 !important;
+  font-weight: bold;
+}
+.dvf-page .dvf-map-desc-container tr.outlier-row:hover td {
+  background: #ffcccc !important;
+}
+
+/* === Style ultra-ciblé pour la page tendances (pixel perfect modèle à droite) === */
+.trends-page .project-content {
+  background: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.trends-page .highlight-block,
+.trends-page .highlight-block.premium {
+  background: #f7f0e6;
+  color: #5C4033;
+  border: 2px solid #e0d3b8;
+  border-radius: 12px;
+  box-shadow: 0 1px 6px rgba(44,44,44,0.04);
+  padding: 18px 24px;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.trends-page .highlight-block strong {
+  font-size: 1.5rem;
+  color: #2A2A2A;
+  font-weight: 900;
+}
+.trends-page .trend-table {
+  background-color: none;
+}
+.trends-page .trend-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  background: none;
+}
+.trends-page .trend-table th,
+.trends-page .trend-table td {
+  border: 1px solid #e0d3b8;
+  padding: 3px 6px;
+  text-align: center;
+  background: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.1;
+}
+.trends-page .trend-table th {
+  background-color: #f7f0e6;
+  color: #5C4033;
+  font-weight: bold;
+  font-size: 0.97rem;
+  line-height: 1.15;
+  height: 30px;
+  border-bottom: 2px solid #e0d3b8;
+}
+.trends-page .trend-table td {
+  font-size: 0.91rem;
+  color: #2A2A2A;
+  background: none;
+}
+.trends-page .polaroid-chart {
+  background: #fff;
+  border: 1.5px solid #e0d3b8;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(44,44,44,0.04);
+  padding: 10px;
+  margin-bottom: 8px;
+}
+.trends-page .conclusion {
+  background: #f9f6f2;
+  border: 1.5px dashed #e0d3b8;
+  border-radius: 8px;
+  box-shadow: none;
+  padding: 10px 16px;
+  text-align: center;
+  color: #5C4033;
+  font-size: 1.05rem;
+  margin-top: 8px;
+}
+

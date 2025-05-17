@@ -1,0 +1,59 @@
+.homeContainer {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  padding: 2rem 1rem;
+}
+
+.logo {
+  max-width: 420px;
+  width: 90vw;
+  margin-bottom: 2rem;
+  display: block;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #22223b;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 1.3rem;
+  color: #4a4e69;
+  margin-bottom: 2rem;
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.button {
+  background: #22223b;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.9rem 2.2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(34,34,59,0.08);
+}
+
+.button:hover {
+  background: #4a4e69;
+  transform: translateY(-2px) scale(1.04);
+}

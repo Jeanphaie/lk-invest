@@ -12,6 +12,7 @@ export const BusinessPlanResultsSchema = z.object({
     date_vente: z.string(),
     prix_fai: z.number(),
     prix_hfa: z.number(),
+    retour_fonds_propres: z.number(),
   }),
   prix_m2: z.object({
     prix_achat_pondere_m2: z.number(),

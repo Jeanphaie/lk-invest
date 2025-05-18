@@ -622,6 +622,8 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
       prix_hfa - prix_revient
     ]);
 
+    const retour_fonds_propres = fonds_propres_utilise_total > 0 ? marge_nette / fonds_propres_utilise_total : 0;
+
     // --- Préparation des résultats selon la nouvelle structure ---
     const synthese_couts = [
       { categorie: 'Acquisition', montant: total_acquisition },
@@ -642,7 +644,8 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
         tri,
         date_vente: date_vente.toISOString().split('T')[0],
         prix_fai,
-        prix_hfa
+        prix_hfa,
+        retour_fonds_propres
       },
       prix_m2: {
         prix_achat_pondere_m2: safeDiv(prix_achat, surface_ponderee_avant_travaux),

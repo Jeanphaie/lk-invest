@@ -20,6 +20,14 @@ export class PdfMappingService {
     const validatedInputsDescriptionBien = project.inputsDescriptionBien ? DescriptionBienInputsSchema.parse(project.inputsDescriptionBien) : undefined;
     const validatedResultsDescriptionBien = project.resultsDescriptionBien ? DescriptionBienResultsSchema.parse(project.resultsDescriptionBien) : undefined;
 
+    // Factorisation pour éviter les linter warnings
+    const photos = project.photos;
+    const hasPhotos = !!photos;
+    const beforePhotos = hasPhotos && Array.isArray(photos.before) ? photos.before : [];
+    const selectedBeforeIds = hasPhotos && Array.isArray(photos.selectedBeforePhotosForPdf) ? photos.selectedBeforePhotosForPdf : [];
+    const photos3d = hasPhotos && Array.isArray(photos['3d']) ? photos['3d'] : [];
+    const selected3dIds = hasPhotos && Array.isArray(photos.selected3dPhotosForPdf) ? photos.selected3dPhotosForPdf : [];
+
     // Construction de l'objet PdfData
     const pdfData: PdfData = {
       project_title: project.projectTitle,
@@ -37,23 +45,15 @@ export class PdfMappingService {
       // Champs optionnels (photos, dates, etc.) à compléter selon besoin
       date_creation: new Date(project.createdAt),
       date_modification: new Date(project.updatedAt),
-      // Mapping images: on prend les urls des photos sélectionnées (par id)
-      image1: project.photos && Array.isArray(project.photos.selectedBeforePhotosForPdf) && Array.isArray(project.photos.before) ?
-        (project.photos.before.find(p => p.id === project.photos.selectedBeforePhotosForPdf[0])?.url || '') : '',
-      image2: project.photos && Array.isArray(project.photos.selectedBeforePhotosForPdf) && Array.isArray(project.photos.before) ?
-        (project.photos.before.find(p => p.id === project.photos.selectedBeforePhotosForPdf[1])?.url || '') : '',
-      image3: project.photos && Array.isArray(project.photos.selectedBeforePhotosForPdf) && Array.isArray(project.photos.before) ?
-        (project.photos.before.find(p => p.id === project.photos.selectedBeforePhotosForPdf[2])?.url || '') : '',
-      image4: project.photos && Array.isArray(project.photos.selectedBeforePhotosForPdf) && Array.isArray(project.photos.before) ?
-        (project.photos.before.find(p => p.id === project.photos.selectedBeforePhotosForPdf[3])?.url || '') : '',
-      image5: project.photos && Array.isArray(project.photos.selectedBeforePhotosForPdf) && Array.isArray(project.photos.before) ?
-        (project.photos.before.find(p => p.id === project.photos.selectedBeforePhotosForPdf[4])?.url || '') : '',
-      image3d1: project.photos && Array.isArray(project.photos.selected3dPhotosForPdf) && Array.isArray(project.photos['3d']) ?
-        (project.photos['3d'].find(p => p.id === project.photos.selected3dPhotosForPdf[0])?.url || '') : '',
-      image3d2: project.photos && Array.isArray(project.photos.selected3dPhotosForPdf) && Array.isArray(project.photos['3d']) ?
-        (project.photos['3d'].find(p => p.id === project.photos.selected3dPhotosForPdf[1])?.url || '') : '',
-      image3d3: project.photos && Array.isArray(project.photos.selected3dPhotosForPdf) && Array.isArray(project.photos['3d']) ?
-        (project.photos['3d'].find(p => p.id === project.photos.selected3dPhotosForPdf[2])?.url || '') : '',
+      image1: beforePhotos.find(p => p.id === selectedBeforeIds[0])?.url || '',
+      image2: beforePhotos.find(p => p.id === selectedBeforeIds[1])?.url || '',
+      image3: beforePhotos.find(p => p.id === selectedBeforeIds[2])?.url || '',
+      image4: beforePhotos.find(p => p.id === selectedBeforeIds[3])?.url || '',
+      image5: beforePhotos.find(p => p.id === selectedBeforeIds[4])?.url || '',
+      image3d1: photos3d.find(p => p.id === selected3dIds[0])?.url || '',
+      image3d2: photos3d.find(p => p.id === selected3dIds[1])?.url || '',
+      image3d3: photos3d.find(p => p.id === selected3dIds[2])?.url || '',
+      selectedBeforePhotosForPdf: selectedBeforeIds.map(id => beforePhotos.find(p => p.id === id)?.url).filter((url): url is string => typeof url === 'string'),
     };
     // PATCH: Images PDF en URL HTTP (comme dans l'ancien extractPdfData)
     const BASE_IMAGE_URL = process.env.BASE_PDF_IMAGE_URL || 'http://localhost:3001';
@@ -71,6 +71,9 @@ export class PdfMappingService {
       if (pdfDataAny[field]) {
         pdfDataAny[field] = toHttpUrl(pdfDataAny[field]);
       }
+    }
+    if (Array.isArray(pdfDataAny.selectedBeforePhotosForPdf)) {
+      pdfDataAny.selectedBeforePhotosForPdf = pdfDataAny.selectedBeforePhotosForPdf.map(toHttpUrl);
     }
     // Validation finale de l'objet complet
     return PdfDataSchema.parse(pdfData);

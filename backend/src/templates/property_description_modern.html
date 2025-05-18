@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    .property-section {
+      padding: 2rem;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 2rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+    }
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .data-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+    }
+    .data-label {
+      color: #718096;
+      font-size: 0.9rem;
+    }
+    .data-value {
+      color: #2d3748;
+      font-weight: 500;
+      text-align: right;
+    }
+    .highlight {
+      color: #2b6cb0;
+      font-weight: 600;
+    }
+    .impacts-list {
+      margin-top: 1rem;
+    }
+    .impact-item {
+      padding: 0.5rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .impact-item:last-child {
+      border-bottom: none;
+    }
+    .impact-parameter {
+      font-weight: 600;
+      color: #2d3748;
+    }
+    .impact-value {
+      color: #718096;
+    }
+    .impact-description {
+      font-size: 0.9rem;
+      color: #4a5568;
+      margin-top: 0.25rem;
+    }
+    .coef-circle { width:110px; height:110px; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:2.2rem; font-weight:800; color:#fff; box-shadow:0 0 0 6px #fff, 0 2px 12px #0002; }
+    .coef-blue { background-color: #4f6ddf; }
+    .coef-orange { background-color: #f6ad55; }
+    .coef-red { background-color: #e53e3e; }
+    .param-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px #0a6c9d10;
+      border: 1.5px solid #e2e8f0;
+      padding: 1.1rem 1rem 1rem 1rem;
+      margin-bottom: 0.7rem;
+      min-width: 140px;
+      font-size: 0.97rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="property-section">
+    <h1 class="section-title">Description du bien</h1>
+    <div style="width:100%; margin-bottom:5rem;">
+      <div style="font-size:1.08rem; color:#2b6cb0; font-weight:600; margin-bottom:0.7rem;">
+        {{inputsGeneral.adresseBien}}
+      </div>
+      {{#if description}}
+      <div style="margin-bottom:1.2rem;">
+        <p>{{description}}</p>
+      </div>
+      {{/if}}
+    </div>
+    <div style="width:100%; margin-bottom:5rem;">
+      <div class="card-title">Caractéristiques principales</div>
+      <table style="width:100%; border-collapse:collapse; margin-bottom:1rem;">
+        <thead>
+          <tr>
+            <th style="text-align:left; color:#718096; font-weight:600; width:30%;">&nbsp;</th>
+            <th style="text-align:right; color:#0a6c9d; width:35%;">Avant travaux</th>
+            <th style="text-align:right; color:#0a6c9d; width:35%;">Après travaux</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="data-label">Superficie intérieure</td>
+            <td class="data-value" style="text-align:right;">{{formatNumber inputsGeneral.superficie}} m²</td>
+            <td class="data-value" style="text-align:right;">{{formatNumber inputsBusinessPlan.surface_carrez_apres_travaux}} m²</td>
+          </tr>
+          <tr>
+            <td class="data-label">Superficie terrasse</td>
+            <td class="data-value" style="text-align:right;">{{formatNumber inputsGeneral.surface_terrasse_avant_travaux}} m²</td>
+            <td class="data-value" style="text-align:right;">{{formatNumber inputsBusinessPlan.surface_terrasse_apres_travaux}} m²</td>
+          </tr>
+          <tr>
+            <td class="data-label">Superficie totale</td>
+            <td class="data-value" style="text-align:right;">{{formatNumber resultsDescriptionBien.surface_totale}} m²</td>
+            <td class="data-value" style="text-align:right;">{{formatNumber inputsBusinessPlan.surface_ponderee_apres_travaux}} m²</td>
+          </tr>
+          <tr>
+            <td class="data-label">Prix</td>
+            <td class="data-value" style="text-align:right;">{{formatKCurrency inputsBusinessPlan.prix_achat}}</td>
+            <td class="data-value" style="text-align:right;">{{formatKCurrency resultsBusinessPlan.resultats.prix_fai}}</td>
+          </tr>
+          <tr>
+            <td class="data-label">Prix m² carrez</td>
+            <td class="data-value" style="text-align:right;">{{formatKCurrency resultsBusinessPlan.prix_m2.prix_achat_carrez_m2 1}}</td>
+            <td class="data-value" style="text-align:right;">{{formatKCurrency resultsBusinessPlan.prix_m2.prix_vente_carrez_m2 1}}</td>
+          </tr>
+          <tr>
+            <td class="data-label">Prix m² pondéré</td>
+            <td class="data-value" style="text-align:right;">{{formatKCurrency resultsBusinessPlan.prix_m2.prix_achat_pondere_m2 1}}</td>
+            <td class="data-value" style="text-align:right;">{{formatKCurrency resultsBusinessPlan.prix_m2.prix_vente_pondere_m2 1}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="display: flex; flex-direction: row; align-items: flex-start; gap: 1.5rem; margin-top:2rem; justify-content:center;">
+      <!-- Colonne 1 -->
+      <div style="display:flex; flex-direction:column; gap:0.7rem; flex:1; min-width:180px;">
+        {{#each impacts_col1}}
+        <div class="param-card">
+          <div class="impact-parameter">{{parameter}}</div>
+          <div class="impact-value">{{value}} <span style="color:#2b6cb0;font-weight:600;">({{impact}}%)</span></div>
+          <div class="impact-description">{{description}}</div>
+        </div>
+        {{/each}}
+      </div>
+      <!-- Colonne 2 : cercle coef + 1 paramètre -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:0.7rem; flex:1; min-width:180px;">
+        <div class="coef-circle {{coef_class}}">
+          {{resultsDescriptionBien.coef_ponderation}}
+          <div style="font-size:1.1rem; font-weight:400; margin-top:0.2rem;">Coef</div>
+        </div>
+        {{#if impact_col2}}
+        <div class="param-card" style="margin-top:0.5rem;">
+          <div class="impact-parameter">{{impact_col2.parameter}}</div>
+          <div class="impact-value">{{impact_col2.value}} <span style="color:#2b6cb0;font-weight:600;">({{impact_col2.impact}}%)</span></div>
+          <div class="impact-description">{{impact_col2.description}}</div>
+        </div>
+        {{/if}}
+      </div>
+      <!-- Colonne 3 -->
+      <div style="display:flex; flex-direction:column; gap:0.7rem; flex:1; min-width:180px;">
+        {{#each impacts_col3}}
+        <div class="param-card">
+          <div class="impact-parameter">{{parameter}}</div>
+          <div class="impact-value">{{value}} <span style="color:#2b6cb0;font-weight:600;">({{impact}}%)</span></div>
+          <div class="impact-description">{{description}}</div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</body>
+</html> 

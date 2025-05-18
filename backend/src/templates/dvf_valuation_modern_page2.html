@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8fafc; color: #222; margin: 0; }
+    .section { padding: 2.2rem 1.5rem 1.2rem 1.5rem; max-width: 900px; margin: 0 auto; }
+    .section-title { font-size: 2rem; font-weight: 700; color: #0a6c9d; margin-bottom: 2rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
+    .outlier-phrase { margin: 0.7rem 0 1.5rem 0; font-size: 0.95rem; color: #2d3748; text-align: center; font-style: italic; }
+    .chart-block { margin-bottom: 2rem; }
+    .chart-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.5rem; color: #1a202c; }
+    .chart-image { width: 100%; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px #0001; background: #fff; }
+    .table-block { margin-bottom: 1.2rem; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.98rem; background: #fff; border-radius: 10px; overflow: hidden; }
+    .data-table th { background: #f8fafc; color: #64748b; font-weight: 600; text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1.2px solid #e2e8f0; }
+    .data-table td { padding: 0.5rem 0.7rem; border-bottom: 1px solid #f1f5f9; text-align: right; }
+    .data-table tr:last-child td { border-bottom: none; }
+    @media (max-width: 900px), print {
+      .section { padding: 1rem 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="section">
+    <div class="section-title">Analyse DVF</div>
+    <div class="outlier-phrase">
+      Les bornes d'outliers sont calculées à partir de la moyenne arrondissement brute ({{formatKCurrency resultsDvfMetadata.arrondissement_avg_for_outliers 1}}).<br>Les transactions avec un prix inferieur à <b>{{resultsDvfMetadata.outlier_lower_bound}}</b> et supérieur à <b>{{resultsDvfMetadata.outlier_upper_bound}}</b> ont été exclues.
+      
+    </div>
+    
+    <div style="display:flex;flex-direction:row;gap:1.5rem;margin-bottom:1.5rem;justify-content:center;align-items:stretch;width:100%;min-width:0;">
+      <div style="flex:1 1 0;min-width:0;max-width:100%;width:auto;display:flex;flex-direction:column;align-items:center;background:#fff;border-radius:14px;box-shadow:0 2px 8px #0a6c9d10;text-align:center;padding:1.2rem 0.7rem;">
+        <div style="font-size:1.05rem;color:#64748b;font-weight:600;margin-bottom:0.2rem;">Prix moyen <br>sélection</div>
+        <div style="font-size:1.7rem;font-weight:800;color:#1a237e;margin-bottom:0.1rem;">{{formatKCurrency resultsDvfMetadata.sel_final_avg 1}}/m2</div>
+        <div style="font-size:0.97rem;color:#888;">basé sur {{resultsDvfMetadata.selection_total_count}} transactions</div>
+      </div>
+      <div style="flex:1 1 0;min-width:0;max-width:100%;width:auto;display:flex;flex-direction:column;align-items:center;background:#fff;border-radius:14px;box-shadow:0 2px 8px #0a6c9d10;text-align:center;padding:1.2rem 0.7rem;">
+        <div style="font-size:1.05rem;color:#64748b;font-weight:600;margin-bottom:0.2rem;">Prix moyen <br>arrondissement</div>
+        <div style="font-size:1.7rem;font-weight:800;color:#388e3c;margin-bottom:0.1rem;">{{formatKCurrency resultsDvfMetadata.arr_final_avg 1}}/m2</div>
+        <div style="font-size:0.97rem;color:#888;">basé sur {{resultsDvfMetadata.arrondissement_total_count}} transactions</div>
+      </div>
+      <div style="flex:1 1 0;min-width:0;max-width:100%;width:auto;display:flex;flex-direction:column;align-items:center;background:#fff;border-radius:14px;box-shadow:0 2px 8px #0a6c9d10;text-align:center;padding:1.2rem 0.7rem;">
+        <div style="font-size:1.05rem;color:#64748b;font-weight:600;margin-bottom:0.2rem;">Moyenne Premium <br>(top 10%)</div>
+        <div style="font-size:1.7rem;font-weight:800;color:#d32f2f;margin-bottom:0.1rem;">{{formatKCurrency resultsDvfMetadata.premium_final_avg 1}}/m2</div>
+        <div style="font-size:0.97rem;color:#888;">basé sur {{resultsDvfMetadata.premium_total_count}} transactions</div>
+      </div>
+    </div>
+    <div class="chart-block">
+      <div class="chart-title">Évolution des prix</div>
+      <img src="{{trend_chart_url}}" alt="Évolution des prix" class="chart-image" />
+    </div>
+    <div class="table-block">
+      <div class="chart-title">Tableau annuel</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="text-align:left;">Année</th>
+            <th style="text-align:right;">Sélection</th>
+            <th style="text-align:right;">Arrondissement</th>
+            <th style="text-align:right;">Premium</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each dvf_series}}
+          <tr>
+            <td style="text-align:left;">{{year}}</td>
+            <td>{{formatKCurrency selection_avg 1}} <span style="color:#888;font-size:0.93em;">({{selection_count}})</span></td>
+            <td>{{formatKCurrency arrondissement_avg 1}} <span style="color:#888;font-size:0.93em;">({{arrondissement_count}})</span></td>
+            <td>{{formatKCurrency premium_avg 1}} <span style="color:#888;font-size:0.93em;">({{premium_count}})</span></td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html> 

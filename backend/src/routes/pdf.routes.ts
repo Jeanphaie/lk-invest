@@ -54,6 +54,9 @@ Handlebars.registerHelper('formatKCurrency', formatKCurrency);
 Handlebars.registerHelper('formatPercentage', formatPercentage);
 Handlebars.registerHelper('formatNumber', formatNumber);
 Handlebars.registerHelper('multiply', (a: number, b: number) => a * b);
+Handlebars.registerHelper('eq', function (a, b) {
+  return a === b;
+});
 
 // Fonction pour convertir une image en base64
 const imageToBase64 = (filePath: string): string => {
@@ -65,6 +68,224 @@ const imageToBase64 = (filePath: string): string => {
     return '';
   }
 };
+
+// Types pour les données DVF
+interface DvfTransaction {
+  date_mutation?: string;
+  voie?: string;
+  code_postal?: string;
+  valeur_fonciere?: number;
+  nombre_pieces_principales?: number;
+  surface_reelle_bati?: number;
+  prix_m2?: number;
+  is_outlier?: boolean;
+}
+
+interface TrendSeries {
+  year?: number | string;
+  selection_avg?: number;
+  selection_count?: number;
+  arrondissement_avg?: number;
+  arrondissement_count?: number;
+  premium_avg?: number;
+  premium_count?: number;
+}
+
+interface DistributionSeries {
+  bin?: string;
+  prixM2?: number;
+  count?: number;
+  nombreTransactions?: number;
+}
+
+function buildDvfTableHtml(transactions: DvfTransaction[] = []): string {
+  if (!Array.isArray(transactions)) return '';
+  const formatKCurrency = (value: number | undefined, decimals = 0) => {
+    if (typeof value !== 'number' || isNaN(value)) return 'N/A';
+    return (Math.round(value / 1000 * Math.pow(10, decimals)) / Math.pow(10, decimals))
+      .toLocaleString('fr-FR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  };
+  const sorted = [...transactions].sort((a, b) => (b.date_mutation || '').localeCompare(a.date_mutation || ''));
+  return sorted.slice(0, 30).map((prop) => `
+    <tr class="${prop.is_outlier ? 'outlier-row' : ''}">
+      <td class="col-date">${prop.date_mutation || 'N/A'}</td>
+      <td class="col-adresse">${prop.voie || 'Inconnu'}</td>
+      <td class="col-cp">${prop.code_postal || 'N/A'}</td>
+      <td class="col-valeur">${formatKCurrency(prop.valeur_fonciere, 0)}</td>
+      <td class="col-pieces">${prop.nombre_pieces_principales ?? 'N/A'}</td>
+      <td class="col-surface">${prop.surface_reelle_bati ? Math.round(prop.surface_reelle_bati) : 'N/A'}</td>
+      <td class="col-prixm2">${formatKCurrency(prop.prix_m2, 2)}</td>
+    </tr>
+  `).join('\n');
+}
+
+function buildTrendTableHtml(trendSeries: TrendSeries[] = []): string {
+  if (!Array.isArray(trendSeries)) return '';
+  const formatKCurrency = (value: number | undefined, decimals = 2) => {
+    if (typeof value !== 'number' || isNaN(value)) return 'N/A';
+    return (Math.round(value / 1000 * Math.pow(10, decimals)) / Math.pow(10, decimals))
+      .toLocaleString('fr-FR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  };
+  return trendSeries.map(trend => `
+    <tr>
+      <td>${trend.year || ''}</td>
+      <td>${formatKCurrency(trend.selection_avg, 2)} k€<br/><span style="color:#888;font-size:0.95em;">(${trend.selection_count || 0})</span></td>
+      <td>${formatKCurrency(trend.arrondissement_avg, 2)} k€<br/><span style="color:#888;font-size:0.95em;">(${trend.arrondissement_count || 0})</span></td>
+      <td>${formatKCurrency(trend.premium_avg, 2)} k€<br/><span style="color:#888;font-size:0.95em;">(${trend.premium_count || 0})</span></td>
+    </tr>
+  `).join('\n');
+}
+
+function buildTrendChartUrl(trendSeries: TrendSeries[] = []): string {
+  if (!Array.isArray(trendSeries) || !trendSeries.length) return '';
+  const chart = new QuickChart();
+  chart.setConfig({
+    type: 'line',
+    data: {
+      labels: trendSeries.map(t => t.year),
+      datasets: [
+        {
+          label: 'Sélection',
+          data: trendSeries.map(t => t.selection_avg ? t.selection_avg / 1000 : null),
+          borderColor: '#1a237e',
+          backgroundColor: '#1a237e22',
+          yAxisID: 'y1',
+          fill: false,
+          pointRadius: 4,
+          borderWidth: 3,
+          tension: 0.4,
+        },
+        {
+          label: 'Arrondissement',
+          data: trendSeries.map(t => t.arrondissement_avg ? t.arrondissement_avg / 1000 : null),
+          borderColor: '#388e3c',
+          backgroundColor: '#388e3c22',
+          yAxisID: 'y1',
+          fill: false,
+          pointRadius: 4,
+          borderWidth: 3,
+          tension: 0.4,
+        },
+        {
+          label: 'Premium (top 10%)',
+          data: trendSeries.map(t => t.premium_avg ? t.premium_avg / 1000 : null),
+          borderColor: '#d32f2f',
+          backgroundColor: '#d32f2f22',
+          yAxisID: 'y2',
+          fill: false,
+          pointRadius: 4,
+          borderWidth: 3,
+          tension: 0.4,
+        }
+      ]
+    },
+    options: {
+      plugins: {
+        legend: { display: true, position: 'bottom' },
+        title: { display: false }
+      },
+      scales: {
+        y1: {
+          type: 'linear',
+          position: 'left',
+          title: { display: true, text: 'k€/m²' },
+          min: 9,
+          max: 18
+        },
+        y2: {
+          type: 'linear',
+          position: 'right',
+          title: { display: true, text: 'Premium (k€/m²)' },
+          min: 9,
+          max: 18,
+          grid: { drawOnChartArea: false }
+        },
+        x: { title: { display: true, text: 'Année' } }
+      }
+    }
+  });
+  chart.setWidth(600).setHeight(320).setBackgroundColor('transparent');
+  return chart.getUrl();
+}
+
+function buildDistributionChartUrl(distributionSeries: DistributionSeries[] = []): string {
+  if (!Array.isArray(distributionSeries) || !distributionSeries.length) return '';
+  const labels = distributionSeries.map(d => d.bin ?? (typeof d.prixM2 === 'number' ? `${d.prixM2}` : ''));
+  const data = distributionSeries.map(d => d.count ?? d.nombreTransactions ?? 0);
+
+  const chart = new QuickChart();
+  chart.setConfig({
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Nombre de transactions',
+          data,
+          backgroundColor: '#bfa77a',
+        },
+      ],
+    },
+    options: {
+      plugins: { title: { display: true, text: 'Nombre de transactions par groupe de prix' } },
+      scales: {
+        y: { title: { display: true, text: 'Nombre de transactions' } },
+        x: { title: { display: true, text: 'Prix/m² (k€)' } }
+      }
+    }
+  });
+  chart.setWidth(600).setHeight(300).setBackgroundColor('transparent');
+  return chart.getUrl();
+}
+
+// Helper pour extraire un nombre d'un champ potentiellement objet
+function getNumber(val: any): number {
+  if (typeof val === 'object' && val !== null) {
+    if ('value' in val) return Number(val.value);
+    if ('min' in val) return Number(val.min);
+    if ('max' in val) return Number(val.max);
+    return 0;
+  }
+  return Number(val ?? 0);
+}
+
+
+// Fonction utilitaire pour générer un cercle encodé polyline Google Maps
+function encodeCirclePolyline(lat: number, lng: number, radiusMeters: number, numPoints: number = 32): string {
+  const R = 6378137; // Rayon de la Terre en mètres
+  const points: [number, number][] = [];
+  for (let i = 0; i <= numPoints; i++) {
+    const angle = (2 * Math.PI * i) / numPoints;
+    const dx = radiusMeters * Math.cos(angle);
+    const dy = radiusMeters * Math.sin(angle);
+    // Décalage en degrés
+    const dLat = (dy / R) * (180 / Math.PI);
+    const dLng = (dx / (R * Math.cos((Math.PI * lat) / 180))) * (180 / Math.PI);
+    points.push([lat + dLat, lng + dLng]);
+  }
+  // Polyline encoding Google Maps
+  function encode(points: [number, number][]): string {
+    let plat = 0, plng = 0, res = '';
+    for (const [lat, lng] of points) {
+      let late5 = Math.round(lat * 1e5);
+      let lnge5 = Math.round(lng * 1e5);
+      let dlat = late5 - plat;
+      let dlng = lnge5 - plng;
+      plat = late5;
+      plng = lnge5;
+      for (const v of [dlat, dlng]) {
+        let sv = v < 0 ? ~(v << 1) : v << 1;
+        while (sv >= 0x20) {
+          res += String.fromCharCode((0x20 | (sv & 0x1f)) + 63);
+          sv >>= 5;
+        }
+        res += String.fromCharCode(sv + 63);
+      }
+    }
+    return res;
+  }
+  return encode(points);
+}
 
 // Route pour générer le PDF à partir des données POST (config custom)
 router.post('/generate', async (req: Request, res: Response) => {
@@ -105,7 +326,7 @@ router.post('/generate', async (req: Request, res: Response) => {
     const project_title = project.projectTitle || 'Sans titre';
     const includeSections = (pdfConfig && pdfConfig.sections) || {};
     const dynamicFields = req.body.dynamicFields || {};
-    
+
     // 2. Préparation des assets
     const logo_path = '/data/lki/uploads/LOGO-LK-noir_2025.png';
     const cover_image_path = '/data/lki/uploads/cover_LKI.png';
@@ -117,7 +338,7 @@ router.post('/generate', async (req: Request, res: Response) => {
 
     // 3. Lecture des templates et du CSS
     const templatesDir = path.join(__dirname, '..', 'templates');
-    
+
     const cssContent = await fs.promises.readFile(css_path, 'utf-8');
 
 
@@ -135,7 +356,7 @@ router.post('/generate', async (req: Request, res: Response) => {
     `;
 
     // 4. Génération des sections
-    
+
     if (includeSections.cover) {
       console.log('[PDF] --> Entrée dans la section COVER');
       const coverTemplate = await fs.promises.readFile(
@@ -147,10 +368,9 @@ router.post('/generate', async (req: Request, res: Response) => {
         ...pdfData,
         logo_path: logo_base64,
         cover_image_path: cover_image_base64,
-        // Champs dynamiques à plat pour le template
         ...(pdfData.pdf_config?.dynamic_fields || {})
       };
-      
+
       htmlContent += compiledCover(coverData);
       htmlContent += '<div class="page-break"></div>';
     }
@@ -169,7 +389,7 @@ router.post('/generate', async (req: Request, res: Response) => {
         resultats_marge_nette: pdfData.resultsBusinessPlan?.resultats?.marge_nette,
         resultats_rentabilite: pdfData.resultsBusinessPlan?.resultats?.rentabilite,
       };
-      
+
       htmlContent += compiledToc(tocData);
       htmlContent += '<div class="page-break"></div>';
     }
@@ -194,7 +414,7 @@ router.post('/generate', async (req: Request, res: Response) => {
         prix_m2_prix_vente_carrez_m2: pdfData.resultsBusinessPlan?.prix_m2?.prix_vente_carrez_m2,
         superficie_totale: pdfData.resultsDescriptionBien?.surface_totale,
       };
-      
+
       htmlContent += compiledProperty(propertyData);
       htmlContent += '<div class="page-break"></div>';
     }
@@ -202,7 +422,7 @@ router.post('/generate', async (req: Request, res: Response) => {
     if (includeSections.valuation_lk) {
       console.log('[PDF] --> Entrée dans la section VALUATION_LK');
       console.log('[PDF] DEBUG RAYON - Avant compilation template LK Invest, rayon:', pdfData.inputsDvf?.rayon);
-      
+
       const valuationLkTemplate = await fs.promises.readFile(
         path.join(templatesDir, 'valuation_lk_invest.html'),
         'utf-8'
@@ -247,125 +467,6 @@ router.post('/generate', async (req: Request, res: Response) => {
       // Log la structure finale
       console.log('[PDF][DEBUG] distributionSeries (après mapping):', JSON.stringify(distributionSeries, null, 2));
 
-      function buildDvfTableHtml(transactions: any[] = []): string {
-        if (!Array.isArray(transactions)) return '';
-        const formatKCurrency = (value: number, decimals = 0) => {
-          if (typeof value !== 'number' || isNaN(value)) return 'N/A';
-          return (Math.round(value / 1000 * Math.pow(10, decimals)) / Math.pow(10, decimals))
-            .toLocaleString('fr-FR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-        };
-        // Tri décroissant par date
-        const sorted = [...transactions].sort((a, b) => (b.date_mutation || '').localeCompare(a.date_mutation || ''));
-        return sorted.slice(0, 30).map((prop) => `
-          <tr class="${prop.is_outlier ? 'outlier-row' : ''}">
-            <td class="col-date">${prop.date_mutation || 'N/A'}</td>
-            <td class="col-adresse">${prop.voie || 'Inconnu'}</td>
-            <td class="col-cp">${prop.code_postal || 'N/A'}</td>
-            <td class="col-valeur">${formatKCurrency(prop.valeur_fonciere, 0)}</td>
-            <td class="col-pieces">${prop.nombre_pieces_principales ?? 'N/A'}</td>
-            <td class="col-surface">${prop.surface_reelle_bati ? Math.round(prop.surface_reelle_bati) : 'N/A'}</td>
-            <td class="col-prixm2">${formatKCurrency(prop.prix_m2, 2)}</td>
-          </tr>
-        `).join('\n');
-      }
-
-      function buildTrendTableHtml(trendSeries: any[] = []): string {
-        if (!Array.isArray(trendSeries)) return '';
-        const formatKCurrency = (value: number, decimals = 2) => {
-          if (typeof value !== 'number' || isNaN(value)) return 'N/A';
-          return (Math.round(value / 1000 * Math.pow(10, decimals)) / Math.pow(10, decimals))
-            .toLocaleString('fr-FR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-        };
-        return trendSeries.map(trend => `
-          <tr>
-            <td>${trend.year || ''}</td>
-            <td>${formatKCurrency(trend.selection_avg, 2)} k€<br/><span style="color:#888;font-size:0.95em;">(${trend.selection_count || 0})</span></td>
-            <td>${formatKCurrency(trend.arrondissement_avg, 2)} k€<br/><span style="color:#888;font-size:0.95em;">(${trend.arrondissement_count || 0})</span></td>
-            <td>${formatKCurrency(trend.premium_avg, 2)} k€<br/><span style="color:#888;font-size:0.95em;">(${trend.premium_count || 0})</span></td>
-          </tr>
-        `).join('\n');
-      }
-
-      function buildTrendChartUrl(trendSeries: any[] = []): string {
-        if (!Array.isArray(trendSeries) || !trendSeries.length) return '';
-        const chart = new QuickChart();
-        chart.setConfig({
-          type: 'line',
-          data: {
-            labels: trendSeries.map(t => t.year),
-            datasets: [
-              {
-                label: 'Sélection',
-                data: trendSeries.map(t => t.selection_avg / 1000),
-                borderColor: '#5C4033',
-                fill: false,
-              },
-              {
-                label: 'Arrondissement',
-                data: trendSeries.map(t => t.arrondissement_avg / 1000),
-                borderColor: '#bfa77a',
-                fill: false,
-              },
-              {
-                label: 'Premium (Top 10%)',
-                data: trendSeries.map(t => t.premium_avg / 1000),
-                borderColor: '#c97c2b',
-                fill: false,
-              },
-            ],
-          },
-          options: {
-            plugins: { title: { display: true, text: 'Évolution des prix/m² (2019-2024)' } },
-            scales: {
-              y: { title: { display: true, text: 'Prix (k€)' } },
-              x: { title: { display: true, text: 'Année' } }
-            }
-          }
-        });
-        chart.setWidth(600).setHeight(300).setBackgroundColor('transparent');
-        return chart.getUrl();
-      }
-
-      function buildDistributionChartUrl(distributionSeries: any[] = []): string {
-        if (!Array.isArray(distributionSeries) || !distributionSeries.length) return '';
-        // Log chaque objet de distributionSeries
-        console.log('[PDF][DEBUG] distributionSeries objets (dans chart):', JSON.stringify(distributionSeries, null, 2));
-        const labels = distributionSeries.map(d => d.bin ?? (typeof d.prixM2 === 'number' ? `${d.prixM2}` : ''));
-        const data = distributionSeries.map(d => d.count ?? d.nombreTransactions ?? 0);
-        console.log('[PDF][DEBUG] distributionSeries labels:', labels);
-        console.log('[PDF][DEBUG] distributionSeries data:', data);
-
-        const chart = new QuickChart();
-        chart.setConfig({
-          type: 'bar',
-          data: {
-            labels,
-            datasets: [
-              {
-                label: 'Nombre de transactions',
-                data,
-                backgroundColor: '#bfa77a',
-              },
-            ],
-          },
-          options: {
-            plugins: { title: { display: true, text: 'Nombre de transactions par groupe de prix' } },
-            scales: {
-              y: { title: { display: true, text: 'Nombre de transactions' } },
-              x: { title: { display: true, text: 'Prix/m² (k€)' } }
-            }
-          }
-        });
-        chart.setWidth(600).setHeight(300).setBackgroundColor('transparent');
-        return chart.getUrl();
-      }
-
-      // Ajoute des logs pour debug la structure de distributionSeries
-      console.log('[PDF][DEBUG] distributionSeries (raw):', JSON.stringify(distributionSeries));
-      if (distributionSeries.length > 0) {
-        console.log('[PDF][DEBUG] distributionSeries[0]:', distributionSeries[0]);
-      }
-
       const valuationLkData = {
         ...pdfData,
         outlier_lower_bound_percent: pdfData.inputsDvf?.outlierLowerBoundPercent,
@@ -383,7 +484,7 @@ router.post('/generate', async (req: Request, res: Response) => {
         trend_chart_url: buildTrendChartUrl(trendSeries),
         distribution_chart_url: buildDistributionChartUrl(distributionSeries),
       };
-      
+
       htmlContent += compiledValuationLk(valuationLkData);
       htmlContent += '<div class="page-break"></div>';
     }
@@ -445,6 +546,7 @@ router.post('/generate', async (req: Request, res: Response) => {
         pct_credit_foncier_utilise,
         pct_fonds_propres_utilise,
       };
+
       htmlContent += compiledFinancial(financialData);
       htmlContent += '<div class="page-break"></div>';
     }
@@ -520,6 +622,469 @@ router.post('/generate', async (req: Request, res: Response) => {
     console.error('Erreur lors de la génération du PDF:', error);
     res.status(500).json({
       error: 'Erreur lors de la génération du PDF',
+      details: error instanceof Error ? error.message : 'Erreur inconnue'
+    });
+  }
+});
+
+// Route pour générer le PDF moderne
+router.post('/generate-modern', async (req: Request, res: Response) => {
+  try {
+    const { projectId, pdfConfig } = req.body;
+    if (!projectId) {
+      return res.status(400).json({ error: 'projectId requis' });
+    }
+
+    // Validation de la config PDF si présente
+    let validatedConfig: PdfConfig | undefined = undefined;
+    if (pdfConfig) {
+      const result = PdfConfigSchema.safeParse(pdfConfig);
+      if (!result.success) {
+        return res.status(400).json({
+          error: 'Config PDF invalide',
+          details: result.error.errors.map(err => ({ path: err.path.join('.'), message: err.message }))
+        });
+      }
+      validatedConfig = result.data;
+    }
+
+    // Récupérer le projet
+    const project = await projectService.getProjectById(projectId);
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    // Utiliser le PdfMappingService pour extraire les données
+    const pdfData = PdfMappingService.mapProjectToPdfData(project, validatedConfig || {});
+
+    // 1. Préparation des données
+    const project_title = project.projectTitle || 'Sans titre';
+    const includeSections = (pdfConfig && pdfConfig.sections) || {};
+    const dynamicFields = req.body.dynamicFields || {};
+
+    // 2. Préparation des assets
+    const logo_path = '/data/lki/uploads/LOGO-LK-noir_2025.png';
+    const cover_image_path = '/data/lki/uploads/cover_LKI.png';
+    const css_path = path.join(__dirname, '..', 'static', 'pdf_assets', 'styles_modern.css');
+
+    // Conversion des images logo/cover en base64
+    const logo_base64 = imageToBase64(logo_path);
+    const cover_image_base64 = imageToBase64(cover_image_path);
+
+    // 3. Lecture des templates et du CSS
+    const templatesDir = path.join(__dirname, '..', 'templates');
+    const cssContent = await fs.promises.readFile(css_path, 'utf-8');
+
+    let htmlContent = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+            ${cssContent}
+        </style>
+      </head>
+      <body>
+    `;
+
+    // 4. Génération des sections avec les nouveaux templates
+
+    if (includeSections.cover) {
+      console.log('[PDF] --> Entrée dans la section COVER (modern)');
+      const coverTemplate = await fs.promises.readFile(
+        path.join(templatesDir, 'cover_page_modern.html'),
+        'utf-8'
+      );
+      const compiledCover = Handlebars.compile(coverTemplate);
+      const coverData = {
+        ...pdfData,
+        logo_path: logo_base64,
+        cover_image_path: cover_image_base64,
+        ...(pdfData.pdf_config?.dynamic_fields || {})
+      };
+
+      htmlContent += compiledCover(coverData);
+
+    }
+
+    if (includeSections.property) {
+      console.log('[PDF] --> Entrée dans la section PROPERTY (modern)');
+      const propertyTemplate = await fs.promises.readFile(
+        path.join(templatesDir, 'property_description_modern.html'),
+        'utf-8'
+      );
+      const compiledProperty = Handlebars.compile(propertyTemplate);
+      // Préparation des impacts et couleur coef
+      const impacts = pdfData.resultsDescriptionBien?.impacts || [];
+      const impacts_col1 = impacts.slice(0, 3);
+      const impact_col2 = impacts[3];
+      const impacts_col3 = impacts.slice(4, 7);
+      const coef = pdfData.resultsDescriptionBien?.coef_ponderation ?? 1;
+      let coef_class = 'coef-blue';
+      if (coef >= 1.2) coef_class = 'coef-red';
+      else if (coef >= 1.1) coef_class = 'coef-orange';
+      const propertyData = {
+        ...pdfData,
+        adresse: pdfData.adresse,
+        prix_achat: pdfData.inputsBusinessPlan?.prix_achat,
+        prix_m2: pdfData.resultsBusinessPlan?.prix_m2?.prix_achat_pondere_m2,
+        coefficient: pdfData.inputsGeneral?.ponderation_terrasse,
+        images: pdfData.selectedBeforePhotosForPdf,
+        description: pdfData.pdf_config?.dynamic_fields?.description_general,
+        impacts_col1,
+        impact_col2,
+        impacts_col3,
+        coef_class,
+        ...(pdfData.pdf_config?.dynamic_fields || {})
+      };
+      htmlContent += compiledProperty(propertyData);
+      htmlContent += '<div class="page-break"></div>';
+    }
+
+    // Ajout de la section photos avant travaux (utilise le tableau complet, avec styles inline pour effet jeté)
+    const imagesRaw = pdfData.selectedBeforePhotosForPdf || [];
+    const n = imagesRaw.length;
+    const imagesStyled = imagesRaw.map((url, i) => {
+      let left, top, width, height, rotate, z = 2, shadow = '0 6px 32px rgba(0,0,0,0.18)';
+      if (i === 0) {
+        // Image centrale, focus
+        left = '50%'; top = '50%'; width = '70vw'; height = '52vh'; rotate = '-2deg'; z = 10;
+        shadow = '0 12px 40px rgba(0,0,0,0.22)';
+      } else {
+        // Satellites : plus grandes, cercle plus large, rotation douce
+        const nSat = n - 1;
+        const angle = (360 / nSat) * (i - 1) - 90 + (nSat > 1 ? 360 / (2 * nSat) : 0); // décalage pour éviter la superposition
+        const rad = (angle * Math.PI) / 180;
+        const r = n < 7 ? 40 : 44; // rayon en %
+        left = `${50 + Math.cos(rad) * r}%`;
+        top = `${50 + Math.sin(rad) * r}%`;
+        width = n < 7 ? '48vw' : '38vw';
+        height = n < 7 ? '36vh' : '28vh';
+        rotate = `${-10 + (i * 13) % 21}deg`;
+        z = 2 + i;
+      }
+      const style = `left:${left};top:${top};width:${width};height:${height};transform:translate(-50%,-50%) rotate(${rotate});z-index:${z};box-shadow:${shadow};`;
+      return { url, style };
+    });
+    if (imagesStyled.length > 0) {
+      console.log('[PDF] --> Entrée dans la section PHOTOS (modern)');
+      const photosTemplate = await fs.promises.readFile(
+        path.join(templatesDir, 'photos_before_modern.html'),
+        'utf-8'
+      );
+      const compiledPhotos = Handlebars.compile(photosTemplate);
+      htmlContent += compiledPhotos({ images: imagesStyled });
+      htmlContent += '<div class="page-break"></div>';
+    }
+
+    if (includeSections.valuation_lk) {
+      console.log('[PDF] --> Entrée dans la section VALUATION_LK (modern)');
+      // Préparation des données DVF (comme la route classique)
+      const dvfTransactions = (project.dvfTransactions || []) as DvfTransaction[];
+      // Tri décroissant par date
+      const dvfTransactionsSorted = [...dvfTransactions].sort((a, b) => (b.date_mutation || '').localeCompare(a.date_mutation || ''));
+      const trendSeries = (project.dvfSeries || []) as TrendSeries[];
+      // Sanitize trendSeries pour le chart et le tableau
+      const trendSeriesSanitized = trendSeries.map(t => ({
+        year: String(t.year ?? ''),
+        selection_avg: Number(t.selection_avg ?? 0),
+        selection_count: Number(t.selection_count ?? 0),
+        arrondissement_avg: Number(t.arrondissement_avg ?? 0),
+        arrondissement_count: Number(t.arrondissement_count ?? 0),
+        premium_avg: Number(t.premium_avg ?? 0),
+        premium_count: Number(t.premium_count ?? 0),
+      }));
+      // --- QuickChart double y axis Chart.js 2.x ---
+      let trend_chart_url = '';
+      if (trendSeriesSanitized.length > 0) {
+        // Calcul dynamique des min/max pour chaque axe
+        const y1Vals = trendSeriesSanitized.flatMap(t => [t.selection_avg, t.arrondissement_avg].map(v => v ? v / 1000 : null)).filter(v => v !== null);
+        const y2Vals = trendSeriesSanitized.map(t => t.premium_avg ? t.premium_avg / 1000 : null).filter(v => v !== null);
+        const y1Min = Math.floor(Math.min(...y1Vals) - 0.5);
+        const y1Max = Math.ceil(Math.max(...y1Vals) + 0.5);
+        const y2Min = Math.floor(Math.min(...y2Vals) - 0.5);
+        const y2Max = Math.ceil(Math.max(...y2Vals) + 0.5);
+        try {
+          trend_chart_url = new QuickChart()
+            .setConfig({
+              type: 'line',
+              data: {
+                labels: trendSeriesSanitized.map(t => t.year),
+                datasets: [
+                  {
+                    label: 'Sélection',
+                    data: trendSeriesSanitized.map(t => t.selection_avg ? t.selection_avg / 1000 : null),
+                    borderColor: '#1a237e',
+                    backgroundColor: '#1a237e22',
+                    yAxisID: 'y1',
+                    fill: false,
+                    pointRadius: 4,
+                    borderWidth: 3,
+                    lineTension: 0.4,
+                  },
+                  {
+                    label: 'Arrondissement',
+                    data: trendSeriesSanitized.map(t => t.arrondissement_avg ? t.arrondissement_avg / 1000 : null),
+                    borderColor: '#388e3c',
+                    backgroundColor: '#388e3c22',
+                    yAxisID: 'y1',
+                    fill: false,
+                    pointRadius: 4,
+                    borderWidth: 3,
+                    lineTension: 0.4,
+                  },
+                  {
+                    label: 'Premium (top 10%)',
+                    data: trendSeriesSanitized.map(t => t.premium_avg ? t.premium_avg / 1000 : null),
+                    borderColor: '#d32f2f',
+                    backgroundColor: '#d32f2f22',
+                    yAxisID: 'y2',
+                    fill: false,
+                    pointRadius: 4,
+                    borderWidth: 3,
+                    lineTension: 0.4,
+                  }
+                ]
+              },
+              options: {
+                legend: { display: true, position: 'bottom' },
+                title: { display: false },
+                scales: {
+                  yAxes: [
+                    {
+                      id: 'y1',
+                      type: 'linear',
+                      position: 'left',
+                      scaleLabel: { display: true, labelString: 'k€/m²' },
+                      ticks: { min: y1Min, max: y1Max }
+                    },
+                    {
+                      id: 'y2',
+                      type: 'linear',
+                      position: 'right',
+                      scaleLabel: { display: true, labelString: 'Premium (k€/m²)' },
+                      ticks: { min: y2Min, max: y2Max },
+                      gridLines: { drawOnChartArea: false }
+                    }
+                  ],
+                  xAxes: [
+                    { scaleLabel: { display: true, labelString: 'Année' } }
+                  ]
+                }
+              }
+            })
+            .setWidth(600)
+            .setHeight(220)
+            .setBackgroundColor('transparent')
+            .getUrl();
+        } catch (err) {
+          console.error('[PDF] Erreur génération graphique DVF:', err);
+        }
+      }
+      // --- Préparation des champs pour les cartes ---
+      const meta = pdfData.resultsDvfMetadata || {};
+      const metaAny = meta as any;
+      const safeMeta = {
+        selection_total_count: getNumber(metaAny.selection_total_count),
+        arrondissement_total_count: getNumber(metaAny.arrondissement_total_count),
+        premium_total_count: getNumber(metaAny.premium_total_count),
+        sel_final_avg: getNumber(metaAny.sel_final_avg),
+        arr_final_avg: getNumber(metaAny.arr_final_avg),
+        premium_final_avg: getNumber(metaAny.premium_final_avg),
+        outlier_lower_bound: formatCurrency(getNumber(metaAny.outlier_lower_bound), '€', 0),
+        outlier_upper_bound: formatCurrency(getNumber(metaAny.outlier_upper_bound), '€', 0),
+        arrondissement_avg_for_outliers: getNumber(metaAny.arrondissement_avg_for_outliers)
+      };
+      // Pagination : 25 transactions par page
+      const pageSize = 20;
+      const numPages = Math.ceil(dvfTransactionsSorted.length / pageSize) || 1;
+      const dvfTemplatePage1 = await fs.promises.readFile(
+        path.join(templatesDir, 'dvf_valuation_modern.html'),
+        'utf-8'
+      );
+      const compiledDvfPage1 = Handlebars.compile(dvfTemplatePage1);
+      // Préparation du cercle encodé pour la map
+      let circlePolyline = '';
+      let rayon_m = 0;
+      if (pdfData.latitude && pdfData.longitude && pdfData.inputsDvf?.rayon) {
+        rayon_m = Math.round(Number(pdfData.inputsDvf.rayon) * 1000);
+        circlePolyline = encodeCirclePolyline(pdfData.latitude, pdfData.longitude, rayon_m);
+      }
+      for (let pageIdx = 0; pageIdx < numPages; pageIdx++) {
+        const pageTransactions = dvfTransactionsSorted.slice(pageIdx * pageSize, (pageIdx + 1) * pageSize);
+        htmlContent += compiledDvfPage1({
+          ...pdfData,
+          dvf_transactions: pageTransactions,
+          lat: pdfData.latitude,
+          lng: pdfData.longitude,
+          description_quartier: pdfData.inputsGeneral?.description_quartier || '',
+          page: 1,
+          circle_polyline: circlePolyline,
+          rayon_m
+        });
+        htmlContent += '<div class="page-break"></div>';
+      }
+      // PAGE KPI/chart/table (toujours à la fin)
+      const dvfTemplatePage2 = await fs.promises.readFile(
+        path.join(templatesDir, 'dvf_valuation_modern_page2.html'),
+        'utf-8'
+      );
+      const compiledDvfPage2 = Handlebars.compile(dvfTemplatePage2);
+      htmlContent += compiledDvfPage2({
+        resultsDvfMetadata: safeMeta,
+        dvf_series: trendSeriesSanitized,
+        trend_chart_url,
+      });
+      htmlContent += '<div class="page-break"></div>';
+    }
+
+
+    if (includeSections.financial) {
+      console.log('[PDF] --> Entrée dans la section FINANCIAL (modern, fusionné)');
+      const financialTemplate = await fs.promises.readFile(
+        path.join(templatesDir, 'financial_data_modern.html'),
+        'utf-8'
+      );
+      const compiledFinancial = Handlebars.compile(financialTemplate);
+      // Génération du graphique à colonnes (achat/revient/vente, carrez/pondéré, benchmark)
+      let vente_chart_url = '';
+      try {
+        const chart = new QuickChart();
+        const prix_achat = pdfData.resultsBusinessPlan?.prix_m2?.prix_achat_pondere_m2 || 0;
+        const prix_revient = pdfData.resultsBusinessPlan?.prix_m2?.prix_revient_pondere_m2 || 0;
+        const prix_vente = pdfData.resultsBusinessPlan?.prix_m2?.prix_vente_pondere_m2 || 0;
+        const prix_achat_carrez = pdfData.resultsBusinessPlan?.prix_m2?.prix_achat_carrez_m2 || 0;
+        const prix_revient_carrez = pdfData.resultsBusinessPlan?.prix_m2?.prix_revient_carrez_m2 || 0;
+        const prix_vente_carrez = pdfData.resultsBusinessPlan?.prix_m2?.prix_vente_carrez_m2 || 0;
+        const prix_m2_benchmark = pdfData.resultsDvfMetadata?.sel_final_avg || null;
+        // Calcul du min pour l'axe y (jamais < 0)
+        const allVals = [prix_achat, prix_revient, prix_vente, prix_achat_carrez, prix_revient_carrez, prix_vente_carrez].filter(v => typeof v === 'number' && v > 0);
+        const minVal = Math.min(...allVals);
+        const yMin = Math.max(0, Math.floor(minVal - 500));
+        const chartConfig = {
+          type: 'bar',
+          data: {
+            labels: ['Achat (pondéré)', 'Revient (pondéré)', 'Vente (pondéré)', 'Achat (carrez)', 'Revient (carrez)', 'Vente (carrez)'],
+            datasets: [
+              {
+                label: 'Prix/m²',
+                data: [prix_achat, prix_revient, prix_vente, prix_achat_carrez, prix_revient_carrez, prix_vente_carrez],
+                backgroundColor: ['#bfa77a', '#c97c2b', '#0a6c9d', '#bfa77a55', '#c97c2b55', '#0a6c9d55'],
+              },
+              ...(prix_m2_benchmark ? [{
+                type: 'line',
+                label: 'Benchmark',
+                data: [prix_m2_benchmark, prix_m2_benchmark, prix_m2_benchmark, prix_m2_benchmark, prix_m2_benchmark, prix_m2_benchmark],
+                borderColor: '#e53e3e',
+                borderDash: [8, 4],
+                fill: false,
+                pointRadius: 0,
+                order: 2
+              }] : [])
+            ]
+          },
+          options: {
+            plugins: { legend: { display: true } },
+            // Pour compatibilité Chart.js v2 et v3
+            scales: {
+              yAxes: [{
+                display: true,
+                scaleLabel: { display: true, labelString: 'Prix (€/m²)' },
+                ticks: { min: yMin }
+              }],
+              y: { title: { display: true, text: 'Prix (€/m²)' }, min: yMin },
+              x: { title: { display: true, text: 'Type' } }
+            }
+          }
+        };
+        console.log('[PDF][DEBUG] chartConfig:', JSON.stringify(chartConfig));
+        chart.setConfig(chartConfig);
+        chart.setWidth(700).setHeight(320).setBackgroundColor('transparent');
+        vente_chart_url = chart.getUrl();
+      } catch (err) {
+        console.error('[PDF] Erreur génération graphique vente:', err);
+      }
+      const financialData = {
+        ...pdfData,
+        vente_chart_url,
+        // Champs pour le tableau comparatif (structure imbriquée)
+        prix_m2_vente_pondere: pdfData.resultsBusinessPlan?.prix_m2?.prix_vente_pondere_m2,
+        prix_m2_vente_carrez: pdfData.resultsBusinessPlan?.prix_m2?.prix_vente_carrez_m2,
+        ...(pdfData.pdf_config?.dynamic_fields || {})
+      };
+      htmlContent += compiledFinancial(financialData);
+    }
+    htmlContent += '</body></html>';
+
+    // DEBUG: Sauvegarder le HTML généré
+    const tempHtmlPath = `/data/lki/pdf_modern_debug_${projectId}.html`;
+    try {
+      fs.writeFileSync(tempHtmlPath, htmlContent, 'utf-8');
+      console.log(`[PDF DEBUG] HTML moderne sauvegardé dans ${tempHtmlPath}`);
+    } catch (err) {
+      console.error('[PDF DEBUG] Erreur lors de la sauvegarde du HTML:', err);
+    }
+
+    // 5. Génération du PDF avec Puppeteer
+    console.log('[PDF] Début de la génération du PDF moderne avec Puppeteer');
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    const page = await browser.newPage();
+
+    // Configurer Puppeteer pour accéder aux fichiers locaux
+    await page.setRequestInterception(true);
+    page.on('request', request => {
+      if (request.resourceType() === 'image') {
+        const url = request.url();
+        if (url.startsWith('/data/lki/')) {
+          const filePath = url;
+          try {
+            const imageBuffer = fs.readFileSync(filePath);
+            request.respond({
+              status: 200,
+              contentType: 'image/png',
+              body: imageBuffer
+            });
+          } catch (error) {
+            console.error(`Erreur lors de la lecture de l'image ${filePath}:`, error);
+            request.abort();
+          }
+        } else {
+          request.continue();
+        }
+      } else {
+        request.continue();
+      }
+    });
+
+    await page.setContent(htmlContent, {
+      waitUntil: 'networkidle0'
+    });
+
+    const pdf = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      margin: {
+        top: '0mm',
+        right: '0mm',
+        bottom: '0mm',
+        left: '0mm'
+      }
+    });
+    await browser.close();
+    console.log('[PDF] PDF moderne généré avec succès');
+
+    // 6. Envoi du PDF
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=Business_Plan_Modern_${project_title.replace(/\s+/g, '_')}.pdf`);
+    res.end(pdf);
+
+  } catch (error) {
+    console.error('Erreur lors de la génération du PDF moderne:', error);
+    res.status(500).json({
+      error: 'Erreur lors de la génération du PDF moderne',
       details: error instanceof Error ? error.message : 'Erreur inconnue'
     });
   }

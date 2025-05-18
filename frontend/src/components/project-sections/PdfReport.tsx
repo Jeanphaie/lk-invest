@@ -133,6 +133,51 @@ export default function PdfReport({ project, onUpdate }: PdfReportProps) {
     }
   };
 
+  const handleGenerateModernPdf = async (e: React.FormEvent) => {
+    e.preventDefault?.();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/pdf/generate-modern', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: project.id,
+          pdfConfig: {
+            ...project.pdfConfig,
+            sections,
+            dynamic_fields: pdfFields,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        console.error('[PDF FRONT] Erreur HTTP :', response.status, text);
+        setError(`Erreur HTTP ${response.status} : ${text}`);
+        return;
+      }
+
+      const blob = await response.blob();
+
+      if (blob.type === 'application/pdf' && blob.size > 1000) {
+        const url = window.URL.createObjectURL(blob);
+        setPdfUrl(url);
+        setRawResponse(null);
+      } else {
+        const text = await blob.text();
+        setRawResponse(text);
+        setPdfUrl(null);
+      }
+    } catch (error) {
+      console.error('[PDF FRONT] Exception attrapée :', error);
+      setError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col md:flex-row gap-6 w-full">
       {/* Colonne gauche : paramètres */}
@@ -141,10 +186,17 @@ export default function PdfReport({ project, onUpdate }: PdfReportProps) {
         <form onSubmit={handleGeneratePdf} className="space-y-6">
           <div className="flex justify-end space-x-4">
             <button
+              type="button"
+              onClick={handleGenerateModernPdf}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Générer PDF Moderne
+            </button>
+            <button
               type="submit"
               className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             >
-              Générer le PDF
+              Générer PDF Classique
             </button>
           </div>
 

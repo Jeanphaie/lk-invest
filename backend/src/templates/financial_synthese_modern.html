@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    .financial-synthese {
+      padding: 2.5rem 2rem;
+      background: #f8fafc;
+      min-height: 100vh;
+    }
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0a6c9d;
+      margin-bottom: 2rem;
+      letter-spacing: 0.01em;
+    }
+    .tables-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .fin-table {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px #0a6c9d10;
+      padding: 1.2rem 1rem 1.5rem 1rem;
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .fin-table th {
+      color: #64748b;
+      font-size: 1.05rem;
+      font-weight: 600;
+      text-align: left;
+      padding-bottom: 0.5rem;
+      border-bottom: 1.5px solid #e2e8f0;
+    }
+    .fin-table td {
+      color: #2d3748;
+      font-size: 1.05rem;
+      padding: 0.4rem 0.2rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .fin-table tr:last-child td {
+      border-bottom: none;
+    }
+    .fin-table .highlight {
+      color: #0a6c9d;
+      font-weight: 700;
+    }
+    .results-block {
+      margin-top: 2rem;
+      background: #e0f2fe;
+      border-radius: 12px;
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      gap: 2.5rem;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 8px #0a6c9d10;
+    }
+    .result-item {
+      text-align: center;
+    }
+    .result-label {
+      color: #64748b;
+      font-size: 1.05rem;
+      margin-bottom: 0.2rem;
+    }
+    .result-value {
+      color: #0a6c9d;
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+  <div class="financial-synthese">
+    <div class="section-title">Synthèse Financière</div>
+    <div class="tables-row">
+      <!-- Tableau Acquisition & Travaux -->
+      <table class="fin-table">
+        <tr><th colspan="2">Acquisition & Travaux</th></tr>
+        <tr><td>Prix d'achat</td><td>{{formatKCurrency prix_achat}} k€</td></tr>
+        <tr><td>Frais de notaire</td><td>{{formatKCurrency resultsBusinessPlan.couts_acquisition.frais_notaire}} k€</td></tr>
+        <tr><td>Frais d'agence</td><td>{{formatKCurrency resultsBusinessPlan.couts_acquisition.frais_agence_achat}} k€</td></tr>
+        <tr><td>Total acquisition</td><td class="highlight">{{formatKCurrency resultsBusinessPlan.couts_acquisition.total}} k€</td></tr>
+        <tr><td>Coût travaux/m²</td><td>{{formatKCurrency cout_travaux_m2}} k€</td></tr>
+        <tr><td>Surface pondérée</td><td>{{formatNumber surface_ponderee_apres_travaux}} m²</td></tr>
+        <tr><td>Total travaux</td><td class="highlight">{{formatKCurrency resultsBusinessPlan.couts_travaux.total}} k€</td></tr>
+      </table>
+      <!-- Tableau Financement & Vente -->
+      <table class="fin-table">
+        <tr><th colspan="2">Financement & Vente</th></tr>
+        <tr><td>Crédit foncier</td><td>{{formatKCurrency financement_credit_foncier_amount}} k€</td></tr>
+        <tr><td>Fonds propres</td><td>{{formatKCurrency financement_fonds_propres_amount}} k€</td></tr>
+        <tr><td>Taux d'intérêt</td><td>{{formatPercentage financement_taux_credit_percent}}</td></tr>
+        <tr><td>Coût du crédit</td><td class="highlight">{{formatKCurrency resultsBusinessPlan.financement.cout_credit}} k€</td></tr>
+        <tr><td>Prix de vente FAI</td><td>{{formatKCurrency resultsBusinessPlan.prix_vente.prix_vente_fai}} k€</td></tr>
+        <tr><td>Frais d'agence vente</td><td>{{formatKCurrency resultsBusinessPlan.prix_vente.frais_agence_vente}} k€</td></tr>
+        <tr><td>Prix de vente net</td><td>{{formatKCurrency resultsBusinessPlan.prix_vente.prix_vente_net}} k€</td></tr>
+      </table>
+    </div>
+    <div class="results-block">
+      <div class="result-item">
+        <div class="result-label">Marge brute</div>
+        <div class="result-value">{{formatKCurrency resultsBusinessPlan.resultats.marge_brute}} k€</div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Marge nette</div>
+        <div class="result-value">{{formatKCurrency resultsBusinessPlan.resultats.marge_nette}} k€</div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Rentabilité</div>
+        <div class="result-value">{{formatPercentage resultsBusinessPlan.resultats.rentabilite}}</div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">ROI annuel</div>
+        <div class="result-value">{{formatPercentage resultsBusinessPlan.resultats.roi_annuel}}</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html> 

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .cover-page {
+            min-height: 100vh;
+            background: linear-gradient(120deg, var(--color-background) 60%, #e0f2fe 100%);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+        }
+
+        .cover-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+        }
+
+        .cover-logo {
+            max-width: 180px;
+            height: auto;
+        }
+
+        .cover-contacts {
+            text-align: right;
+            font-size: 1.15rem;
+            color: var(--color-text-light);
+            line-height: 1.4;
+        }
+
+        .cover-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .cover-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .cover-subtitle {
+            font-size: 1.1rem;
+            color: var(--color-text-light);
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+
+        .cover-image {
+            width: 100%;
+            max-width: 800px;
+            max-height: 480px;
+            object-fit: cover;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            margin: 2rem auto;
+        }
+
+        .cover-kpis {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        @media print {
+            .cover-page {
+                height: 100vh;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cover-page">
+        <div class="cover-header">
+            <img src="{{logo_path}}" alt="Logo LK Invest" class="cover-logo">
+            <div class="cover-contacts">
+                <div>{{contact1_nom}}<br>{{contact1_email}}<br>{{contact1_tel}}</div>
+                {{#if contact2_nom}}
+                <div style="margin-top:0.5rem;">{{contact2_nom}}<br>{{contact2_email}}<br>{{contact2_tel}}</div>
+                {{/if}}
+            </div>
+        </div>
+        <div class="cover-content">
+            <div class="cover-title">PROJET : {{project_title}}</div>
+            {{#if sous_titre_projet}}
+            <div class="cover-subtitle">{{sous_titre_projet}}</div>
+            {{/if}}
+            {{#if cover_image_path}}
+            <img src="{{cover_image_path}}" alt="Image de couverture" class="cover-image">
+            {{/if}}
+        </div>
+    </div>
+</body>
+
+</html>

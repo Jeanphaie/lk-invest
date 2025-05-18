@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    .business-section {
+      padding: 2rem;
+      background: var(--color-background);
+    }
+
+    .business-header {
+      margin-bottom: 2rem;
+    }
+
+    .business-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 1rem;
+    }
+
+    .business-subtitle {
+      font-size: 1.1rem;
+      color: var(--color-text-light);
+      margin-bottom: 2rem;
+    }
+
+    .business-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .business-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .business-card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .business-card-title i {
+      color: var(--color-primary);
+    }
+
+    .business-highlights {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .business-highlight-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .business-highlight-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .business-highlight-label {
+      font-size: 0.9rem;
+      color: var(--color-text-light);
+    }
+
+    .business-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .business-table th,
+    .business-table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .business-table th {
+      font-weight: 600;
+      color: var(--color-text-light);
+      background: var(--color-background-light);
+    }
+
+    .business-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .business-table .total-row {
+      font-weight: 600;
+      background: var(--color-background-light);
+    }
+
+    .business-chart-container {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .business-chart-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 1rem;
+    }
+
+    .business-chart {
+      width: 100%;
+      height: 300px;
+    }
+
+    .business-analysis {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .business-analysis-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 1rem;
+    }
+
+    .business-analysis-content {
+      color: var(--color-text);
+      line-height: 1.6;
+    }
+
+    .business-progress {
+      margin-top: 1rem;
+    }
+
+    .business-progress-bar {
+      height: 8px;
+      background: var(--color-background-light);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .business-progress-fill {
+      height: 100%;
+      background: var(--color-primary);
+      border-radius: var(--radius-full);
+      transition: width 0.3s ease;
+    }
+
+    .business-progress-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--color-text-light);
+    }
+
+    @media print {
+      .business-section {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="business-section">
+    <div class="business-header">
+      <div class="business-title">Business Plan</div>
+      <div class="business-subtitle">Analyse financière et rentabilité du projet</div>
+    </div>
+
+    <div class="business-highlights">
+      <div class="business-highlight-card">
+        <div class="business-highlight-value">{{formatKCurrency resultsBusinessPlan.prix_vente.prix_vente_fai}}</div>
+        <div class="business-highlight-label">Prix de vente</div>
+      </div>
+      <div class="business-highlight-card">
+        <div class="business-highlight-value">{{formatKCurrency resultsBusinessPlan.couts_totaux.total}}</div>
+        <div class="business-highlight-label">Coûts totaux</div>
+      </div>
+      <div class="business-highlight-card">
+        <div class="business-highlight-value">{{formatKCurrency resultsBusinessPlan.resultats.marge_nette}}</div>
+        <div class="business-highlight-label">Marge nette</div>
+      </div>
+      <div class="business-highlight-card">
+        <div class="business-highlight-value">{{formatPercentage resultsBusinessPlan.resultats.rentabilite}}</div>
+        <div class="business-highlight-label">Rentabilité</div>
+      </div>
+    </div>
+
+    <div class="business-grid">
+      <div class="business-card">
+        <div class="business-card-title">
+          <i class="fas fa-chart-pie"></i>
+          Répartition des coûts
+        </div>
+        <div class="business-chart-container">
+          <div class="business-chart" id="costBreakdownChart"></div>
+        </div>
+      </div>
+
+      <div class="business-card">
+        <div class="business-card-title">
+          <i class="fas fa-chart-line"></i>
+          Évolution de la marge
+        </div>
+        <div class="business-chart-container">
+          <div class="business-chart" id="marginEvolutionChart"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="business-card">
+      <div class="business-card-title">
+        <i class="fas fa-calculator"></i>
+        Détail des coûts
+      </div>
+      <table class="business-table">
+        <thead>
+          <tr>
+            <th>Catégorie</th>
+            <th>Montant</th>
+            <th>% du total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Prix d'achat</td>
+            <td>{{formatKCurrency resultsBusinessPlan.couts_totaux.prix_achat}}</td>
+            <td>{{formatPercentage resultsBusinessPlan.couts_totaux.prix_achat_percent}}</td>
+          </tr>
+          <tr>
+            <td>Travaux</td>
+            <td>{{formatKCurrency resultsBusinessPlan.couts_totaux.travaux}}</td>
+            <td>{{formatPercentage resultsBusinessPlan.couts_totaux.travaux_percent}}</td>
+          </tr>
+          <tr>
+            <td>Frais d'acquisition</td>
+            <td>{{formatKCurrency resultsBusinessPlan.couts_totaux.frais_acquisition}}</td>
+            <td>{{formatPercentage resultsBusinessPlan.couts_totaux.frais_acquisition_percent}}</td>
+          </tr>
+          <tr>
+            <td>Frais de vente</td>
+            <td>{{formatKCurrency resultsBusinessPlan.couts_totaux.frais_vente}}</td>
+            <td>{{formatPercentage resultsBusinessPlan.couts_totaux.frais_vente_percent}}</td>
+          </tr>
+          <tr class="total-row">
+            <td>Total</td>
+            <td>{{formatKCurrency resultsBusinessPlan.couts_totaux.total}}</td>
+            <td>100%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="business-card">
+      <div class="business-card-title">
+        <i class="fas fa-chart-bar"></i>
+        Analyse de rentabilité
+      </div>
+      <div class="business-progress">
+        <div class="business-progress-bar">
+          <div class="business-progress-fill" style="width: {{resultsBusinessPlan.resultats.rentabilite}}%"></div>
+        </div>
+        <div class="business-progress-labels">
+          <span>0%</span>
+          <span>Rentabilité cible: {{formatPercentage resultsBusinessPlan.resultats.rentabilite_cible}}</span>
+          <span>100%</span>
+        </div>
+      </div>
+    </div>
+
+    {{#if business_analysis}}
+    <div class="business-analysis">
+      <div class="business-analysis-title">Analyse financière</div>
+      <div class="business-analysis-content">{{business_analysis}}</div>
+    </div>
+    {{/if}}
+  </div>
+
+  <script>
+    // Les graphiques seront générés côté serveur avec Chart.js
+    // et convertis en images pour l'inclusion dans le PDF
+  </script>
+</body>
+</html> 

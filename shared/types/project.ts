@@ -6,8 +6,8 @@ import { BusinessPlanInputsSchema } from './businessPlanInputs';
 import { BusinessPlanResultsSchema } from './businessPlanResults';
 import { PdfConfigSchema } from './pdf';
 import { PhotosSchema } from './photos';
-import { InputsRenovationBienSchema } from './renovationBienInputs';
-import { ResultsRenovationBienSchema } from './renovationBienResults';
+import { RenovationBienInputsSchema } from './renovationBienInputs';
+import { RenovationBienResultsSchema } from './renovationBienResults';
 import { DescriptionBienInputsSchema } from './descriptionBienInputs';
 import { DescriptionBienResultsSchema } from './descriptionBienResults';
 import { DvfTransactionSchema } from './dvfTransaction';
@@ -34,8 +34,8 @@ export const ProjectSchema = z.object({
     resultsBusinessPlan: BusinessPlanResultsSchema.optional(),
     pdfConfig: PdfConfigSchema.optional(),
     photos: PhotosSchema.optional(),
-    inputsRenovationBien: InputsRenovationBienSchema.optional(),
-    resultsRenovationBien: ResultsRenovationBienSchema.optional(),
+    inputsRenovationBien: RenovationBienInputsSchema.optional(),
+    resultsRenovationBien: RenovationBienResultsSchema.optional(),
     inputsDescriptionBien: DescriptionBienInputsSchema.optional(),
     resultsDescriptionBien: DescriptionBienResultsSchema.optional(),
     // Pour référence, on peut aussi stocker des tableaux de transactions/séries DVF si besoin :

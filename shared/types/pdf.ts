@@ -5,8 +5,8 @@ import { ResultsDvfMetadataSchema } from './dvfMetadataResults';
 import { BusinessPlanInputsSchema } from './businessPlanInputs';
 import { BusinessPlanResultsSchema } from './businessPlanResults';
 import { PhotosSchema } from './photos';
-import { InputsRenovationBienSchema } from './renovationBienInputs';
-import { ResultsRenovationBienSchema } from './renovationBienResults';
+import { RenovationBienInputsSchema } from './renovationBienInputs';
+import { RenovationBienResultsSchema } from './renovationBienResults';
 import { DescriptionBienInputsSchema } from './descriptionBienInputs';
 import { DescriptionBienResultsSchema } from './descriptionBienResults';
 
@@ -17,7 +17,9 @@ const DEFAULT_SECTIONS = {
   property: true,
   valuation_lk: true,
   valuation_casa: true,
-  financial: true
+  financial: true,
+  plans: true,
+  photos_3d: true
 } as const;
 
 const DEFAULT_DYNAMIC_FIELDS = {
@@ -41,7 +43,9 @@ export const PdfSectionsSchema = z.object({
   property: z.boolean().optional().default(DEFAULT_SECTIONS.property),
   valuation_lk: z.boolean().optional().default(DEFAULT_SECTIONS.valuation_lk),
   valuation_casa: z.boolean().optional().default(DEFAULT_SECTIONS.valuation_casa),
-  financial: z.boolean().optional().default(DEFAULT_SECTIONS.financial)
+  financial: z.boolean().optional().default(DEFAULT_SECTIONS.financial),
+  plans: z.boolean().optional().default(DEFAULT_SECTIONS.plans),
+  photos_3d: z.boolean().optional().default(DEFAULT_SECTIONS.photos_3d)
 });
 
 // Schéma des champs dynamiques du PDF
@@ -148,8 +152,8 @@ export const PdfDataSchema = z.object({
   inputsBusinessPlan: BusinessPlanInputsSchema.optional(),
   resultsBusinessPlan: BusinessPlanResultsSchema.optional(),
   photos: PhotosSchema.optional(),
-  inputsRenovationBien: InputsRenovationBienSchema.optional(),
-  resultsRenovationBien: ResultsRenovationBienSchema.optional(),
+  inputsRenovationBien: RenovationBienInputsSchema.optional(),
+  resultsRenovationBien: RenovationBienResultsSchema.optional(),
   inputsDescriptionBien: DescriptionBienInputsSchema.optional(),
   resultsDescriptionBien: DescriptionBienResultsSchema.optional(),
   
@@ -158,6 +162,7 @@ export const PdfDataSchema = z.object({
   cover_image_path: z.string().optional(),
   selectedBeforePhotosForPdf: z.array(z.string()).optional(),
   selected3dPhotosForPdf: z.array(z.string()).optional(),
+  selectedPlansPhotosForPdf: z.array(z.string()).optional(),
   image1: z.string().optional(),
   image2: z.string().optional(),
   image3: z.string().optional(),

@@ -28,7 +28,9 @@ export default function PdfReport({ project, onUpdate }: PdfReportProps) {
       property: true,
       valuation_lk: true,
       valuation_casa: true,
-      financial: true
+      financial: true,
+      plans: true,
+      photos_3d: true
     };
     return project.pdfConfig?.sections || defaultSections;
   });
@@ -257,6 +259,24 @@ export default function PdfReport({ project, onUpdate }: PdfReportProps) {
                   className="rounded border-gray-300"
                 />
                 <span>Données financières</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={sections.plans}
+                  onChange={() => handleSectionToggle('plans')}
+                  className="rounded border-gray-300"
+                />
+                <span>Plans</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={sections.photos_3d}
+                  onChange={() => handleSectionToggle('photos_3d')}
+                  className="rounded border-gray-300"
+                />
+                <span>Photos 3D</span>
               </label>
             </div>
           </div>

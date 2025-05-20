@@ -54,6 +54,8 @@ export class PdfMappingService {
       image3d2: photos3d.find(p => p.id === selected3dIds[1])?.url || '',
       image3d3: photos3d.find(p => p.id === selected3dIds[2])?.url || '',
       selectedBeforePhotosForPdf: selectedBeforeIds.map(id => beforePhotos.find(p => p.id === id)?.url).filter((url): url is string => typeof url === 'string'),
+      inputsRenovationBien: project.inputsRenovationBien,
+      resultsRenovationBien: project.resultsRenovationBien,
     };
     // PATCH: Images PDF en URL HTTP (comme dans l'ancien extractPdfData)
     const BASE_IMAGE_URL = process.env.BASE_PDF_IMAGE_URL || 'http://localhost:3001';

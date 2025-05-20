@@ -279,6 +279,104 @@ const MondrianTreemapBlockFin: React.FC<any> = (props) => {
 };
 
 const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) => {
+  const [inputs, setInputs] = useState<BusinessPlanInputs>(project.inputsBusinessPlan || DEFAULT_INPUTS);
+  const [localInputs, setLocalInputs] = useState<BusinessPlanInputs>(inputs);
+  const [results, setResults] = useState<BusinessPlanResults | null>(project.resultsBusinessPlan || null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [inputErrors, setInputErrors] = useState<Record<string, string>>({});
+  const [financementError, setFinancementError] = useState<FinancementError | null>(null);
+
+  // Mise à jour des inputs locaux quand les inputs changent
+  useEffect(() => {
+    setLocalInputs(inputs);
+  }, [inputs]);
+
+  const handleInputChange = (field: string, value: number | string) => {
+    // Correction spécifique pour date_achat : toujours une string
+    if (field === 'date_achat') {
+      setLocalInputs(prev => ({
+        ...prev,
+        [field]: value as string
+      }));
+      return;
+    }
+    setLocalInputs(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleInputBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const field = e.target.name;
+    let value: string | number;
+    // Correction spécifique pour date_achat : ne pas parser en nombre
+    if (field === 'date_achat') {
+      value = e.target.value;
+    } else {
+      value = parseInputNumber(e.target.value);
+    }
+    const updatedInputs = {
+      ...localInputs,
+      [field]: value
+    };
+    setLocalInputs(updatedInputs);
+    const validation = validateInputs(updatedInputs);
+    if (validation.valid && validation.data) {
+      setInputs(validation.data);
+      await triggerBusinessPlanCalculation(validation.data);
+    } else if (validation.errors) {
+      setInputErrors(validation.errors.reduce((acc, err) => ({
+        ...acc,
+        [err.path]: err.message
+      }), {}));
+    }
+  };
+
+  const triggerBusinessPlanCalculation = async (updatedInputs: BusinessPlanInputs) => {
+    try {
+      setIsLoading(true);
+      setInputErrors({});
+      setFinancementError(null);
+
+      const response = await fetch(`${API_BASE_URL}/api/business-plan/${project.id}/calculate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedInputs)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (errorData.error === 'FINANCEMENT_ERROR') {
+          setFinancementError(errorData.details);
+        } else {
+          throw new Error(errorData.message || 'Erreur lors du calcul');
+        }
+        return;
+      }
+
+      const data = await response.json();
+      const validation = validateResults(data);
+      
+      if (validation.valid && validation.data) {
+        setResults(validation.data);
+        await onUpdate({
+          inputsBusinessPlan: updatedInputs,
+          resultsBusinessPlan: validation.data
+        });
+      } else if (validation.errors) {
+        setInputErrors(validation.errors.reduce((acc, err) => ({
+          ...acc,
+          [err.path]: err.message
+        }), {}));
+      }
+    } catch (error) {
+      console.error('Erreur lors du calcul:', error);
+      setInputErrors({ general: 'Erreur lors du calcul du business plan' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Accordéon contrôlé (doit être AVANT tout return conditionnel)
   const [isAccordionOpen, setIsAccordionOpen] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -292,60 +390,6 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
       window.localStorage.setItem('bpTabAccordionOpen', isAccordionOpen ? 'true' : 'false');
     }
   }, [isAccordionOpen]);
-
-  const [inputs, setInputs] = useState<BusinessPlanInputs>(() => {
-    if (project.inputsBusinessPlan) {
-      const bp = project.inputsBusinessPlan;
-      return {
-        ...DEFAULT_VALUES,
-        ...bp,
-        prix_achat: Number(bp.prix_achat ?? DEFAULT_VALUES.prix_achat),
-        frais_notaire_percent: Number(bp.frais_notaire_percent ?? DEFAULT_VALUES.frais_notaire_percent),
-        frais_agence_achat_percent: Number(bp.frais_agence_achat_percent ?? DEFAULT_VALUES.frais_agence_achat_percent),
-        frais_agence_vente_percent: Number(bp.frais_agence_vente_percent ?? DEFAULT_VALUES.frais_agence_vente_percent),
-        frais_dossier_amount: Number(bp.frais_dossier_amount ?? DEFAULT_VALUES.frais_dossier_amount),
-        cout_travaux_m2: Number(bp.cout_travaux_m2 ?? DEFAULT_VALUES.cout_travaux_m2),
-        cout_maitrise_oeuvre_percent: Number(bp.cout_maitrise_oeuvre_percent ?? DEFAULT_VALUES.cout_maitrise_oeuvre_percent),
-        cout_alea_percent: Number(bp.cout_alea_percent ?? DEFAULT_VALUES.cout_alea_percent),
-        cout_terrasse_input_amount: Number(bp.cout_terrasse_input_amount ?? DEFAULT_VALUES.cout_terrasse_input_amount),
-        cout_demolition_input_amount: Number(bp.cout_demolition_input_amount ?? DEFAULT_VALUES.cout_demolition_input_amount),
-        cout_honoraires_tech_input_amount: Number(bp.cout_honoraires_tech_input_amount ?? DEFAULT_VALUES.cout_honoraires_tech_input_amount),
-        cout_prorata_foncier_input_amount: Number(bp.cout_prorata_foncier_input_amount ?? DEFAULT_VALUES.cout_prorata_foncier_input_amount),
-        cout_diagnostics_input_amount: Number(bp.cout_diagnostics_input_amount ?? DEFAULT_VALUES.cout_diagnostics_input_amount),
-        cout_mobilier_input_amount: Number(bp.cout_mobilier_input_amount ?? DEFAULT_VALUES.cout_mobilier_input_amount),
-        financement_credit_foncier_amount: Number(bp.financement_credit_foncier_amount ?? DEFAULT_VALUES.financement_credit_foncier_amount),
-        financement_fonds_propres_amount: Number(bp.financement_fonds_propres_amount ?? DEFAULT_VALUES.financement_fonds_propres_amount),
-        financement_credit_accompagnement_amount: Number(bp.financement_credit_accompagnement_amount ?? DEFAULT_VALUES.financement_credit_accompagnement_amount),
-        financement_taux_credit_percent: Number(bp.financement_taux_credit_percent ?? DEFAULT_VALUES.financement_taux_credit_percent),
-        financement_commission_percent: Number(bp.financement_commission_percent ?? DEFAULT_VALUES.financement_commission_percent),
-        duree_projet: Number(bp.duree_projet ?? DEFAULT_VALUES.duree_projet),
-        prix_vente_reel_pondere_m2: Number(bp.prix_vente_reel_pondere_m2 ?? DEFAULT_VALUES.prix_vente_reel_pondere_m2),
-        surface_carrez_apres_travaux: Number(bp.surface_carrez_apres_travaux ?? DEFAULT_VALUES.surface_carrez_apres_travaux),
-        surface_terrasse_apres_travaux: Number(bp.surface_terrasse_apres_travaux ?? DEFAULT_VALUES.surface_terrasse_apres_travaux),
-        surface_ponderee_apres_travaux: Number(bp.surface_ponderee_apres_travaux ?? DEFAULT_VALUES.surface_ponderee_apres_travaux),
-        date_achat: bp.date_achat ?? DEFAULT_VALUES.date_achat,
-        date_vente: bp.date_vente ?? DEFAULT_VALUES.date_vente,
-      };
-    }
-    return DEFAULT_VALUES as BusinessPlanInputs;
-  });
-
-  const [results, setResults] = useState<BusinessPlanResults | null>(() => {
-    if (project.resultsBusinessPlan) {
-      return {
-        ...project.resultsBusinessPlan,
-        resultats: project.resultsBusinessPlan?.resultats ?? {},
-        prix_m2: project.resultsBusinessPlan?.prix_m2 ?? {},
-        financement: project.resultsBusinessPlan?.financement ?? {},
-        trimestre_details: project.resultsBusinessPlan?.trimestre_details ?? []
-      };
-    }
-    return null;
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [financementError, setFinancementError] = useState<FinancementError | null>(null);
-  const [financementSuffisant, setFinancementSuffisant] = useState<boolean | null>(null);
 
   const [superficie, setSuperficie] = useState(project.inputsGeneral?.superficie ?? 0);
   const [superficieTerrasse, setSuperficieTerrasse] = useState(project.inputsGeneral?.superficie_terrasse ?? 0);
@@ -364,7 +408,6 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
 
   const [isCalculating, setIsCalculating] = useState(false);
   const [updatedCells, setUpdatedCells] = useState<Set<string>>(new Set());
-  const [inputErrors, setInputErrors] = useState<Record<string, string>>({});
   const lastInputsRef = useRef(inputs);
 
   // Debounced calcul
@@ -452,87 +495,6 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
     return { valid: true, data: result.data };
   };
 
-  // Nouvelle fonction pour déclencher le calcul avec les inputs à jour
-  const triggerBusinessPlanCalculation = async (updatedInputs: BusinessPlanInputs) => {
-    try {
-      setIsCalculating(true);
-      setUpdatedCells(new Set());
-      setInputErrors({});
-
-      const response = await fetch(`${API_BASE_URL}/api/business-plan/${project.id}/calculate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedInputs),
-      });
-
-      if (!response.ok) {
-        let errorData;
-        try { errorData = await response.json(); } catch { errorData = {}; }
-        setError(errorData.details || errorData.error || 'Erreur lors du calcul du business plan');
-        if (errorData.details && Array.isArray(errorData.details)) {
-          // Erreurs Zod
-          const fieldErrors: Record<string, string> = {};
-          errorData.details.forEach((err: any) => {
-            if (err.path && err.path.length) fieldErrors[err.path[0]] = err.message;
-          });
-          setInputErrors(fieldErrors);
-        }
-        return;
-      }
-
-      const data = await response.json();
-      setResults(data);
-      await onUpdate({ resultsBusinessPlan: data });
-      setError(null);
-
-      // Animation des cellules
-      const allCellIds = [
-        'prix_revient', 'marge_brute', 'commission', 'marge_nette', 'rentabilite', 'cash_flow_mensuel', 'tri',
-        'prix_m2', 'prix_m2_terrasse', 'prix_revient_m2', 'prix_revient_m2_carrez', 'prix_m2_vente', 'prix_m2_carrez_vente',
-      ];
-      setUpdatedCells(new Set(allCellIds));
-      setTimeout(() => setUpdatedCells(new Set()), 2000);
-    } catch (error) {
-      setError('Erreur lors du calcul du business plan');
-    } finally {
-      setIsCalculating(false);
-    }
-  };
-
-  // Handler principal avec debounce
-  const handleInputChange = (field: string, value: number | string) => {
-    // Si le champ est numérique, on parse correctement
-    const numericFields = [
-      'prix_affiche', 'prix_achat', 'frais_notaire_percent', 'frais_agence_achat_percent', 'frais_agence_vente_percent', 'frais_dossier_amount',
-      'cout_travaux_m2', 'cout_maitrise_oeuvre_percent', 'cout_alea_percent', 'cout_terrasse_input_amount', 'cout_demolition_input_amount', 'cout_honoraires_tech_input_amount',
-      'cout_prorata_foncier_input_amount', 'cout_diagnostics_input_amount', 'cout_mobilier_input_amount',
-      'financement_credit_foncier_amount', 'financement_fonds_propres_amount', 'financement_credit_accompagnement_amount', 'financement_taux_credit_percent', 'financement_commission_percent',
-      'duree_projet', 'prix_vente_reel_pondere_m2', 'surface_carrez_apres_travaux', 'surface_terrasse_apres_travaux', 'surface_ponderee_apres_travaux'
-    ];
-    let parsedValue = value;
-    if (numericFields.includes(field)) {
-      parsedValue = parseInputNumber(value);
-    }
-    setInputs(prev => {
-      const updated = { ...prev, [field]: parsedValue };
-      lastInputsRef.current = updated;
-      debouncedTrigger(updated);
-      return updated;
-    });
-  };
-
-  // Calcul immédiat sur blur
-  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const { name } = e.target;
-    triggerBusinessPlanCalculation({ ...inputs, [name]: e.target.value });
-  };
-
-  useEffect(() => {
-    if (project.resultsBusinessPlan) {
-      setResults(project.resultsBusinessPlan);
-    }
-  }, [project.resultsBusinessPlan]);
-
   // Format k€ sans décimales
   const formatK = (v: number) => (v ? Math.round(v / 1000).toLocaleString('fr-FR') + ' k€' : '0 k€');
   const formatPercent = (v: number) => (v ? v.toFixed(1) + ' %' : '0 %');
@@ -596,25 +558,24 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
   };
 
   // Mise à jour des états lors des changements
-  const handleSuperficieChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSuperficieChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value) || 0;
     setSuperficie(value);
     setSurfaceTotalePonderee(value + (superficieTerrasse * ponderationTerrasse));
-    await handleInputChange('surface_carrez_apres_travaux', value);
+    handleInputChange('surface_carrez_apres_travaux', value);
   };
 
-  const handleSuperficieTerrasseChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSuperficieTerrasseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value) || 0;
     setSuperficieTerrasse(value);
     setSurfaceTotalePonderee(superficie + (value * ponderationTerrasse));
-    await handleInputChange('surface_terrasse_apres_travaux', value);
+    handleInputChange('surface_terrasse_apres_travaux', value);
   };
 
-  const handlePonderationTerrasseChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePonderationTerrasseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value) || 0;
     setPonderationTerrasse(value);
     setSurfaceTotalePonderee(superficie + (superficieTerrasse * value));
-    // Pas besoin de lancer le calcul ici car la pondération n'affecte pas directement le business plan
   };
 
   // Calcul du prix de vente au m²
@@ -631,23 +592,21 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
   const prixVenteM2Theorique = benchmark * coefPonderation;
 
   // Gestion du champ prix_vente_reel_pondere_m2 (input contrôlé et cohérent)
-  async function handlePrixVenteReelChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handlePrixVenteReelChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
     setPrixVenteReelInput(value);
 
     // Convertir la valeur en nombre
     const numericValue = parseFloat(value.replace(/[^\d,-]/g, '').replace(',', '.'));
     if (!isNaN(numericValue)) {
-      await handleInputChange('prix_vente_reel_pondere_m2', numericValue);
+      handleInputChange('prix_vente_reel_pondere_m2', numericValue);
     }
   }
 
   async function handlePrixVenteReelBlur() {
     // 1. Sauvegarder l'input dans le projet
     await onUpdate({ inputsBusinessPlan: { ...inputs, prix_vente_reel_pondere_m2: inputs.prix_vente_reel_pondere_m2 } });
-    // 2. Déclencher le recalcul du business plan (déjà fait dans handleInputBlur normalement)
-    // Pour garantir la cohérence, on peut rappeler handleInputBlur sur ce champ
-    // (simulateur d'un blur classique)
+    // 2. Déclencher le recalcul du business plan
     const fakeEvent = { target: { name: 'prix_vente_reel_pondere_m2' } } as React.FocusEvent<HTMLInputElement>;
     await handleInputBlur(fakeEvent);
   }
@@ -758,6 +717,19 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
     }
   ];
 
+  // Recalcul automatique de la date de vente à chaque changement de date_achat ou duree_projet
+  useEffect(() => {
+    if (!localInputs.date_achat || !localInputs.duree_projet) return;
+    const dateAchat = new Date(localInputs.date_achat);
+    if (isNaN(dateAchat.getTime())) return;
+    const dateVente = new Date(dateAchat);
+    dateVente.setDate(dateAchat.getDate() + Number(localInputs.duree_projet));
+    const dateVenteStr = dateVente.toISOString().split('T')[0];
+    if (localInputs.date_vente !== dateVenteStr) {
+      setLocalInputs(prev => ({ ...prev, date_vente: dateVenteStr }));
+    }
+    // Pas de return de JSX ici !
+  }, [localInputs.date_achat, localInputs.duree_projet]);
 
   return (
     <div className={styles['bp-tab-main-grid']}>
@@ -775,34 +747,34 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
                 <div className={styles['bp-tab-inputs-row']}>
                   <Form.Group>
                     <Form.Label>Prix affiché (€)</Form.Label>
-                    <Form.Control type="number" name="prix_affiche" value={safeNumberInputValue(inputs.prix_affiche)} onChange={e => handleInputChange('prix_affiche', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['prix_affiche']} />
+                    <Form.Control type="number" name="prix_affiche" value={safeNumberInputValue(localInputs.prix_affiche)} onChange={e => handleInputChange('prix_affiche', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['prix_affiche']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['prix_affiche']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Prix d'achat (€)</Form.Label>
-                    <Form.Control type="number" name="prix_achat" value={safeNumberInputValue(inputs.prix_achat)} onChange={e => handleInputChange('prix_achat', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['prix_achat']} />
+                    <Form.Control type="number" name="prix_achat" value={safeNumberInputValue(localInputs.prix_achat)} onChange={e => handleInputChange('prix_achat', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['prix_achat']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['prix_achat']}</Form.Control.Feedback>
                   </Form.Group>
                 </div>
                 <div className={styles['bp-tab-inputs-row']}>
                   <Form.Group>
                     <Form.Label>Frais notaire (%)</Form.Label>
-                    <Form.Control type="number" name="frais_notaire_percent" value={safeNumberInputValue(inputs.frais_notaire_percent)} onChange={e => handleInputChange('frais_notaire_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['frais_notaire_percent']} />
+                    <Form.Control type="number" name="frais_notaire_percent" value={safeNumberInputValue(localInputs.frais_notaire_percent)} onChange={e => handleInputChange('frais_notaire_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['frais_notaire_percent']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['frais_notaire_percent']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Frais agence achat (%)</Form.Label>
-                    <Form.Control type="number" name="frais_agence_achat_percent" value={safeNumberInputValue(inputs.frais_agence_achat_percent)} onChange={e => handleInputChange('frais_agence_achat_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['frais_agence_achat_percent']} />
+                    <Form.Control type="number" name="frais_agence_achat_percent" value={safeNumberInputValue(localInputs.frais_agence_achat_percent)} onChange={e => handleInputChange('frais_agence_achat_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['frais_agence_achat_percent']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['frais_agence_achat_percent']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Frais agence vente (%)</Form.Label>
-                    <Form.Control type="number" name="frais_agence_vente_percent" value={safeNumberInputValue(inputs.frais_agence_vente_percent)} onChange={e => handleInputChange('frais_agence_vente_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['frais_agence_vente_percent']} />
+                    <Form.Control type="number" name="frais_agence_vente_percent" value={safeNumberInputValue(localInputs.frais_agence_vente_percent)} onChange={e => handleInputChange('frais_agence_vente_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['frais_agence_vente_percent']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['frais_agence_vente_percent']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Frais dossier (€)</Form.Label>
-                    <Form.Control type="number" name="frais_dossier_amount" value={safeNumberInputValue(inputs.frais_dossier_amount)} onChange={e => handleInputChange('frais_dossier_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['frais_dossier_amount']} />
+                    <Form.Control type="number" name="frais_dossier_amount" value={safeNumberInputValue(localInputs.frais_dossier_amount)} onChange={e => handleInputChange('frais_dossier_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['frais_dossier_amount']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['frais_dossier_amount']}</Form.Control.Feedback>
                   </Form.Group>
                 </div>
@@ -814,34 +786,34 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
                 <div className={styles['bp-tab-inputs-row']}>
                   <Form.Group>
                     <Form.Label>Coût travaux (€/m²)</Form.Label>
-                    <Form.Control type="number" name="cout_travaux_m2" value={safeNumberInputValue(inputs.cout_travaux_m2)} onChange={e => handleInputChange('cout_travaux_m2', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_travaux_m2']} />
+                    <Form.Control type="number" name="cout_travaux_m2" value={safeNumberInputValue(localInputs.cout_travaux_m2)} onChange={e => handleInputChange('cout_travaux_m2', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_travaux_m2']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['cout_travaux_m2']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Maîtrise d'œuvre (%)</Form.Label>
-                    <Form.Control type="number" name="cout_maitrise_oeuvre_percent" value={safeNumberInputValue(inputs.cout_maitrise_oeuvre_percent)} onChange={e => handleInputChange('cout_maitrise_oeuvre_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_maitrise_oeuvre_percent']} />
+                    <Form.Control type="number" name="cout_maitrise_oeuvre_percent" value={safeNumberInputValue(localInputs.cout_maitrise_oeuvre_percent)} onChange={e => handleInputChange('cout_maitrise_oeuvre_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_maitrise_oeuvre_percent']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['cout_maitrise_oeuvre_percent']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Aléa travaux (%)</Form.Label>
-                    <Form.Control type="number" name="cout_alea_percent" value={safeNumberInputValue(inputs.cout_alea_percent)} onChange={e => handleInputChange('cout_alea_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_alea_percent']} />
+                    <Form.Control type="number" name="cout_alea_percent" value={safeNumberInputValue(localInputs.cout_alea_percent)} onChange={e => handleInputChange('cout_alea_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_alea_percent']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['cout_alea_percent']}</Form.Control.Feedback>
                   </Form.Group>
                 </div>
                 <div className={styles['bp-tab-inputs-row']}>
                   <Form.Group>
                     <Form.Label>Terrasse (€)</Form.Label>
-                    <Form.Control type="number" name="cout_terrasse_input_amount" value={safeNumberInputValue(inputs.cout_terrasse_input_amount)} onChange={e => handleInputChange('cout_terrasse_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_terrasse_input_amount']} />
+                    <Form.Control type="number" name="cout_terrasse_input_amount" value={safeNumberInputValue(localInputs.cout_terrasse_input_amount)} onChange={e => handleInputChange('cout_terrasse_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_terrasse_input_amount']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['cout_terrasse_input_amount']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Démolition (€)</Form.Label>
-                    <Form.Control type="number" name="cout_demolition_input_amount" value={safeNumberInputValue(inputs.cout_demolition_input_amount)} onChange={e => handleInputChange('cout_demolition_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_demolition_input_amount']} />
+                    <Form.Control type="number" name="cout_demolition_input_amount" value={safeNumberInputValue(localInputs.cout_demolition_input_amount)} onChange={e => handleInputChange('cout_demolition_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_demolition_input_amount']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['cout_demolition_input_amount']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Honoraires techniques (€)</Form.Label>
-                    <Form.Control type="number" name="cout_honoraires_tech_input_amount" value={safeNumberInputValue(inputs.cout_honoraires_tech_input_amount)} onChange={e => handleInputChange('cout_honoraires_tech_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_honoraires_tech_input_amount']} />
+                    <Form.Control type="number" name="cout_honoraires_tech_input_amount" value={safeNumberInputValue(localInputs.cout_honoraires_tech_input_amount)} onChange={e => handleInputChange('cout_honoraires_tech_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_honoraires_tech_input_amount']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['cout_honoraires_tech_input_amount']}</Form.Control.Feedback>
                   </Form.Group>
                 </div>
@@ -853,17 +825,17 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
                 <div className={styles['bp-tab-inputs-row']}>
                   <Form.Group>
                     <Form.Label>Prorata foncier (€)</Form.Label>
-                    <Form.Control type="number" name="cout_prorata_foncier_input_amount" value={safeNumberInputValue(inputs.cout_prorata_foncier_input_amount)} onChange={e => handleInputChange('cout_prorata_foncier_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_prorata_foncier_input_amount']} />
+                    <Form.Control type="number" name="cout_prorata_foncier_input_amount" value={safeNumberInputValue(localInputs.cout_prorata_foncier_input_amount)} onChange={e => handleInputChange('cout_prorata_foncier_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_prorata_foncier_input_amount']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['cout_prorata_foncier_input_amount']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Diagnostics (€)</Form.Label>
-                    <Form.Control type="number" name="cout_diagnostics_input_amount" value={safeNumberInputValue(inputs.cout_diagnostics_input_amount)} onChange={e => handleInputChange('cout_diagnostics_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_diagnostics_input_amount']} />
+                    <Form.Control type="number" name="cout_diagnostics_input_amount" value={safeNumberInputValue(localInputs.cout_diagnostics_input_amount)} onChange={e => handleInputChange('cout_diagnostics_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_diagnostics_input_amount']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['cout_diagnostics_input_amount']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Mobilier (€)</Form.Label>
-                    <Form.Control type="number" name="cout_mobilier_input_amount" value={safeNumberInputValue(inputs.cout_mobilier_input_amount)} onChange={e => handleInputChange('cout_mobilier_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_mobilier_input_amount']} />
+                    <Form.Control type="number" name="cout_mobilier_input_amount" value={safeNumberInputValue(localInputs.cout_mobilier_input_amount)} onChange={e => handleInputChange('cout_mobilier_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_mobilier_input_amount']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['cout_mobilier_input_amount']}</Form.Control.Feedback>
                   </Form.Group>
                 </div>
@@ -875,29 +847,29 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
                 <div className={styles['bp-tab-inputs-row']}>
                   <Form.Group>
                     <Form.Label>Crédit foncier (€)</Form.Label>
-                    <Form.Control type="number" name="financement_credit_foncier_amount" value={safeNumberInputValue(inputs.financement_credit_foncier_amount)} onChange={e => handleInputChange('financement_credit_foncier_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['financement_credit_foncier_amount']} />
+                    <Form.Control type="number" name="financement_credit_foncier_amount" value={safeNumberInputValue(localInputs.financement_credit_foncier_amount)} onChange={e => handleInputChange('financement_credit_foncier_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['financement_credit_foncier_amount']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['financement_credit_foncier_amount']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Fonds propres (€)</Form.Label>
-                    <Form.Control type="number" name="financement_fonds_propres_amount" value={safeNumberInputValue(inputs.financement_fonds_propres_amount)} onChange={e => handleInputChange('financement_fonds_propres_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['financement_fonds_propres_amount']} />
+                    <Form.Control type="number" name="financement_fonds_propres_amount" value={safeNumberInputValue(localInputs.financement_fonds_propres_amount)} onChange={e => handleInputChange('financement_fonds_propres_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['financement_fonds_propres_amount']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['financement_fonds_propres_amount']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Crédit accompagnement (€)</Form.Label>
-                    <Form.Control type="number" name="financement_credit_accompagnement_amount" value={safeNumberInputValue(inputs.financement_credit_accompagnement_amount)} onChange={e => handleInputChange('financement_credit_accompagnement_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['financement_credit_accompagnement_amount']} />
+                    <Form.Control type="number" name="financement_credit_accompagnement_amount" value={safeNumberInputValue(localInputs.financement_credit_accompagnement_amount)} onChange={e => handleInputChange('financement_credit_accompagnement_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['financement_credit_accompagnement_amount']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['financement_credit_accompagnement_amount']}</Form.Control.Feedback>
                   </Form.Group>
                 </div>
                 <div className={styles['bp-tab-inputs-row']}>
                   <Form.Group>
                     <Form.Label>Taux crédit (%)</Form.Label>
-                    <Form.Control type="number" name="financement_taux_credit_percent" value={safeNumberInputValue(inputs.financement_taux_credit_percent)} onChange={e => handleInputChange('financement_taux_credit_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['financement_taux_credit_percent']} />
+                    <Form.Control type="number" name="financement_taux_credit_percent" value={safeNumberInputValue(localInputs.financement_taux_credit_percent)} onChange={e => handleInputChange('financement_taux_credit_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['financement_taux_credit_percent']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['financement_taux_credit_percent']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Commission (%)</Form.Label>
-                    <Form.Control type="number" name="financement_commission_percent" value={safeNumberInputValue(inputs.financement_commission_percent)} onChange={e => handleInputChange('financement_commission_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['financement_commission_percent']} />
+                    <Form.Control type="number" name="financement_commission_percent" value={safeNumberInputValue(localInputs.financement_commission_percent)} onChange={e => handleInputChange('financement_commission_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['financement_commission_percent']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['financement_commission_percent']}</Form.Control.Feedback>
                   </Form.Group>
                 </div>
@@ -909,12 +881,28 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
                 <div className={styles['bp-tab-inputs-row']}>
                   <Form.Group>
                     <Form.Label>Carrez (m²)</Form.Label>
-                    <Form.Control type="number" name="surface_carrez_apres_travaux" value={safeNumberInputValue(surfaceCarrez)} onChange={e => handleInputChange('surface_carrez_apres_travaux', e.target.value)} onBlur={handleInputBlur} min={superficie} isInvalid={!!inputErrors['surface_carrez_apres_travaux']} />
+                    <Form.Control
+                      type="number"
+                      name="surface_carrez_apres_travaux"
+                      value={safeNumberInputValue(localInputs.surface_carrez_apres_travaux)}
+                      onChange={e => handleInputChange('surface_carrez_apres_travaux', e.target.value)}
+                      onBlur={handleInputBlur}
+                      min={superficie}
+                      isInvalid={!!inputErrors['surface_carrez_apres_travaux']}
+                    />
                     <Form.Control.Feedback type="invalid">{inputErrors['surface_carrez_apres_travaux']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Terrasse (m²)</Form.Label>
-                    <Form.Control type="number" name="surface_terrasse_apres_travaux" value={safeNumberInputValue(surfaceTerrasse)} onChange={e => handleInputChange('surface_terrasse_apres_travaux', e.target.value)} onBlur={handleInputBlur} min={superficieTerrasse} isInvalid={!!inputErrors['surface_terrasse_apres_travaux']} />
+                    <Form.Control
+                      type="number"
+                      name="surface_terrasse_apres_travaux"
+                      value={safeNumberInputValue(localInputs.surface_terrasse_apres_travaux)}
+                      onChange={e => handleInputChange('surface_terrasse_apres_travaux', e.target.value)}
+                      onBlur={handleInputBlur}
+                      min={superficieTerrasse}
+                      isInvalid={!!inputErrors['surface_terrasse_apres_travaux']}
+                    />
                     <Form.Control.Feedback type="invalid">{inputErrors['surface_terrasse_apres_travaux']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
@@ -930,16 +918,16 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
                 <div className={styles['bp-tab-inputs-row']}>
                   <Form.Group>
                     <Form.Label>Date d'achat</Form.Label>
-                    <Form.Control type="date" name="date_achat" value={inputs.date_achat} onChange={e => handleInputChange('date_achat', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['date_achat']} />
+                    <Form.Control type="date" name="date_achat" value={localInputs.date_achat} onChange={e => handleInputChange('date_achat', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['date_achat']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['date_achat']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Durée (jours)</Form.Label>
-                    <Form.Control type="number" name="duree_projet" value={safeNumberInputValue(inputs.duree_projet)} onChange={e => handleInputChange('duree_projet', parseInt(e.target.value))} onBlur={handleInputBlur} isInvalid={!!inputErrors['duree_projet']} />
+                    <Form.Control type="number" name="duree_projet" value={safeNumberInputValue(localInputs.duree_projet)} onChange={e => handleInputChange('duree_projet', parseInt(e.target.value))} onBlur={handleInputBlur} isInvalid={!!inputErrors['duree_projet']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['duree_projet']}</Form.Control.Feedback>
                   </Form.Group>
                   <div className={styles['bp-tab-calendar-date']}>
-                    Date de vente : <span>{inputs.date_vente}</span>
+                    Date de vente : <span>{localInputs.date_vente}</span>
                   </div>
                 </div>
               </div>
@@ -950,7 +938,7 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
                 <div className={styles['bp-tab-inputs-row']}>
                   <Form.Group>
                     <Form.Label>Prix vente réel pondéré (€/m²)</Form.Label>
-                    <Form.Control type="number" name="prix_vente_reel_pondere_m2" value={safeNumberInputValue(inputs.prix_vente_reel_pondere_m2)} onChange={e => handleInputChange('prix_vente_reel_pondere_m2', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['prix_vente_reel_pondere_m2']} />
+                    <Form.Control type="number" name="prix_vente_reel_pondere_m2" value={safeNumberInputValue(localInputs.prix_vente_reel_pondere_m2)} onChange={e => handleInputChange('prix_vente_reel_pondere_m2', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['prix_vente_reel_pondere_m2']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['prix_vente_reel_pondere_m2']}</Form.Control.Feedback>
                   </Form.Group>
                 </div>
@@ -1012,12 +1000,12 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '1.1rem', color: '#64748b' }}>Prix FAI</div>
                 <div style={{ fontSize: '2.3rem', fontWeight: 900, color: '#0a6c9d', letterSpacing: '-1px', lineHeight: 1 }}>
-                  {(Math.round((inputs?.prix_achat ?? 0) / 1000)).toLocaleString('fr-FR', { maximumFractionDigits: 0 })}<span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#64748b' }}> k€</span>
+                  {(Math.round((localInputs?.prix_achat ?? 0) / 1000)).toLocaleString('fr-FR', { maximumFractionDigits: 0 })}<span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#64748b' }}> k€</span>
                 </div>
               </div>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '1.1rem', color: '#64748b' }}>Frais notaire</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f59e42' }}>{inputs.frais_notaire_percent} %</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f59e42' }}>{localInputs.frais_notaire_percent} %</div>
               </div>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '1.1rem', color: '#64748b' }}>Prix total</div>
@@ -1042,7 +1030,7 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
               </div>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '1.1rem', color: '#64748b' }}>Frais agence</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f59e42' }}>{inputs.frais_agence_vente_percent} %</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f59e42' }}>{localInputs.frais_agence_vente_percent} %</div>
               </div>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '1.1rem', color: '#64748b' }}>Prix HFA</div>
@@ -1114,7 +1102,7 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
                 textAlign: 'left'
               }}
             >
-              Autour de ce bien, le prix moyen des transactions historiques est de <b>{Math.round(benchmark).toLocaleString('fr-FR')} €</b> ; ce bien refait à neuf bénéficie d'une pondération de <b>{coefPonderation}</b> due à ses prestations intrinsèques et donc d'un prix de vente théorique de <b>{Math.round(prixVenteM2Theorique).toLocaleString('fr-FR')} €</b>. Nous estimons une revente à <b>{inputs.prix_vente_reel_pondere_m2 ? Math.round(inputs.prix_vente_reel_pondere_m2).toLocaleString('fr-FR') : '-'} €</b>.
+              Autour de ce bien, le prix moyen des transactions historiques est de <b>{Math.round(benchmark).toLocaleString('fr-FR')} €</b> ; ce bien refait à neuf bénéficie d'une pondération de <b>{coefPonderation}</b> due à ses prestations intrinsèques et donc d'un prix de vente théorique de <b>{Math.round(prixVenteM2Theorique).toLocaleString('fr-FR')} €</b>. Nous estimons une revente à <b>{localInputs.prix_vente_reel_pondere_m2 ? Math.round(localInputs.prix_vente_reel_pondere_m2).toLocaleString('fr-FR') : '-'} €</b>.
             </div>
             <div style={{ fontWeight: 600, color: '#1a3557', fontSize: '1.05rem', marginBottom: '0.7rem' }}>Comparatif prix au m²</div>
             <ResponsiveContainer width="100%" height={240}>
@@ -1193,7 +1181,7 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
                 textAlign: 'left'
               }}
             >
-              {`Le coût des travaux est estimé à ${Number(inputs.cout_travaux_m2).toLocaleString('fr-FR')} € par m² pour une surface Carrez après travaux de ${Number(inputs.surface_carrez_apres_travaux).toLocaleString('fr-FR')} m². Le financement repose sur un taux d'intérêt de ${Number(inputs.financement_taux_credit_percent).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} % et une commission de ${Number(inputs.financement_commission_percent).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} %. Le crédit total mis à disposition s'élève à ${Number(inputs.financement_credit_foncier_amount).toLocaleString('fr-FR')} € pour le foncier et ${Number(inputs.financement_credit_accompagnement_amount).toLocaleString('fr-FR')} € pour l'accompagnement.`}
+              {`Le coût des travaux est estimé à ${Number(localInputs.cout_travaux_m2).toLocaleString('fr-FR')} € par m² pour une surface Carrez après travaux de ${Number(localInputs.surface_carrez_apres_travaux).toLocaleString('fr-FR')} m². Le financement repose sur un taux d'intérêt de ${Number(localInputs.financement_taux_credit_percent).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} % et une commission de ${Number(localInputs.financement_commission_percent).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} %. Le crédit total mis à disposition s'élève à ${Number(localInputs.financement_credit_foncier_amount).toLocaleString('fr-FR')} € pour le foncier et ${Number(localInputs.financement_credit_accompagnement_amount).toLocaleString('fr-FR')} € pour l'accompagnement.`}
             </div>
             <div>
               <table style={{ width: '100%', fontSize: '0.97rem', borderCollapse: 'collapse', minWidth: 0 }}>

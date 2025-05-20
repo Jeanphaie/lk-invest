@@ -9,7 +9,7 @@ interface PhotosTabProps {
 }
 
 // Définition des catégories valides
-const photoCategories = ['before', '3d', 'during', 'after'] as const;
+const photoCategories = ['before', 'plans', '3d', 'during', 'after'] as const;
 type PhotoCategory = typeof photoCategories[number];
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://163.172.32.45:3001';
@@ -21,6 +21,7 @@ const normalizePath = (path: string) => {
 
 const categories: { key: PhotoCategory; label: string; canSelectForPdf: boolean }[] = [
   { key: 'before', label: 'Avant', canSelectForPdf: true },
+  { key: 'plans', label: 'Plans', canSelectForPdf: true },
   { key: '3d', label: '3D', canSelectForPdf: true },
   { key: 'during', label: 'Pendant', canSelectForPdf: false },
   { key: 'after', label: 'Après', canSelectForPdf: false },
@@ -39,9 +40,19 @@ function sortedPhotos(photos: Photos, category: PhotoCategory, sortOrder: 'asc' 
 
 export default function PhotosTab({ projectId }: PhotosTabProps) {
   // États typés strictement
-  const [photos, setPhotos] = useState<Photos>({ before: [], '3d': [], during: [], after: [], selectedBeforePhotosForPdf: [], selected3dPhotosForPdf: [] });
+  const [photos, setPhotos] = useState<Photos>({ 
+    before: [], 
+    plans: [], 
+    '3d': [], 
+    during: [], 
+    after: [], 
+    selectedBeforePhotosForPdf: [], 
+    selected3dPhotosForPdf: [],
+    selectedPlansPhotosForPdf: []
+  });
   const [selectedBeforePhotosForPdf, setSelectedBeforePhotosForPdf] = useState<number[]>([]);
   const [selected3dPhotosForPdf, setSelected3dPhotosForPdf] = useState<number[]>([]);
+  const [selectedPlansPhotosForPdf, setSelectedPlansPhotosForPdf] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -94,9 +105,20 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
       setPhotos(parse.data);
       setSelectedBeforePhotosForPdf(parse.data.selectedBeforePhotosForPdf || []);
       setSelected3dPhotosForPdf(parse.data.selected3dPhotosForPdf || []);
+      setSelectedPlansPhotosForPdf(parse.data.selectedPlansPhotosForPdf || []);
       setCoverPhoto(parse.data.coverPhoto || null);
       console.log('[FRONT][FETCH][PARSED]', parse.data);
-      
+      console.log('[FRONT][FETCH][COVER]', {
+        coverPhoto: parse.data.coverPhoto,
+        before: parse.data.before?.length,
+        plans: parse.data.plans?.length,
+        '3d': parse.data['3d']?.length,
+        after: parse.data.after?.length,
+        during: parse.data.during?.length,
+        selectedBeforePhotosForPdf: parse.data.selectedBeforePhotosForPdf,
+        selected3dPhotosForPdf: parse.data.selected3dPhotosForPdf,
+        selectedPlansPhotosForPdf: parse.data.selectedPlansPhotosForPdf
+      });
       console.log('=== fetchPhotos END ===\n');
     } catch (e) {
       console.error('Error fetching photos:', e);
@@ -107,14 +129,24 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
   };
 
   useEffect(() => {
+    console.log('\n=== [PhotosTab] useEffect: retour sur tab Photos ===');
+    console.log('coverPhoto (state):', coverPhoto);
+    console.log('photos (state):', {
+      before: photos.before?.length,
+      plans: photos.plans?.length,
+      '3d': photos['3d']?.length,
+      after: photos.after?.length,
+      during: photos.during?.length
+    });
+    fetchPhotos();
+  }, [projectId]);
+
+  useEffect(() => {
     console.log('\n=== State Update ===');
     console.log('selectedBeforePhotosForPdf:', selectedBeforePhotosForPdf);
     console.log('selected3dPhotosForPdf:', selected3dPhotosForPdf);
-  }, [selectedBeforePhotosForPdf, selected3dPhotosForPdf]);
-
-  useEffect(() => {
-    fetchPhotos();
-  }, [projectId]);
+    console.log('selectedPlansPhotosForPdf:', selectedPlansPhotosForPdf);
+  }, [selectedBeforePhotosForPdf, selected3dPhotosForPdf, selectedPlansPhotosForPdf]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, category: string) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -158,15 +190,26 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
   };
 
   const handleDelete = async (category: string, photoId: number) => {
+    // Validate category
+    if (!photoCategories.includes(category as PhotoCategory)) {
+      setError('Catégorie de photo invalide');
+      return;
+    }
+
+    // Confirm deletion
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette photo ?')) {
+      return;
+    }
+
     setLoading(true);
     try {
-      // Trouver la photo pour récupérer son url
+      // Find the photo to get its URL
       const photo = photos[category as PhotoCategory]?.find((p: Photo) => p.id === photoId);
       if (!photo) {
         setError('Photo introuvable');
-        setLoading(false);
         return;
       }
+
       console.log('Deleting photo:', { projectId, category, photoId, photoPath: photo.url });
       
       const response = await fetch(`${API_BASE_URL}/api/photos/${projectId}/${category}`, {
@@ -182,22 +225,21 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
         throw new Error(errorData.error || 'Erreur lors de la suppression');
       }
       
-      // Mettre à jour l'état local immédiatement
-      setPhotos(prevPhotos => {
-        const newPhotos = { ...prevPhotos };
-        if (newPhotos[category as PhotoCategory]) {
-          newPhotos[category as PhotoCategory] = newPhotos[category as PhotoCategory]!.filter((p: Photo) => p.id !== photoId);
-        }
-        return newPhotos;
-      });
-
-      // Rafraîchir les données du serveur après un court délai
-      setTimeout(() => {
-        fetchPhotos();
-      }, 100);
+      // Re-fetch systématique après suppression
+      await fetchPhotos();
     } catch (e) {
       console.error('Delete error:', e);
-      setError(e instanceof Error ? e.message : 'Erreur suppression photo');
+      if (e instanceof Error) {
+        if (e.message.includes('404')) {
+          setError('La photo n\'existe plus sur le serveur');
+        } else if (e.message.includes('403')) {
+          setError('Vous n\'avez pas les droits pour supprimer cette photo');
+        } else {
+          setError(`Erreur lors de la suppression: ${e.message}`);
+        }
+      } else {
+        setError('Une erreur inattendue est survenue');
+      }
     } finally {
       setLoading(false);
     }
@@ -242,8 +284,8 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
   };
 
   const handleTogglePdfSelection = async (category: PhotoCategory, photoId: number) => {
-    console.log('[FRONT][PDF][BEFORE]', { category, photoId, selectedBeforePhotosForPdf, selected3dPhotosForPdf });
-    if (!(category === 'before' || category === '3d')) return;
+    console.log('[FRONT][PDF][BEFORE]', { category, photoId, selectedBeforePhotosForPdf, selected3dPhotosForPdf, selectedPlansPhotosForPdf });
+    if (!(category === 'before' || category === '3d' || category === 'plans')) return;
     let updated: number[];
     if (category === 'before') {
       updated = selectedBeforePhotosForPdf.includes(photoId)
@@ -251,16 +293,24 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
         : [...selectedBeforePhotosForPdf, photoId];
       setSelectedBeforePhotosForPdf(updated);
       console.log('[FRONT][PDF][AFTER SETSTATE before]', updated);
-    } else {
+    } else if (category === '3d') {
       updated = selected3dPhotosForPdf.includes(photoId)
         ? selected3dPhotosForPdf.filter(id => id !== photoId)
         : [...selected3dPhotosForPdf, photoId];
       setSelected3dPhotosForPdf(updated);
       console.log('[FRONT][PDF][AFTER SETSTATE 3d]', updated);
+    } else {
+      updated = selectedPlansPhotosForPdf.includes(photoId)
+        ? selectedPlansPhotosForPdf.filter(id => id !== photoId)
+        : [...selectedPlansPhotosForPdf, photoId];
+      setSelectedPlansPhotosForPdf(updated);
+      console.log('[FRONT][PDF][AFTER SETSTATE plans]', updated);
     }
     const payload = category === 'before'
       ? { selectedBeforePhotosForPdf: updated }
-      : { selected3dPhotosForPdf: updated };
+      : category === '3d'
+        ? { selected3dPhotosForPdf: updated }
+        : { selectedPlansPhotosForPdf: updated };
     console.log('[FRONT][PDF][API PAYLOAD]', payload);
     try {
       setLoading(true);
@@ -338,7 +388,9 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
                       ? selectedBeforePhotosForPdf.includes(photo.id)
                       : cat.key === '3d'
                         ? selected3dPhotosForPdf.includes(photo.id)
-                        : false;
+                        : cat.key === 'plans'
+                          ? selectedPlansPhotosForPdf.includes(photo.id)
+                          : false;
                     
 
 

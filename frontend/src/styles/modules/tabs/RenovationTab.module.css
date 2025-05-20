@@ -1,0 +1,194 @@
+.container {
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.infoRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.infoCard {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e9ecef;
+}
+
+.infoCard h3 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+}
+
+.infoCard p {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.content {
+  margin-bottom: 2rem;
+}
+
+.error {
+  color: #dc3545;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 0.25rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.saveButton {
+  padding: 0.5rem 1rem;
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.saveButton:hover {
+  background-color: #0b5ed7;
+}
+
+.saveButton:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.beforeWorks {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  margin-bottom: 2rem;
+}
+
+.beforeWorks h2 {
+  color: #495057;
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.beforeWorks .form-label {
+  color: #6c757d;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.beforeWorks .form-control {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #212529;
+  background-color: transparent;
+  border: none;
+  padding: 0.375rem 0;
+}
+
+.beforeWorks .form-control:focus {
+  box-shadow: none;
+}
+
+.afterWorks {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  margin-bottom: 2rem;
+}
+
+.afterWorks h2 {
+  color: #495057;
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.afterWorks .form-label {
+  color: #6c757d;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.afterWorks .form-control {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #212529;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  padding: 0.375rem 0.75rem;
+}
+
+.afterWorks .form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  border-color: #86b7fe;
+}
+
+.calendar {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  margin-bottom: 1.5rem;
+}
+
+.calendar h2 {
+  color: #495057;
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.calendar :global(.form-label) {
+  color: #6c757d;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.calendar :global(.form-control) {
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.calendar :global(.form-control:focus) {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.calendar :global(.form-control[readonly]) {
+  background-color: transparent;
+  border: none;
+  font-weight: 600;
+  color: #495057;
+  padding-left: 0;
+} 

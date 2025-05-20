@@ -4,15 +4,15 @@ import { Photos, Photo, PhotosSchema } from '../../../shared/types/photos';
 const prisma = new PrismaClient();
 
 // Type guard pour s'assurer qu'on manipule une catégorie de Photo[]
-function isPhotoCategory(category: keyof Photos): category is 'before' | 'during' | 'after' | '3d' {
-  return category === 'before' || category === 'during' || category === 'after' || category === '3d';
+function isPhotoCategory(category: keyof Photos): category is 'before' | 'during' | 'after' | '3d' | 'plans' {
+  return category === 'before' || category === 'during' || category === 'after' || category === '3d' || category === 'plans';
 }
 
 export class PhotoService {
   // Récupérer les photos d'un projet
   async getProjectPhotos(projectId: number): Promise<Photos> {
     const project = await prisma.project.findUnique({
-      where: { id: projectId },
+      where: { project_id: projectId },
       select: { photos: true }
     });
     const photos = project?.photos || {
@@ -20,8 +20,10 @@ export class PhotoService {
       during: [],
       after: [],
       '3d': [],
+      plans: [],
       selectedBeforePhotosForPdf: [],
       selected3dPhotosForPdf: [],
+      selectedPlansPhotosForPdf: [],
       coverPhoto: undefined
     };
     // Validation stricte
@@ -35,7 +37,7 @@ export class PhotoService {
   // Ajouter une photo à une catégorie
   async addPhotoToCategory(projectId: number, category: keyof Photos, photo: Photo): Promise<Photos> {
     // Récupérer l'objet photos existant
-    const project = await prisma.project.findUnique({ where: { id: projectId } });
+    const project = await prisma.project.findUnique({ where: { project_id: projectId } });
     let photos = project?.photos;
     if (typeof photos === 'string') {
       try { photos = JSON.parse(photos); } catch { photos = {}; }
@@ -46,14 +48,17 @@ export class PhotoService {
     // Initialiser les champs si absents
     const currentSelectedBefore = (photos as any).selectedBeforePhotosForPdf || [];
     const currentSelected3d = (photos as any).selected3dPhotosForPdf || [];
+    const currentSelectedPlans = (photos as any).selectedPlansPhotosForPdf || [];
     const currentCover = (photos as any).coverPhoto || undefined;
     photos = {
       before: (photos as any).before || [],
       '3d': (photos as any)['3d'] || [],
       during: (photos as any).during || [],
       after: (photos as any).after || [],
+      plans: (photos as any).plans || [],
       selectedBeforePhotosForPdf: currentSelectedBefore,
       selected3dPhotosForPdf: currentSelected3d,
+      selectedPlansPhotosForPdf: currentSelectedPlans,
       coverPhoto: currentCover,
     };
     // Ajouter la photo à la bonne catégorie
@@ -69,7 +74,7 @@ export class PhotoService {
       throw new Error('Invalid photos data: ' + parsed.error.message);
     }
     await prisma.project.update({
-      where: { id: projectId },
+      where: { project_id: projectId },
       data: { photos: parsed.data }
     });
     return parsed.data;
@@ -91,9 +96,10 @@ export class PhotoService {
         console.log('[BACK][DELETE][COVER] Removing coverPhoto reference');
         photos.coverPhoto = undefined;
       }
-      // Remove from selectedBeforePhotosForPdf/selected3dPhotosForPdf if needed
+      // Remove from selectedBeforePhotosForPdf/selected3dPhotosForPdf/selectedPlansPhotosForPdf if needed
       photos.selectedBeforePhotosForPdf = photos.selectedBeforePhotosForPdf.filter(id => id !== deletedPhoto!.id);
       photos.selected3dPhotosForPdf = photos.selected3dPhotosForPdf.filter(id => id !== deletedPhoto!.id);
+      photos.selectedPlansPhotosForPdf = photos.selectedPlansPhotosForPdf.filter(id => id !== deletedPhoto!.id);
     }
     // Validation stricte
     const parsed = PhotosSchema.safeParse(photos);
@@ -102,7 +108,7 @@ export class PhotoService {
     }
     console.log('[BACK][DELETE][BEFORE SAVE]', JSON.stringify(parsed.data, null, 2));
     await prisma.project.update({
-      where: { id: projectId },
+      where: { project_id: projectId },
       data: { photos: parsed.data }
     });
     return { photos: parsed.data, deletedPhoto };
@@ -115,7 +121,7 @@ export class PhotoService {
   }
 
   // Sélectionner/désélectionner une photo pour le PDF (par id)
-  async togglePhotoForPdf(projectId: number, photoId: number, selected: boolean, type: 'selectedBeforePhotosForPdf' | 'selected3dPhotosForPdf'): Promise<void> {
+  async togglePhotoForPdf(projectId: number, photoId: number, selected: boolean, type: 'selectedBeforePhotosForPdf' | 'selected3dPhotosForPdf' | 'selectedPlansPhotosForPdf'): Promise<void> {
     const photos = await this.getProjectPhotos(projectId);
     console.log('[BACK][PDF][BEFORE]', { photoId, selected, type, current: photos[type] });
     if (selected && !photos[type].includes(photoId)) {
@@ -132,25 +138,27 @@ export class PhotoService {
     console.log('[BACK][PDF][TYPES]', {
       selectedBeforePhotosForPdf: parsed.data.selectedBeforePhotosForPdf.map(x => typeof x),
       selected3dPhotosForPdf: parsed.data.selected3dPhotosForPdf.map(x => typeof x),
+      selectedPlansPhotosForPdf: parsed.data.selectedPlansPhotosForPdf.map(x => typeof x),
     });
     await prisma.project.update({
-      where: { id: projectId },
+      where: { project_id: projectId },
       data: { photos: parsed.data }
     });
   }
 
   // Récupérer les photos sélectionnées pour le PDF
-  async getSelectedPhotosForPdf(projectId: number): Promise<{ selectedBeforePhotosForPdf: number[]; selected3dPhotosForPdf: number[] }> {
+  async getSelectedPhotosForPdf(projectId: number): Promise<{ selectedBeforePhotosForPdf: number[]; selected3dPhotosForPdf: number[]; selectedPlansPhotosForPdf: number[] }> {
     const photos = await this.getProjectPhotos(projectId);
     return {
       selectedBeforePhotosForPdf: photos.selectedBeforePhotosForPdf,
-      selected3dPhotosForPdf: photos.selected3dPhotosForPdf
+      selected3dPhotosForPdf: photos.selected3dPhotosForPdf,
+      selectedPlansPhotosForPdf: photos.selectedPlansPhotosForPdf
     };
   }
 
   // Mettre à jour la photo de couverture
   async updateCoverPhoto(projectId: number, photoUrl: string | undefined): Promise<Photos> {
-    const project = await prisma.project.findUnique({ where: { id: projectId } });
+    const project = await prisma.project.findUnique({ where: { project_id: projectId } });
     let photos = project?.photos;
     if (typeof photos === 'string') {
       try { photos = JSON.parse(photos); } catch { photos = {}; }
@@ -158,32 +166,52 @@ export class PhotoService {
     if (!photos || typeof photos !== 'object') {
       photos = {};
     }
-    // Merger tous les champs existants pour ne rien écraser
-    photos = {
+
+    // Récupérer toutes les données existantes d'abord
+    const existingData = {
       before: (photos as any).before || [],
       '3d': (photos as any)['3d'] || [],
       during: (photos as any).during || [],
       after: (photos as any).after || [],
+      plans: (photos as any).plans || [],
       selectedBeforePhotosForPdf: (photos as any).selectedBeforePhotosForPdf || [],
       selected3dPhotosForPdf: (photos as any).selected3dPhotosForPdf || [],
-      coverPhoto: photoUrl,
+      selectedPlansPhotosForPdf: (photos as any).selectedPlansPhotosForPdf || [],
+      
       ...photos // merge tout le reste au cas où
     };
+
+    // Mettre à jour la photo de couverture en dernier
+    const updatedPhotos = {
+      ...existingData,
+      coverPhoto: photoUrl
+    };
+
+    console.log('[BACK][COVER][UPDATE] Updating cover photo:', {
+      projectId,
+      newCoverPhoto: photoUrl,
+      existingCoverPhoto: (photos as any).coverPhoto,
+      finalCoverPhoto: updatedPhotos.coverPhoto
+    });
+
     // Validation stricte
-    const parsed = PhotosSchema.safeParse(photos);
+    const parsed = PhotosSchema.safeParse(updatedPhotos);
     if (!parsed.success) {
       throw new Error('Invalid photos data: ' + parsed.error.message);
     }
+
     console.log('[BACK][COVER][BEFORE SAVE]', JSON.stringify(parsed.data, null, 2));
+
     await prisma.project.update({
-      where: { id: projectId },
+      where: { project_id: projectId },
       data: { photos: parsed.data }
     });
+
     return parsed.data;
   }
 
   // Remplace toute la sélection PDF pour un type donné
-  async setSelectedPhotosForPdf(projectId: number, type: 'selectedBeforePhotosForPdf' | 'selected3dPhotosForPdf', ids: number[]): Promise<void> {
+  async setSelectedPhotosForPdf(projectId: number, type: 'selectedBeforePhotosForPdf' | 'selected3dPhotosForPdf' | 'selectedPlansPhotosForPdf', ids: number[]): Promise<void> {
     const photos = await this.getProjectPhotos(projectId);
     photos[type] = ids;
     const parsed = PhotosSchema.safeParse(photos);
@@ -192,7 +220,7 @@ export class PhotoService {
     }
     console.log('[BACK][PDF][SET][BEFORE SAVE]', type, ids);
     await prisma.project.update({
-      where: { id: projectId },
+      where: { project_id: projectId },
       data: { photos: parsed.data }
     });
   }

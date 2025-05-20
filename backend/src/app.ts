@@ -9,6 +9,7 @@ import propertyRoutes from './routes/property.routes';
 import dvfRoutes from './routes/dvf.routes';
 import pdfRoutes from './routes/pdf.routes';
 import photoRoutes from './routes/photo.routes';
+import renovationRoutes from './routes/renovation.routes';
 import prisma from './config/database';
 import { errorHandler } from './middleware/errorHandler';
 
@@ -65,6 +66,7 @@ app.use('/api/property', propertyRoutes);
 app.use('/api/dvf', dvfRoutes);
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/photos', photoRoutes);
+app.use('/api/renovation', renovationRoutes);
 
 // Middleware pour servir les fichiers statiques
 app.use('/uploads', express.static('/data/lki/uploads', {

@@ -9,6 +9,7 @@ Ce document détaille le fonctionnement, les conventions et les structures de do
 - [Photos Tab](#photos-tab)
 - [Conventions globales](#conventions-globales)
 - [🏠 Description du bien Tab](#description-du-bien-tab)
+- [🏗️ Rénovation Tab](#renovation-tab)
 
 ## Business Plan Tab
 
@@ -785,8 +786,8 @@ Pour toute évolution, suivre la méthodologie :
 ```
 
 ### Processus métier
-1. L'utilisateur saisit ou modifie une caractéristique (surface, étage, etc.).
-2. À chaque modification (onBlur pour les inputs généraux, onClick pour les qualitatifs), le front :
+1. L'utilisateur saisit ou modifie une caractéristique (surface, étage, etc.)
+2. À chaque modification, le front :
    - Envoie les données au backend via PATCH `/api/property/:id/property-description` (ou `/api/projects/:id/general-inputs` pour les inputs généraux).
    - Le backend recalcule la surface totale pondérée et le coefficient, puis renvoie le projet mis à jour.
 3. Le front met à jour l'affichage :
@@ -800,3 +801,72 @@ Pour toute évolution, suivre la méthodologie :
 - **Respecter la correspondance des noms de paramètres** entre backend (français, accentués) et frontend (mapping dans le code).
 - **Afficher les impacts de tous les paramètres**, y compris le nombre de pièces.
 - **Utiliser le code couleur** : vert (>0), rouge (<0), neutre (=0).
+
+# 🏗️ Rénovation Tab
+
+### Fonctionnalités
+- Saisie et édition des caractéristiques post-travaux du bien immobilier
+- Gestion du calendrier des travaux
+- Upload et visualisation des plans de rénovation
+- Upload et visualisation des explications 3D
+- Calcul automatique de la surface pondérée après travaux
+- Calcul automatique de la date de fin des travaux
+
+### Structure des données
+
+#### Inputs (`RenovationBienInputs`)
+```ts
+{
+  // Surfaces et nombre de pièces
+  superficie_apres: number;           // Surface intérieure après travaux (m²)
+  superficie_exterieur_apres: number; // Surface extérieure après travaux (m²)
+  nombre_pieces_apres: number;        // Nombre de pièces après travaux
+
+  // Calendrier
+  date_debut: string;                 // Date de début des travaux (YYYY-MM-DD)
+  duree_mois: number;                 // Durée des travaux en mois
+
+  // Plans et explications
+  plan_renovation?: string;           // URL du plan de rénovation (optionnel)
+  explication_3d?: string;            // URL de l'explication 3D (optionnel)
+}
+```
+
+#### Outputs (`RenovationBienResults`)
+```ts
+{
+  surface_ponderee_apres: number;     // Surface pondérée après travaux (m²)
+  date_fin: string;                   // Date de fin des travaux (YYYY-MM-DD)
+}
+```
+
+### Processus métier
+1. L'utilisateur saisit ou modifie une caractéristique (surface, date, etc.)
+2. À chaque modification, le front :
+   - Envoie les données au backend via PATCH `/api/property/:id/renovation`
+   - Le backend recalcule la surface pondérée et la date de fin
+   - Le backend renvoie le projet mis à jour
+3. Le front met à jour l'affichage :
+   - Surface pondérée après travaux
+   - Date de fin des travaux
+   - Plans et explications 3D
+
+### Bonnes pratiques
+- **Centraliser tous les calculs** (surface, dates) côté backend
+- **Synchroniser l'état local** avec la réponse backend après chaque modification
+- **Valider les dates** (format, cohérence)
+- **Gérer les uploads** de plans et explications 3D de manière sécurisée
+- **Afficher les erreurs** de validation clairement
+
+### API Endpoints
+
+#### Mise à jour des inputs
+- **PATCH** `/api/property/:id/renovation`
+  - Paramètres : RenovationBienInputs
+  - Retourne : projet mis à jour
+
+#### Upload de fichiers
+- **POST** `/api/property/:id/renovation/plan`
+  - Upload du plan de rénovation
+- **POST** `/api/property/:id/renovation/3d`
+  - Upload de l'explication 3D

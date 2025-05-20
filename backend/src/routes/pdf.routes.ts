@@ -287,6 +287,13 @@ function encodeCirclePolyline(lat: number, lng: number, radiusMeters: number, nu
   return encode(points);
 }
 
+// Helper pour générer une URL HTTP à partir d'un chemin
+const makeHttpUrl = (url: string | undefined) => {
+  if (!url) return '';
+  if (url.startsWith('http')) return url;
+  return `http://localhost:3001${url}`;
+};
+
 // Route pour générer le PDF à partir des données POST (config custom)
 router.post('/generate', async (req: Request, res: Response) => {
   try {
@@ -687,8 +694,7 @@ router.post('/generate-modern', async (req: Request, res: Response) => {
       <body>
     `;
 
-    // 4. Génération des sections avec les nouveaux templates
-
+    // ===== SECTION COVER =====
     if (includeSections.cover) {
       console.log('[PDF] --> Entrée dans la section COVER (modern)');
       const coverTemplate = await fs.promises.readFile(
@@ -702,12 +708,43 @@ router.post('/generate-modern', async (req: Request, res: Response) => {
         cover_image_path: cover_image_base64,
         ...(pdfData.pdf_config?.dynamic_fields || {})
       };
-
       htmlContent += compiledCover(coverData);
-
+      
     }
 
+    // ===== SOMMAIRE =====
+    // Génère la liste des sections activées pour le sommaire
+    const tocSections = [];
+    if (includeSections.property) tocSections.push({ key: 'property', label: 'Description du bien' });
+    if ((pdfData.selectedBeforePhotosForPdf || []).length > 0) tocSections.push({ key: 'before', label: 'Photos avant travaux' });
+    if ((project.photos?.selectedPlansPhotosForPdf || []).length > 0) tocSections.push({ key: 'plans', label: 'Plans' });
+    if ((project.photos?.selected3dPhotosForPdf || []).length > 0) tocSections.push({ key: '3d', label: 'Photos 3D' });
+    if (includeSections.valuation_lk) tocSections.push({ key: 'dvf', label: 'Analyse DVF' });
+    if (includeSections.financial) tocSections.push({ key: 'financial', label: 'Données financières' });
+    if (includeSections.valuation_lk) tocSections.push({ key: 'transactions', label: 'Transactions DVF' });
+
+    const tocTemplate = await fs.promises.readFile(
+      path.join(templatesDir, 'toc_modern.html'),
+      'utf-8'
+    );
+    const compiledToc = Handlebars.compile(tocTemplate);
+    htmlContent += compiledToc({ sections: tocSections });
+
+    // Prépare le template d'intro
+    const sectionIntroTemplate = await fs.promises.readFile(
+      path.join(templatesDir, 'section_intro.html'),
+      'utf-8'
+    );
+    const compiledSectionIntro = Handlebars.compile(sectionIntroTemplate);
+
+    // ===== SECTION PROPERTY =====
     if (includeSections.property) {
+      htmlContent += compiledSectionIntro({
+        title: 'Description du bien',
+        description: 'Caractéristiques principales du bien',
+        description_2: 'Analyse des plans et projet de rénovation 3D',
+        summary: 'Après rénovation on pourra appliquer un coefficient de pondération de <strong>' + pdfData.resultsDescriptionBien?.coef_ponderation + '</strong> par rapport au prix moyen du mètre carré des appartements avoisinants.'
+      });
       console.log('[PDF] --> Entrée dans la section PROPERTY (modern)');
       const propertyTemplate = await fs.promises.readFile(
         path.join(templatesDir, 'property_description_modern.html'),
@@ -741,50 +778,148 @@ router.post('/generate-modern', async (req: Request, res: Response) => {
       htmlContent += '<div class="page-break"></div>';
     }
 
-    // Ajout de la section photos avant travaux (utilise le tableau complet, avec styles inline pour effet jeté)
-    const imagesRaw = pdfData.selectedBeforePhotosForPdf || [];
-    const n = imagesRaw.length;
-    const imagesStyled = imagesRaw.map((url, i) => {
-      let left, top, width, height, rotate, z = 2, shadow = '0 6px 32px rgba(0,0,0,0.18)';
-      if (i === 0) {
-        // Image centrale, focus
-        left = '50%'; top = '50%'; width = '70vw'; height = '52vh'; rotate = '-2deg'; z = 10;
-        shadow = '0 12px 40px rgba(0,0,0,0.22)';
-      } else {
-        // Satellites : plus grandes, cercle plus large, rotation douce
-        const nSat = n - 1;
-        const angle = (360 / nSat) * (i - 1) - 90 + (nSat > 1 ? 360 / (2 * nSat) : 0); // décalage pour éviter la superposition
-        const rad = (angle * Math.PI) / 180;
-        const r = n < 7 ? 40 : 44; // rayon en %
-        left = `${50 + Math.cos(rad) * r}%`;
-        top = `${50 + Math.sin(rad) * r}%`;
-        width = n < 7 ? '48vw' : '38vw';
-        height = n < 7 ? '36vh' : '28vh';
-        rotate = `${-10 + (i * 13) % 21}deg`;
-        z = 2 + i;
+    // ===== SECTION PHOTOS BEFORE =====
+    if ((pdfData.selectedBeforePhotosForPdf || []).length > 0) {
+
+      const imagesRaw = pdfData.selectedBeforePhotosForPdf || [];
+      const n = imagesRaw.length;
+      const imagesStyled = imagesRaw.map((url, i) => {
+        let left, top, width, height, rotate, z = 2, shadow = '0 6px 32px rgba(0,0,0,0.18)';
+        if (i === 0) {
+          left = '50%'; top = '50%'; width = '70vw'; height = '52vh'; rotate = '-2deg'; z = 10;
+          shadow = '0 12px 40px rgba(0,0,0,0.22)';
+        } else {
+          const nSat = n - 1;
+          const angle = (360 / nSat) * (i - 1) - 90 + (nSat > 1 ? 360 / (2 * nSat) : 0);
+          const rad = (angle * Math.PI) / 180;
+          const r = n < 7 ? 40 : 44;
+          left = `${50 + Math.cos(rad) * r}%`;
+          top = `${50 + Math.sin(rad) * r}%`;
+          width = n < 7 ? '48vw' : '38vw';
+          height = n < 7 ? '36vh' : '28vh';
+          rotate = `${-10 + (i * 13) % 21}deg`;
+          z = 2 + i;
+        }
+        const style = `left:${left};top:${top};width:${width};height:${height};transform:translate(-50%,-50%) rotate(${rotate});z-index:${z};box-shadow:${shadow};`;
+        return { url, style };
+      });
+      if (imagesStyled.length > 0) {
+        console.log('[PDF] --> Entrée dans la section PHOTOS (modern)');
+        const photosTemplate = await fs.promises.readFile(
+          path.join(templatesDir, 'photos_before_modern.html'),
+          'utf-8'
+        );
+        const compiledPhotos = Handlebars.compile(photosTemplate);
+        htmlContent += compiledPhotos({ images: imagesStyled });
+        htmlContent += '<div class="page-break"></div>';
       }
-      const style = `left:${left};top:${top};width:${width};height:${height};transform:translate(-50%,-50%) rotate(${rotate});z-index:${z};box-shadow:${shadow};`;
-      return { url, style };
-    });
-    if (imagesStyled.length > 0) {
-      console.log('[PDF] --> Entrée dans la section PHOTOS (modern)');
-      const photosTemplate = await fs.promises.readFile(
-        path.join(templatesDir, 'photos_before_modern.html'),
-        'utf-8'
-      );
-      const compiledPhotos = Handlebars.compile(photosTemplate);
-      htmlContent += compiledPhotos({ images: imagesStyled });
-      htmlContent += '<div class="page-break"></div>';
     }
 
+    // ===== SECTION PLANS =====
+    if ((project.photos?.selectedPlansPhotosForPdf || []).length > 0) {
+
+      const plansPhotos = project.photos?.plans || [];
+      const plansImagesRaw = (project.photos?.selectedPlansPhotosForPdf || [])
+        .map(id => {
+          const photo = plansPhotos.find(p => p.id === id);
+          return photo ? makeHttpUrl(photo.url) : undefined;
+        })
+        .filter(url => url !== undefined);
+      const plansN = plansImagesRaw.length;
+      const plansImagesStyled = plansImagesRaw.map((url, i) => {
+        let left, top, width, height, rotate, z = 2, shadow = '0 6px 32px rgba(0,0,0,0.18)';
+        if (i === 0) {
+          left = '50%'; top = '50%'; width = '70vw'; height = '52vh'; rotate = '-2deg'; z = 10;
+          shadow = '0 12px 40px rgba(0,0,0,0.22)';
+        } else {
+          const nSat = plansN - 1;
+          const angle = (360 / nSat) * (i - 1) - 90 + (nSat > 1 ? 360 / (2 * nSat) : 0);
+          const rad = (angle * Math.PI) / 180;
+          const r = plansN < 7 ? 40 : 44;
+          left = `${50 + Math.cos(rad) * r}%`;
+          top = `${50 + Math.sin(rad) * r}%`;
+          width = plansN < 7 ? '48vw' : '38vw';
+          height = plansN < 7 ? '36vh' : '28vh';
+          rotate = `${-10 + (i * 13) % 21}deg`;
+          z = 2 + i;
+        }
+        const style = `left:${left};top:${top};width:${width};height:${height};transform:translate(-50%,-50%) rotate(${rotate});z-index:${z};box-shadow:${shadow};`;
+        return { url, style };
+      });
+      if (plansImagesStyled.length > 0) {
+        console.log('[PDF] --> Entrée dans la section PLANS');
+        const plansTemplate = await fs.promises.readFile(
+          path.join(templatesDir, 'photos_plans_modern.html'),
+          'utf-8'
+        );
+        const compiledPlans = Handlebars.compile(plansTemplate);
+        htmlContent += compiledPlans({
+          images: plansImagesStyled,
+          plan_renovation: pdfData.inputsRenovationBien?.plan_renovation || ''
+        });
+        htmlContent += '<div class="page-break"></div>';
+      }
+    }
+
+    // ===== SECTION PHOTOS 3D =====
+    if ((project.photos?.selected3dPhotosForPdf || []).length > 0) {
+
+      const photos3d = project.photos?.['3d'] || [];
+      const images3dRaw = (project.photos?.selected3dPhotosForPdf || [])
+        .map(id => {
+          const photo = photos3d.find(p => p.id === id);
+          return photo ? makeHttpUrl(photo.url) : undefined;
+        })
+        .filter(url => url !== undefined);
+      const images3dN = images3dRaw.length;
+      const images3dStyled = images3dRaw.map((url, i) => {
+        let left, top, width, height, rotate, z = 2, shadow = '0 6px 32px rgba(0,0,0,0.18)';
+        if (i === 0) {
+          left = '50%'; top = '50%'; width = '70vw'; height = '52vh'; rotate = '-2deg'; z = 10;
+          shadow = '0 12px 40px rgba(0,0,0,0.22)';
+        } else {
+          const nSat = images3dN - 1;
+          const angle = (360 / nSat) * (i - 1) - 90 + (nSat > 1 ? 360 / (2 * nSat) : 0);
+          const rad = (angle * Math.PI) / 180;
+          const r = images3dN < 7 ? 40 : 44;
+          left = `${50 + Math.cos(rad) * r}%`;
+          top = `${50 + Math.sin(rad) * r}%`;
+          width = images3dN < 7 ? '48vw' : '38vw';
+          height = images3dN < 7 ? '36vh' : '28vh';
+          rotate = `${-10 + (i * 13) % 21}deg`;
+          z = 2 + i;
+        }
+        const style = `left:${left};top:${top};width:${width};height:${height};transform:translate(-50%,-50%) rotate(${rotate});z-index:${z};box-shadow:${shadow};`;
+        return { url, style };
+      });
+      if (images3dStyled.length > 0) {
+        console.log('[PDF] --> Entrée dans la section PHOTOS 3D');
+        const photos3dTemplate = await fs.promises.readFile(
+          path.join(templatesDir, 'photos_3d_modern.html'),
+          'utf-8'
+        );
+        const compiledPhotos3d = Handlebars.compile(photos3dTemplate);
+        htmlContent += compiledPhotos3d({
+          images: images3dStyled,
+          explication_3d: pdfData.inputsRenovationBien?.explication_3d || ''
+        });
+        htmlContent += '<div class="page-break"></div>';
+      }
+    }
+
+    // ===== SECTION ANALYSE DVF (KPI, graphique, tableau) =====
     if (includeSections.valuation_lk) {
+      htmlContent += compiledSectionIntro({
+        title: 'Analyse DVF',
+        description: 'Basée sur les transactions immobilières autour du bien (voir annexe), nous calculons un prix moyen par mètre carré pour le bien (prix moyen de la sélection selection).',
+        description_2: 'Nous calculons également un prix moyen par mètre carré pour l\'arrondissement (prix moyen de la sélection arrondissement) et pour les biens premium ce qui nous donne une indication du potentiel de rénovation du bien.',
+        summary: 'Le prix moyen du mètre carré des appartements dans un rayon de ' + Math.round(Number(pdfData.inputsDvf?.rayon) * 1000) + ' mètres autour du bien est de <strong>' + formatKCurrency(pdfData.resultsDvfMetadata?.sel_final_avg,1) + '</strong>/m².'
+      });
       console.log('[PDF] --> Entrée dans la section VALUATION_LK (modern)');
-      // Préparation des données DVF (comme la route classique)
+      // Préparation des données DVF
       const dvfTransactions = (project.dvfTransactions || []) as DvfTransaction[];
-      // Tri décroissant par date
       const dvfTransactionsSorted = [...dvfTransactions].sort((a, b) => (b.date_mutation || '').localeCompare(a.date_mutation || ''));
       const trendSeries = (project.dvfSeries || []) as TrendSeries[];
-      // Sanitize trendSeries pour le chart et le tableau
       const trendSeriesSanitized = trendSeries.map(t => ({
         year: String(t.year ?? ''),
         selection_avg: Number(t.selection_avg ?? 0),
@@ -794,10 +929,10 @@ router.post('/generate-modern', async (req: Request, res: Response) => {
         premium_avg: Number(t.premium_avg ?? 0),
         premium_count: Number(t.premium_count ?? 0),
       }));
-      // --- QuickChart double y axis Chart.js 2.x ---
+
+      // Génération du graphique d'évolution
       let trend_chart_url = '';
       if (trendSeriesSanitized.length > 0) {
-        // Calcul dynamique des min/max pour chaque axe
         const y1Vals = trendSeriesSanitized.flatMap(t => [t.selection_avg, t.arrondissement_avg].map(v => v ? v / 1000 : null)).filter(v => v !== null);
         const y2Vals = trendSeriesSanitized.map(t => t.premium_avg ? t.premium_avg / 1000 : null).filter(v => v !== null);
         const y1Min = Math.floor(Math.min(...y1Vals) - 0.5);
@@ -881,7 +1016,8 @@ router.post('/generate-modern', async (req: Request, res: Response) => {
           console.error('[PDF] Erreur génération graphique DVF:', err);
         }
       }
-      // --- Préparation des champs pour les cartes ---
+
+      // Préparation des métadonnées DVF
       const meta = pdfData.resultsDvfMetadata || {};
       const metaAny = meta as any;
       const safeMeta = {
@@ -895,36 +1031,8 @@ router.post('/generate-modern', async (req: Request, res: Response) => {
         outlier_upper_bound: formatCurrency(getNumber(metaAny.outlier_upper_bound), '€', 0),
         arrondissement_avg_for_outliers: getNumber(metaAny.arrondissement_avg_for_outliers)
       };
-      // Pagination : 25 transactions par page
-      const pageSize = 20;
-      const numPages = Math.ceil(dvfTransactionsSorted.length / pageSize) || 1;
-      const dvfTemplatePage1 = await fs.promises.readFile(
-        path.join(templatesDir, 'dvf_valuation_modern.html'),
-        'utf-8'
-      );
-      const compiledDvfPage1 = Handlebars.compile(dvfTemplatePage1);
-      // Préparation du cercle encodé pour la map
-      let circlePolyline = '';
-      let rayon_m = 0;
-      if (pdfData.latitude && pdfData.longitude && pdfData.inputsDvf?.rayon) {
-        rayon_m = Math.round(Number(pdfData.inputsDvf.rayon) * 1000);
-        circlePolyline = encodeCirclePolyline(pdfData.latitude, pdfData.longitude, rayon_m);
-      }
-      for (let pageIdx = 0; pageIdx < numPages; pageIdx++) {
-        const pageTransactions = dvfTransactionsSorted.slice(pageIdx * pageSize, (pageIdx + 1) * pageSize);
-        htmlContent += compiledDvfPage1({
-          ...pdfData,
-          dvf_transactions: pageTransactions,
-          lat: pdfData.latitude,
-          lng: pdfData.longitude,
-          description_quartier: pdfData.inputsGeneral?.description_quartier || '',
-          page: 1,
-          circle_polyline: circlePolyline,
-          rayon_m
-        });
-        htmlContent += '<div class="page-break"></div>';
-      }
-      // PAGE KPI/chart/table (toujours à la fin)
+
+      // Génération de la page KPI/graphique/tableau
       const dvfTemplatePage2 = await fs.promises.readFile(
         path.join(templatesDir, 'dvf_valuation_modern_page2.html'),
         'utf-8'
@@ -938,15 +1046,22 @@ router.post('/generate-modern', async (req: Request, res: Response) => {
       htmlContent += '<div class="page-break"></div>';
     }
 
-
+    // ===== SECTION FINANCIAL =====
     if (includeSections.financial) {
-      console.log('[PDF] --> Entrée dans la section FINANCIAL (modern, fusionné)');
+      htmlContent += compiledSectionIntro({
+        title: 'Données financières',
+        description: 'Reprise de toutes les hypothèses du business plan, Synthèse des coûts, financement, marges et indicateurs financiers du projet.',
+        description_2: 'Nous prenons une hypothèse de prix de vente du mètre carré conservateur par rapport au prix moyen du mètre carré des appartements avoisinants et du coefficient de pondération du bien.',
+        summary: 'Selon les hypothèses de financement et de cout des travaux, le prix de revient sera de <strong>' + formatKCurrency(pdfData.resultsBusinessPlan?.couts_total, 0) + '</strong> et la marge nette sera de <strong>' + formatKCurrency(pdfData.resultsBusinessPlan?.resultats?.marge_nette, 0) + '</strong> (' + formatPercentage(pdfData.resultsBusinessPlan?.resultats?.rentabilite) + ').'
+      });
+      console.log('[PDF] --> Entrée dans la section FINANCIAL (modern)');
       const financialTemplate = await fs.promises.readFile(
         path.join(templatesDir, 'financial_data_modern.html'),
         'utf-8'
       );
       const compiledFinancial = Handlebars.compile(financialTemplate);
-      // Génération du graphique à colonnes (achat/revient/vente, carrez/pondéré, benchmark)
+
+      // Génération du graphique financier
       let vente_chart_url = '';
       try {
         const chart = new QuickChart();
@@ -957,10 +1072,11 @@ router.post('/generate-modern', async (req: Request, res: Response) => {
         const prix_revient_carrez = pdfData.resultsBusinessPlan?.prix_m2?.prix_revient_carrez_m2 || 0;
         const prix_vente_carrez = pdfData.resultsBusinessPlan?.prix_m2?.prix_vente_carrez_m2 || 0;
         const prix_m2_benchmark = pdfData.resultsDvfMetadata?.sel_final_avg || null;
-        // Calcul du min pour l'axe y (jamais < 0)
+
         const allVals = [prix_achat, prix_revient, prix_vente, prix_achat_carrez, prix_revient_carrez, prix_vente_carrez].filter(v => typeof v === 'number' && v > 0);
         const minVal = Math.min(...allVals);
         const yMin = Math.max(0, Math.floor(minVal - 500));
+
         const chartConfig = {
           type: 'bar',
           data: {
@@ -985,7 +1101,6 @@ router.post('/generate-modern', async (req: Request, res: Response) => {
           },
           options: {
             plugins: { legend: { display: true } },
-            // Pour compatibilité Chart.js v2 et v3
             scales: {
               yAxes: [{
                 display: true,
@@ -997,23 +1112,68 @@ router.post('/generate-modern', async (req: Request, res: Response) => {
             }
           }
         };
-        console.log('[PDF][DEBUG] chartConfig:', JSON.stringify(chartConfig));
+
         chart.setConfig(chartConfig);
         chart.setWidth(700).setHeight(320).setBackgroundColor('transparent');
         vente_chart_url = chart.getUrl();
       } catch (err) {
         console.error('[PDF] Erreur génération graphique vente:', err);
       }
+
       const financialData = {
         ...pdfData,
         vente_chart_url,
-        // Champs pour le tableau comparatif (structure imbriquée)
         prix_m2_vente_pondere: pdfData.resultsBusinessPlan?.prix_m2?.prix_vente_pondere_m2,
         prix_m2_vente_carrez: pdfData.resultsBusinessPlan?.prix_m2?.prix_vente_carrez_m2,
         ...(pdfData.pdf_config?.dynamic_fields || {})
       };
       htmlContent += compiledFinancial(financialData);
     }
+
+    // ===== SECTION TRANSACTIONS DVF (pagination) =====
+    if (includeSections.valuation_lk) {
+      htmlContent += compiledSectionIntro({
+        title: 'Annexe : Transactions DVF',
+        description: 'Liste détaillée des transactions immobilières utilisées pour l\'analyse comparative.'
+      });
+      // Préparation des données DVF
+      const dvfTransactions = (project.dvfTransactions || []) as DvfTransaction[];
+      const dvfTransactionsSorted = [...dvfTransactions].sort((a, b) => (b.date_mutation || '').localeCompare(a.date_mutation || ''));
+      const pageSize = 20;
+      const numPages = Math.ceil(dvfTransactionsSorted.length / pageSize) || 1;
+
+      // Lecture du template
+      const dvfTemplatePage1 = await fs.promises.readFile(
+        path.join(templatesDir, 'dvf_valuation_modern.html'),
+        'utf-8'
+      );
+      const compiledDvfPage1 = Handlebars.compile(dvfTemplatePage1);
+
+      // Préparation du cercle pour la carte
+      let circlePolyline = '';
+      let rayon_m = 0;
+      if (pdfData.latitude && pdfData.longitude && pdfData.inputsDvf?.rayon) {
+        rayon_m = Math.round(Number(pdfData.inputsDvf.rayon) * 1000);
+        circlePolyline = encodeCirclePolyline(pdfData.latitude, pdfData.longitude, rayon_m);
+      }
+
+      // Génération des pages de transactions
+      for (let pageIdx = 0; pageIdx < numPages; pageIdx++) {
+        const pageTransactions = dvfTransactionsSorted.slice(pageIdx * pageSize, (pageIdx + 1) * pageSize);
+        htmlContent += compiledDvfPage1({
+          ...pdfData,
+          dvf_transactions: pageTransactions,
+          lat: pdfData.latitude,
+          lng: pdfData.longitude,
+          description_quartier: pdfData.inputsGeneral?.description_quartier || '',
+          page: 1,
+          circle_polyline: circlePolyline,
+          rayon_m
+        });
+        htmlContent += '<div class="page-break"></div>';
+      }
+    }
+
     htmlContent += '</body></html>';
 
     // DEBUG: Sauvegarder le HTML généré

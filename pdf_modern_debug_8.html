@@ -305,7 +305,94 @@ body {
 .dvf-card-ignored { font-size: 0.93rem; color: #bfa77a; font-style: italic; }
 .dvf-block { width: 100%; margin-bottom: 1.1rem; }
 .chart-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #1a202c; }
-.chart-image { width: 100%; max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 2px 8px #0001; background: #fff; margin-bottom: 0.2rem; } 
+.chart-image { width: 100%; max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 2px 8px #0001; background: #fff; margin-bottom: 0.2rem; }
+
+/* ===== SOMMAIRE ===== */
+.toc-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 90vh;
+  background: #f7f6f2;
+  padding: 60px 40px 40px 40px;
+}
+.toc-page h1 {
+  font-size: 2.6em;
+  font-weight: 700;
+  margin-bottom: 2.2em;
+  color: #1a237e;
+  letter-spacing: 0.04em;
+}
+.toc-page ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 420px;
+}
+.toc-page li {
+  font-size: 1.35em;
+  color: #333;
+  margin-bottom: 1.1em;
+  padding-left: 0.5em;
+  border-left: 4px solid #bfa77a;
+  background: #fffbe7;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(191,167,122,0.07);
+}
+
+/* ===== PAGE D'INTRO DE SECTION (amélioré) ===== */
+.section-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  background: linear-gradient(135deg, #f2f6fa 80%, #e3e9f2 100%);
+  padding: 60px 40px 40px 40px;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(10,108,157,0.10);
+  border-left: 8px solid #0a6c9d;
+  margin: 0 0 2.5rem 0;
+  animation: fadeInSectionIntro 0.7s cubic-bezier(.4,0,.2,1);
+}
+@keyframes fadeInSectionIntro {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: none; }
+}
+.section-intro h2 {
+  font-size: 2.5em;
+  font-weight: 800;
+  color: #0a6c9d;
+  margin-bottom: 1.3em;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 8px #0a6c9d11;
+}
+.section-intro p {
+  font-size: 1.28em;
+  color: #2d3748;
+  max-width: 700px;
+  text-align: center;
+  line-height: 1.7;
+  margin: 0 auto 1.5em auto;
+  background: #f7fafd;
+  border-radius: 8px;
+  padding: 1.2em 1.5em;
+  box-shadow: 0 2px 8px #0a6c9d08;
+}
+.section-intro .section-summary {
+  margin-top: 1.2em;
+  background: #e3f2fd;
+  border-left: 5px solid #bfa77a;
+  border-radius: 6px;
+  padding: 1em 1.5em;
+  font-size: 1.13em;
+  color: #0a6c9d;
+  font-weight: 500;
+  box-shadow: 0 2px 8px #bfa77a22;
+  max-width: 600px;
+  text-align: center;
+} 
         </style>
       </head>
       <body>
@@ -407,7 +494,47 @@ body {
     </div>
 </body>
 
-</html><!DOCTYPE html>
+</html><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f7f6f2;padding:60px 40px 40px 40px;">
+  <h1 style="font-size:2.6em;font-weight:700;margin-bottom:2.2em;color:#1a237e;letter-spacing:0.04em;text-shadow:0 2px 8px #1a237e11;">Sommaire</h1>
+  <ul style="list-style:none;padding:0;margin:0 auto;max-width:420px;width:100%;">
+      <li style="font-size:1.35em;color:#333;margin-bottom:1.1em;padding-left:0.5em;border-left:4px solid #bfa77a;background:#fffbe7;border-radius:4px;box-shadow:0 2px 8px rgba(191,167,122,0.07);">
+        Description du bien
+      </li>
+      <li style="font-size:1.35em;color:#333;margin-bottom:1.1em;padding-left:0.5em;border-left:4px solid #bfa77a;background:#fffbe7;border-radius:4px;box-shadow:0 2px 8px rgba(191,167,122,0.07);">
+        Photos avant travaux
+      </li>
+      <li style="font-size:1.35em;color:#333;margin-bottom:1.1em;padding-left:0.5em;border-left:4px solid #bfa77a;background:#fffbe7;border-radius:4px;box-shadow:0 2px 8px rgba(191,167,122,0.07);">
+        Plans
+      </li>
+      <li style="font-size:1.35em;color:#333;margin-bottom:1.1em;padding-left:0.5em;border-left:4px solid #bfa77a;background:#fffbe7;border-radius:4px;box-shadow:0 2px 8px rgba(191,167,122,0.07);">
+        Photos 3D
+      </li>
+      <li style="font-size:1.35em;color:#333;margin-bottom:1.1em;padding-left:0.5em;border-left:4px solid #bfa77a;background:#fffbe7;border-radius:4px;box-shadow:0 2px 8px rgba(191,167,122,0.07);">
+        Analyse DVF
+      </li>
+      <li style="font-size:1.35em;color:#333;margin-bottom:1.1em;padding-left:0.5em;border-left:4px solid #bfa77a;background:#fffbe7;border-radius:4px;box-shadow:0 2px 8px rgba(191,167,122,0.07);">
+        Données financières
+      </li>
+      <li style="font-size:1.35em;color:#333;margin-bottom:1.1em;padding-left:0.5em;border-left:4px solid #bfa77a;background:#fffbe7;border-radius:4px;box-shadow:0 2px 8px rgba(191,167,122,0.07);">
+        Transactions DVF
+      </li>
+  </ul>
+</div>
+<div style="page-break-after:always;"></div>
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f2f6fa;padding:60px 40px 40px 40px;border-radius:18px;box-shadow:0 8px 32px rgba(10,108,157,0.10);border-left:8px solid #0a6c9d;margin:0 0 2.5rem 0;">
+  <h2 style="font-size:2.5em;font-weight:800;color:#0a6c9d;margin-bottom:1.3em;letter-spacing:0.01em;text-shadow:0 2px 8px #0a6c9d11;">Description du bien</h2>
+  <div style="font-size:1.28em;color:#2d3748;max-width:700px;text-align:center;line-height:1.7;margin:0 auto 1.5em auto;background:#f7fafd;border-radius:8px;padding:1.2em 1.5em;box-shadow:0 2px 8px #0a6c9d08; font-style:italic;">
+    Caractéristiques principales du bien
+    <br>
+    Analyse des plans et projet de rénovation 3D
+  </div>
+  <br> <br> <br>
+    <div style="margin-top:1.2em;background:#e3f2fd;border-left:5px solid #bfa77a;border-radius:6px;padding:1.2em 2em;font-size:1.18em;color:#0a6c9d;font-weight:700;box-shadow:0 2px 8px #bfa77a22;max-width:600px;text-align:center;">
+      <span style="font-size:1.1em;display:block;margin-bottom:0.4em;">Résumé</span>
+      <span style="font-size:1.25em;font-weight:900;color:#bfa77a;">Après rénovation on pourra appliquer un coefficient de pondération de <strong>1.1</strong> par rapport au prix moyen du mètre carré des appartements avoisinants.</span>
+    </div>
+</div>
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -702,6 +829,546 @@ d&#x27;une surface de 146 m² carrez avec très belle hauteur sous plafond. (env
   </div>
 </body>
 </html> <div class="page-break"></div><!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    .photos-section {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      min-height: 100vh;
+      background: #fff;
+      overflow: hidden;
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+    .section-title {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: #1a202c;
+      margin: 1.2rem 0 0.7rem 2.2rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 2px solid #e2e8f0;
+      z-index: 2;
+      position: relative;
+    }
+    .text-block {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 1.5rem;
+      margin: 0 2.2rem 1.5rem 2.2rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .text-block p {
+      margin: 0;
+      line-height: 1.6;
+      color: #4a5568;
+    }
+    .photos-table-container {
+      position: relative;
+      width: 100vw;
+      height: calc(100vh - 12rem);
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+    }
+    .photo-item {
+      position: absolute;
+      box-shadow: 0 6px 32px rgba(0,0,0,0.18), 0 1.5px 8px rgba(0,0,0,0.10);
+      border-radius: 18px;
+      background: #fff;
+      border: 1.5px solid #e2e8f0;
+      overflow: hidden;
+      z-index: 2;
+      transition: box-shadow 0.2s;
+    }
+    .photo-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    @media print {
+      .photos-section, .photos-table-container {
+        width: 100vw;
+        height: 100vh;
+        min-height: 100vh;
+        padding: 0;
+        margin: 0;
+      }
+      .photo-item {
+        box-shadow: none;
+        border: 1px solid #e2e8f0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="photos-section">
+    <div class="section-title">Plans du bien</div>
+    <div class="text-block">
+      <p>TESTE TESTESTSETSETSETSTSETSTEES</p>
+    </div>
+    <div class="photos-table-container">
+      <div class="photo-item" style="left:50%;top:50%;width:70vw;height:52vh;transform:translate(-50%,-50%) rotate(-2deg);z-index:10;box-shadow:0 12px 40px rgba(0,0,0,0.22);">
+        <img src="http://localhost:3001/uploads/8/plans/1747648991030.jpeg" alt="Plan du bien">
+      </div>
+    </div>
+  </div>
+</body>
+</html> <div class="page-break"></div><!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    .photos-section {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      min-height: 100vh;
+      background: #fff;
+      overflow: hidden;
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+    .section-title {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: #1a202c;
+      margin: 1.2rem 0 0.7rem 2.2rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 2px solid #e2e8f0;
+      z-index: 2;
+      position: relative;
+    }
+    .text-block {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 1.5rem;
+      margin: 0 2.2rem 1.5rem 2.2rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .text-block p {
+      margin: 0;
+      line-height: 1.6;
+      color: #4a5568;
+    }
+    .photos-table-container {
+      position: relative;
+      width: 100vw;
+      height: calc(100vh - 12rem);
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+    }
+    .photo-item {
+      position: absolute;
+      box-shadow: 0 6px 32px rgba(0,0,0,0.18), 0 1.5px 8px rgba(0,0,0,0.10);
+      border-radius: 18px;
+      background: #fff;
+      border: 1.5px solid #e2e8f0;
+      overflow: hidden;
+      z-index: 2;
+      transition: box-shadow 0.2s;
+    }
+    .photo-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    @media print {
+      .photos-section, .photos-table-container {
+        width: 100vw;
+        height: 100vh;
+        min-height: 100vh;
+        padding: 0;
+        margin: 0;
+      }
+      .photo-item {
+        box-shadow: none;
+        border: 1px solid #e2e8f0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="photos-section">
+    <div class="section-title">Vues 3D du projet</div>
+    <div class="text-block">
+      <p>RESTESTESTSETSETSTS</p>
+    </div>
+    <div class="photos-table-container">
+      <div class="photo-item" style="left:50%;top:50%;width:70vw;height:52vh;transform:translate(-50%,-50%) rotate(-2deg);z-index:10;box-shadow:0 12px 40px rgba(0,0,0,0.22);">
+        <img src="http://localhost:3001/uploads/8/3d/1747649564765.webp" alt="Vue 3D">
+      </div>
+      <div class="photo-item" style="left:72%;top:11.8948822334847%;width:38vw;height:28vh;transform:translate(-50%,-50%) rotate(3deg);z-index:3;box-shadow:0 6px 32px rgba(0,0,0,0.18);">
+        <img src="http://localhost:3001/uploads/8/3d/1747649604599.webp" alt="Vue 3D">
+      </div>
+      <div class="photo-item" style="left:94%;top:50%;width:38vw;height:28vh;transform:translate(-50%,-50%) rotate(-5deg);z-index:4;box-shadow:0 6px 32px rgba(0,0,0,0.18);">
+        <img src="http://localhost:3001/uploads/8/3d/1747649604352.webp" alt="Vue 3D">
+      </div>
+      <div class="photo-item" style="left:72%;top:88.10511776651529%;width:38vw;height:28vh;transform:translate(-50%,-50%) rotate(8deg);z-index:5;box-shadow:0 6px 32px rgba(0,0,0,0.18);">
+        <img src="http://localhost:3001/uploads/8/3d/1747649604109.webp" alt="Vue 3D">
+      </div>
+      <div class="photo-item" style="left:28.00000000000001%;top:88.1051177665153%;width:38vw;height:28vh;transform:translate(-50%,-50%) rotate(0deg);z-index:6;box-shadow:0 6px 32px rgba(0,0,0,0.18);">
+        <img src="http://localhost:3001/uploads/8/3d/1747241924816.jpeg" alt="Vue 3D">
+      </div>
+      <div class="photo-item" style="left:6%;top:50.00000000000001%;width:38vw;height:28vh;transform:translate(-50%,-50%) rotate(-8deg);z-index:7;box-shadow:0 6px 32px rgba(0,0,0,0.18);">
+        <img src="http://localhost:3001/uploads/8/3d/1747649604046.webp" alt="Vue 3D">
+      </div>
+      <div class="photo-item" style="left:27.99999999999998%;top:11.894882233484708%;width:38vw;height:28vh;transform:translate(-50%,-50%) rotate(5deg);z-index:8;box-shadow:0 6px 32px rgba(0,0,0,0.18);">
+        <img src="http://localhost:3001/uploads/8/3d/1747649604337.webp" alt="Vue 3D">
+      </div>
+    </div>
+  </div>
+</body>
+</html> <div class="page-break"></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f2f6fa;padding:60px 40px 40px 40px;border-radius:18px;box-shadow:0 8px 32px rgba(10,108,157,0.10);border-left:8px solid #0a6c9d;margin:0 0 2.5rem 0;">
+  <h2 style="font-size:2.5em;font-weight:800;color:#0a6c9d;margin-bottom:1.3em;letter-spacing:0.01em;text-shadow:0 2px 8px #0a6c9d11;">Analyse DVF</h2>
+  <div style="font-size:1.28em;color:#2d3748;max-width:700px;text-align:center;line-height:1.7;margin:0 auto 1.5em auto;background:#f7fafd;border-radius:8px;padding:1.2em 1.5em;box-shadow:0 2px 8px #0a6c9d08; font-style:italic;">
+    Basée sur les transactions immobilières autour du bien (voir annexe), nous calculons un prix moyen par mètre carré pour le bien (prix moyen de la sélection selection).
+    <br>
+    Nous calculons également un prix moyen par mètre carré pour l&#x27;arrondissement (prix moyen de la sélection arrondissement) et pour les biens premium ce qui nous donne une indication du potentiel de rénovation du bien.
+  </div>
+  <br> <br> <br>
+    <div style="margin-top:1.2em;background:#e3f2fd;border-left:5px solid #bfa77a;border-radius:6px;padding:1.2em 2em;font-size:1.18em;color:#0a6c9d;font-weight:700;box-shadow:0 2px 8px #bfa77a22;max-width:600px;text-align:center;">
+      <span style="font-size:1.1em;display:block;margin-bottom:0.4em;">Résumé</span>
+      <span style="font-size:1.25em;font-weight:900;color:#bfa77a;">Le prix moyen du mètre carré des appartements dans un rayon de 50 mètres autour du bien est de <strong>10.2 k€</strong>/m².</span>
+    </div>
+</div>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8fafc; color: #222; margin: 0; }
+    .section { padding: 2.2rem 1.5rem 1.2rem 1.5rem; max-width: 900px; margin: 0 auto; }
+    .section-title { font-size: 2rem; font-weight: 700; color: #0a6c9d; margin-bottom: 2rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
+    .outlier-phrase { margin: 0.7rem 0 1.5rem 0; font-size: 0.95rem; color: #2d3748; text-align: center; font-style: italic; }
+    .chart-block { margin-bottom: 2rem; }
+    .chart-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.5rem; color: #1a202c; }
+    .chart-image { width: 100%; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px #0001; background: #fff; }
+    .table-block { margin-bottom: 1.2rem; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.98rem; background: #fff; border-radius: 10px; overflow: hidden; }
+    .data-table th { background: #f8fafc; color: #64748b; font-weight: 600; text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1.2px solid #e2e8f0; }
+    .data-table td { padding: 0.5rem 0.7rem; border-bottom: 1px solid #f1f5f9; text-align: right; }
+    .data-table tr:last-child td { border-bottom: none; }
+    @media (max-width: 900px), print {
+      .section { padding: 1rem 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="section">
+    <div class="section-title">Analyse DVF</div>
+    <div class="outlier-phrase">
+      Les bornes d'outliers sont calculées à partir de la moyenne arrondissement brute (11.1 k€).<br>Les transactions avec un prix inferieur à <b>7 213 €</b> et supérieur à <b>33 291 €</b> ont été exclues.
+      
+    </div>
+    
+    <div style="display:flex;flex-direction:row;gap:1.5rem;margin-bottom:1.5rem;justify-content:center;align-items:stretch;width:100%;min-width:0;">
+      <div style="flex:1 1 0;min-width:0;max-width:100%;width:auto;display:flex;flex-direction:column;align-items:center;background:#fff;border-radius:14px;box-shadow:0 2px 8px #0a6c9d10;text-align:center;padding:1.2rem 0.7rem;">
+        <div style="font-size:1.05rem;color:#64748b;font-weight:600;margin-bottom:0.2rem;">Prix moyen <br>sélection</div>
+        <div style="font-size:1.7rem;font-weight:800;color:#1a237e;margin-bottom:0.1rem;">10.2 k€/m2</div>
+        <div style="font-size:0.97rem;color:#888;">basé sur 42 transactions</div>
+      </div>
+      <div style="flex:1 1 0;min-width:0;max-width:100%;width:auto;display:flex;flex-direction:column;align-items:center;background:#fff;border-radius:14px;box-shadow:0 2px 8px #0a6c9d10;text-align:center;padding:1.2rem 0.7rem;">
+        <div style="font-size:1.05rem;color:#64748b;font-weight:600;margin-bottom:0.2rem;">Prix moyen <br>arrondissement</div>
+        <div style="font-size:1.7rem;font-weight:800;color:#388e3c;margin-bottom:0.1rem;">10.6 k€/m2</div>
+        <div style="font-size:0.97rem;color:#888;">basé sur 18556 transactions</div>
+      </div>
+      <div style="flex:1 1 0;min-width:0;max-width:100%;width:auto;display:flex;flex-direction:column;align-items:center;background:#fff;border-radius:14px;box-shadow:0 2px 8px #0a6c9d10;text-align:center;padding:1.2rem 0.7rem;">
+        <div style="font-size:1.05rem;color:#64748b;font-weight:600;margin-bottom:0.2rem;">Moyenne Premium <br>(top 10%)</div>
+        <div style="font-size:1.7rem;font-weight:800;color:#d32f2f;margin-bottom:0.1rem;">17.3 k€/m2</div>
+        <div style="font-size:0.97rem;color:#888;">basé sur 1549 transactions</div>
+      </div>
+    </div>
+    <div class="chart-block">
+      <div class="chart-title">Évolution des prix</div>
+      <img src="https://quickchart.io/chart?c&#x3D;%7Btype%3A%27line%27%2Cdata%3A%7Blabels%3A%5B%272019%27%2C%272020%27%2C%272021%27%2C%272022%27%2C%272023%27%2C%272024%27%5D%2Cdatasets%3A%5B%7Blabel%3A%27S%C3%A9lection%27%2Cdata%3A%5B10.305222222222222%2C10.43412162162162%2C10.684719535783369%2C9.873794392523365%2C10.946444735516371%2C10.06633802816901%5D%2CborderColor%3A%27%231a237e%27%2CbackgroundColor%3A%27%231a237e22%27%2CyAxisID%3A%27y1%27%2Cfill%3Afalse%2CpointRadius%3A4%2CborderWidth%3A3%2ClineTension%3A0.4%7D%2C%7Blabel%3A%27Arrondissement%27%2Cdata%3A%5B10.674419117346941%2C10.96809100654351%2C11.043095908067901%2C10.93583388715591%2C10.495409598306379%2C10.30183482926523%5D%2CborderColor%3A%27%23388e3c%27%2CbackgroundColor%3A%27%23388e3c22%27%2CyAxisID%3A%27y1%27%2Cfill%3Afalse%2CpointRadius%3A4%2CborderWidth%3A3%2ClineTension%3A0.4%7D%2C%7Blabel%3A%27Premium+%28top+10%25%29%27%2Cdata%3A%5B17.48782447843823%2C17.5437848200313%2C17.54999983551279%2C17.194682859614108%2C16.44430766280026%2C17.03247046654929%5D%2CborderColor%3A%27%23d32f2f%27%2CbackgroundColor%3A%27%23d32f2f22%27%2CyAxisID%3A%27y2%27%2Cfill%3Afalse%2CpointRadius%3A4%2CborderWidth%3A3%2ClineTension%3A0.4%7D%5D%7D%2Coptions%3A%7Blegend%3A%7Bdisplay%3Atrue%2Cposition%3A%27bottom%27%7D%2Ctitle%3A%7Bdisplay%3Afalse%7D%2Cscales%3A%7ByAxes%3A%5B%7Bid%3A%27y1%27%2Ctype%3A%27linear%27%2Cposition%3A%27left%27%2CscaleLabel%3A%7Bdisplay%3Atrue%2ClabelString%3A%27k%E2%82%AC%2Fm%C2%B2%27%7D%2Cticks%3A%7Bmin%3A9%2Cmax%3A12%7D%7D%2C%7Bid%3A%27y2%27%2Ctype%3A%27linear%27%2Cposition%3A%27right%27%2CscaleLabel%3A%7Bdisplay%3Atrue%2ClabelString%3A%27Premium+%28k%E2%82%AC%2Fm%C2%B2%29%27%7D%2Cticks%3A%7Bmin%3A15%2Cmax%3A19%7D%2CgridLines%3A%7BdrawOnChartArea%3Afalse%7D%7D%5D%2CxAxes%3A%5B%7BscaleLabel%3A%7Bdisplay%3Atrue%2ClabelString%3A%27Ann%C3%A9e%27%7D%7D%5D%7D%7D%7D&amp;w&#x3D;600&amp;h&#x3D;220&amp;ref&#x3D;qc-js&amp;bkg&#x3D;transparent&amp;f&#x3D;png&amp;v&#x3D;2.9.4" alt="Évolution des prix" class="chart-image" />
+    </div>
+    <div class="table-block">
+      <div class="chart-title">Tableau annuel</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="text-align:left;">Année</th>
+            <th style="text-align:right;">Sélection</th>
+            <th style="text-align:right;">Arrondissement</th>
+            <th style="text-align:right;">Premium</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align:left;">2019</td>
+            <td>10.3 k€ <span style="color:#888;font-size:0.93em;">(2)</span></td>
+            <td>10.7 k€ <span style="color:#888;font-size:0.93em;">(1676)</span></td>
+            <td>17.5 k€ <span style="color:#888;font-size:0.93em;">(167)</span></td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">2020</td>
+            <td>10.4 k€ <span style="color:#888;font-size:0.93em;">(6)</span></td>
+            <td>11.0 k€ <span style="color:#888;font-size:0.93em;">(2836)</span></td>
+            <td>17.5 k€ <span style="color:#888;font-size:0.93em;">(283)</span></td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">2021</td>
+            <td>10.7 k€ <span style="color:#888;font-size:0.93em;">(10)</span></td>
+            <td>11.0 k€ <span style="color:#888;font-size:0.93em;">(3151)</span></td>
+            <td>17.5 k€ <span style="color:#888;font-size:0.93em;">(315)</span></td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">2022</td>
+            <td>9.9 k€ <span style="color:#888;font-size:0.93em;">(7)</span></td>
+            <td>10.9 k€ <span style="color:#888;font-size:0.93em;">(3376)</span></td>
+            <td>17.2 k€ <span style="color:#888;font-size:0.93em;">(337)</span></td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">2023</td>
+            <td>10.9 k€ <span style="color:#888;font-size:0.93em;">(9)</span></td>
+            <td>10.5 k€ <span style="color:#888;font-size:0.93em;">(2496)</span></td>
+            <td>16.4 k€ <span style="color:#888;font-size:0.93em;">(249)</span></td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">2024</td>
+            <td>10.1 k€ <span style="color:#888;font-size:0.93em;">(5)</span></td>
+            <td>10.3 k€ <span style="color:#888;font-size:0.93em;">(1956)</span></td>
+            <td>17.0 k€ <span style="color:#888;font-size:0.93em;">(195)</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html> <div class="page-break"></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f2f6fa;padding:60px 40px 40px 40px;border-radius:18px;box-shadow:0 8px 32px rgba(10,108,157,0.10);border-left:8px solid #0a6c9d;margin:0 0 2.5rem 0;">
+  <h2 style="font-size:2.5em;font-weight:800;color:#0a6c9d;margin-bottom:1.3em;letter-spacing:0.01em;text-shadow:0 2px 8px #0a6c9d11;">Données financières</h2>
+  <div style="font-size:1.28em;color:#2d3748;max-width:700px;text-align:center;line-height:1.7;margin:0 auto 1.5em auto;background:#f7fafd;border-radius:8px;padding:1.2em 1.5em;box-shadow:0 2px 8px #0a6c9d08; font-style:italic;">
+    Reprise de toutes les hypothèses du business plan, Synthèse des coûts, financement, marges et indicateurs financiers du projet.
+    <br>
+    Nous prenons une hypothèse de prix de vente du mètre carré conservateur par rapport au prix moyen du mètre carré des appartements avoisinants et du coefficient de pondération du bien.
+  </div>
+  <br> <br> <br>
+    <div style="margin-top:1.2em;background:#e3f2fd;border-left:5px solid #bfa77a;border-radius:6px;padding:1.2em 2em;font-size:1.18em;color:#0a6c9d;font-weight:700;box-shadow:0 2px 8px #bfa77a22;max-width:600px;text-align:center;">
+      <span style="font-size:1.1em;display:block;margin-bottom:0.4em;">Résumé</span>
+      <span style="font-size:1.25em;font-weight:900;color:#bfa77a;">Selon les hypothèses de financement et de cout des travaux, le prix de revient sera de <strong>1 487 k€</strong> et la marge nette sera de <strong>494 k€</strong> (33,19%).</span>
+    </div>
+</div>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <!-- PAGE 1 : Inputs (version tableaux robustes et pimpées) -->
+  <div style="padding:2.2rem 1.5rem 1.2rem 1.5rem; font-family:Arial,sans-serif; background:#f8fafc;">
+    <h1 style="font-size:1.7rem;font-weight:700;color:#0a6c9d;margin-bottom:1.5rem;">Paramètres du business plan</h1>
+    <div style="display:flex;flex-wrap:wrap;gap:2.1rem 1.5rem;align-items:flex-start;">
+      <!-- Acquisition -->
+      <div style="flex:1 1 260px;min-width:220px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #bfa77a;">
+        <div style="font-size:1.15rem;font-weight:800;color:#0a6c9d;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Acquisition</div>
+        <table style="width:100%;border-collapse:collapse;">
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Prix affiché (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">0</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Prix d'achat (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">1 050 000</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Frais notaire (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">2,5%</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Frais agence achat (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">0%</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Frais agence vente (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">3,5%</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Frais dossier (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">5 000</td></tr>
+        </table>
+      </div>
+      <!-- Travaux -->
+      <div style="flex:1 1 220px;min-width:220px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #c97c2b;">
+        <div style="font-size:1.15rem;font-weight:800;color:#c97c2b;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Travaux</div>
+        <table style="width:100%;border-collapse:collapse;">
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Coût travaux (€/m²)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">1 500</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Maîtrise d'œuvre (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">0%</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Aléa travaux (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">3%</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Terrasse (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">0</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Démolition (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">10 000</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Honoraires techniques (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">1 500</td></tr>
+        </table>
+      </div>
+      <!-- Divers -->
+      <div style="flex:1 1 180px;min-width:180px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #64748b;">
+        <div style="font-size:1.15rem;font-weight:800;color:#64748b;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Divers</div>
+        <table style="width:100%;border-collapse:collapse;">
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Prorata foncier (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">4 500</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Diagnostics (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">1 500</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Mobilier (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">5 000</td></tr>
+        </table>
+      </div>
+      <!-- Financement -->
+      <div style="flex:1 1 220px;min-width:220px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #0a6c9d;">
+        <div style="font-size:1.15rem;font-weight:800;color:#0a6c9d;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Financement</div>
+        <table style="width:100%;border-collapse:collapse;">
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Crédit foncier (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">900 000</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Fonds propres (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">150 000</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Crédit accompagnement (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">500 000</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Taux crédit (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">4,5%</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Commission (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">1%</td></tr>
+        </table>
+      </div>
+      <!-- Surfaces après travaux -->
+      <div style="flex:1 1 180px;min-width:180px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #388e3c;">
+        <div style="font-size:1.15rem;font-weight:800;color:#388e3c;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Surfaces après travaux</div>
+        <table style="width:100%;border-collapse:collapse;">
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Carrez (m²)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#388e3c;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">205</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Terrasse (m²)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#388e3c;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">0</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Pondérée (m²)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#388e3c;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">205</td></tr>
+        </table>
+      </div>
+      <!-- Calendrier -->
+      <div style="flex:1 1 180px;min-width:180px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #64748b;">
+        <div style="font-size:1.15rem;font-weight:800;color:#64748b;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Calendrier</div>
+        <table style="width:100%;border-collapse:collapse;">
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Date d'achat</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">2025-09-01</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Durée (jours)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">365</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Date de vente</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">2026-09-01</td></tr>
+        </table>
+      </div>
+      <!-- Prix de vente -->
+      <div style="flex:1 1 220px;min-width:220px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #d32f2f;">
+        <div style="font-size:1.15rem;font-weight:800;color:#d32f2f;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Prix de vente</div>
+        <table style="width:100%;border-collapse:collapse;">
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Prix vente réel pondéré (€/m²)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#d32f2f;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">10 000</td></tr>
+          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Prix vente théorique (€/m²) <span style="font-size:0.8rem;color:#64748b;font-style: italic;">(benchmark * ponderation)</span></td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#d32f2f;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">11 257</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div style="page-break-after:always;"></div>
+
+  <!-- PAGE 2 : Détail des coûts et prix de revient -->
+  <div style="padding:2.2rem 1.5rem 1.2rem 1.5rem; font-family:Arial,sans-serif; background:#f8fafc;">
+    <!-- Bloc prix de revient total -->
+    <div style="background:#fff;border-radius:18px;padding:2.1rem 2.2rem 1.5rem 2.2rem;box-shadow:0 2px 16px #0a6c9d10;border:2.5px solid #0a6c9d;max-width:520px;margin:0 auto 2.5rem auto;text-align:center;">
+      <div style="font-size:2.1rem;font-weight:900;color:#0a6c9d;display:flex;align-items:center;justify-content:center;margin-bottom:0.7rem;"><span style='font-size:2.1rem;margin-right:0.7rem;'>💰</span>1 487 k€</div>
+      <div style="font-size:1.15rem;color:#64748b;font-weight:600;">Total du projet</div>
+    </div>
+    <!-- Tableaux des coûts -->
+    <div style="display:flex;flex-wrap:wrap;gap:2.2rem 1.5rem;align-items:flex-start;justify-content:center;">
+      <!-- Coût d'acquisition -->
+      <div style="flex:1 1 320px;min-width:260px;background:#fff;border-radius:10px;padding:1.1rem 1.1rem 0.7rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #bfa77a;">
+        <div style="font-size:1.13rem;font-weight:800;color:#bfa77a;margin-bottom:0.7rem;">Coût d'acquisition</div>
+        <table style="width:100%;border-collapse:collapse;font-size:1.07rem;">
+          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Acquisition</td><td style="text-align:right;padding:0.18rem 0.2rem;">1 050 k€</td></tr>
+          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Commission</td><td style="text-align:right;padding:0.18rem 0.2rem;">0 k€</td></tr>
+          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Frais notaire</td><td style="text-align:right;padding:0.18rem 0.2rem;">26 k€</td></tr>
+          <tr><td style="font-weight:800;color:#0a6c9d;padding:0.18rem 0.2rem;">Total achat</td><td style="text-align:right;padding:0.18rem 0.2rem;font-weight:800;color:#0a6c9d;">1 076 k€</td></tr>
+        </table>
+      </div>
+      <!-- Coût travaux -->
+      <div style="flex:1 1 320px;min-width:260px;background:#fff;border-radius:10px;padding:1.1rem 1.1rem 0.7rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #c97c2b;">
+        <div style="font-size:1.13rem;font-weight:800;color:#c97c2b;margin-bottom:0.7rem;">Coût travaux</div>
+        <table style="width:100%;border-collapse:collapse;font-size:1.07rem;">
+          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Intérieur habitable</td><td style="text-align:right;padding:0.18rem 0.2rem;">308 k€</td></tr>
+          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Terrasse</td><td style="text-align:right;padding:0.18rem 0.2rem;">0 k€</td></tr>
+          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Mobilier</td><td style="text-align:right;padding:0.18rem 0.2rem;">5 k€</td></tr>
+          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Démolition</td><td style="text-align:right;padding:0.18rem 0.2rem;">10 k€</td></tr>
+          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Aléa</td><td style="text-align:right;padding:0.18rem 0.2rem;">10 k€</td></tr>
+          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">MOE suivi</td><td style="text-align:right;padding:0.18rem 0.2rem;">0 k€</td></tr>
+          <tr><td style="font-weight:800;color:#c97c2b;padding:0.18rem 0.2rem;">Total travaux</td><td style="text-align:right;padding:0.18rem 0.2rem;font-weight:800;color:#c97c2b;">332 k€</td></tr>
+        </table>
+      </div>
+      <!-- Frais financement -->
+      <div style="flex:1 1 320px;min-width:260px;background:#fff;border-radius:10px;padding:1.1rem 1.1rem 0.7rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #0a6c9d;">
+        <div style="font-size:1.13rem;font-weight:800;color:#0a6c9d;margin-bottom:0.7rem;">Frais financement</div>
+        <table style="width:100%;border-collapse:collapse;font-size:1.07rem;">
+          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Intérêts prêt</td><td style="text-align:right;padding:0.18rem 0.2rem;">52 k€</td></tr>
+          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Accompagnement prêt</td><td style="text-align:right;padding:0.18rem 0.2rem;">14 k€</td></tr>
+          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Frais dossier</td><td style="text-align:right;padding:0.18rem 0.2rem;">5 k€</td></tr>
+          <tr><td style="font-weight:800;color:#0a6c9d;padding:0.18rem 0.2rem;">Total financement</td><td style="text-align:right;padding:0.18rem 0.2rem;font-weight:800;color:#0a6c9d;">71 k€</td></tr>
+        </table>
+      </div>
+      <!-- Frais divers -->
+      <div style="flex:1 1 320px;min-width:260px;background:#fff;border-radius:10px;padding:1.1rem 1.1rem 0.7rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #64748b;">
+        <div style="font-size:1.13rem;font-weight:800;color:#64748b;margin-bottom:0.7rem;">Frais divers</div>
+        <table style="width:100%;border-collapse:collapse;font-size:1.07rem;">
+          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Hon. techniques</td><td style="text-align:right;padding:0.18rem 0.2rem;">2 k€</td></tr>
+          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Prorata foncier</td><td style="text-align:right;padding:0.18rem 0.2rem;">5 k€</td></tr>
+          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Diagnostics</td><td style="text-align:right;padding:0.18rem 0.2rem;">2 k€</td></tr>
+          <tr><td style="font-weight:800;color:#64748b;padding:0.18rem 0.2rem;">Total frais divers</td><td style="text-align:right;padding:0.18rem 0.2rem;font-weight:800;color:#64748b;">8 k€</td></tr>
+        </table>
+      </div>
+    </div>
+    <!-- Bloc financement utilisé -->
+    <div style="margin:2.5rem auto 0 auto;max-width:700px;display:flex;gap:1.5rem;justify-content:center;align-items:center;">
+      <div style="background:#e0f2fe;border-radius:12px;padding:1.1rem 2.2rem;text-align:center;font-size:1.18rem;font-weight:800;color:#0a6c9d;box-shadow:0 2px 8px #0a6c9d10;">Foncier<br><span style='font-size:1.5rem;'>900 k€</span></div>
+      <div style="background:#fef9c3;border-radius:12px;padding:1.1rem 2.2rem;text-align:center;font-size:1.18rem;font-weight:800;color:#c97c2b;box-shadow:0 2px 8px #c97c2b10;">FP<br><span style='font-size:1.5rem;'>150 k€</span></div>
+      <div style="background:#fef3c7;border-radius:12px;padding:1.1rem 2.2rem;text-align:center;font-size:1.18rem;font-weight:800;color:#d97706;box-shadow:0 2px 8px #d9770610;">Acc.<br><span style='font-size:1.5rem;'>437 k€</span></div>
+    </div>
+  </div>
+  <div style="page-break-after:always;"></div>
+
+  <!-- PAGE UNIQUE : Synthèse financière et comparatif vente -->
+  <div style="padding:2.5rem 2rem; background:#f8fafc; min-height:100vh; font-family:Arial,sans-serif;">
+    <h1 style="font-size:1.7rem;font-weight:700;color:#0a6c9d;margin-bottom:2.2rem;">Synthèse financière</h1>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2.2rem 2.2rem;margin-bottom:2.5rem;max-width:700px;margin-left:auto;margin-right:auto;">
+      <div style="background:#fff;border-radius:16px;padding:2.1rem 1.1rem;text-align:center;box-shadow:0 2px 12px #0a6c9d10;display:flex;flex-direction:column;align-items:center;">
+        <div style="font-size:1.13rem;font-weight:700;color:#64748b;margin-bottom:0.7rem;">💰 Prix de revient</div>
+        <div style="font-size:2.1rem;font-weight:900;color:#0a6c9d;">1 487 k€</div>
+      </div>
+      <div style="background:#fff;border-radius:16px;padding:2.1rem 1.1rem;text-align:center;box-shadow:0 2px 12px #0a6c9d10;display:flex;flex-direction:column;align-items:center;">
+        <div style="font-size:1.13rem;font-weight:700;color:#64748b;margin-bottom:0.7rem;">💰 Marge nette</div>
+        <div style="font-size:2.1rem;font-weight:900;color:#0a6c9d;">494 k€</div>
+      </div>
+      <div style="background:#fff;border-radius:16px;padding:2.1rem 1.1rem;text-align:center;box-shadow:0 2px 12px #0a6c9d10;display:flex;flex-direction:column;align-items:center;">
+        <div style="font-size:1.13rem;font-weight:700;color:#64748b;margin-bottom:0.7rem;">📊 Rentabilité</div>
+        <div style="font-size:2.1rem;font-weight:900;color:#0a6c9d;">33,19%</div>
+      </div>
+      <div style="background:#fff;border-radius:16px;padding:2.1rem 1.1rem;text-align:center;box-shadow:0 2px 12px #0a6c9d10;display:flex;flex-direction:column;align-items:center;">
+        <div style="font-size:1.13rem;font-weight:700;color:#64748b;margin-bottom:0.7rem;">📈 Rendement fonds propres</div>
+        <div style="font-size:2.1rem;font-weight:900;color:#0a6c9d;">329,08%</div>
+      </div>
+    </div>
+    <div style="margin:2.5rem 0 2.5rem 0;">
+      <img src="https://quickchart.io/chart?c&#x3D;%7Btype%3A%27bar%27%2Cdata%3A%7Blabels%3A%5B%27Achat+%28pond%C3%A9r%C3%A9%29%27%2C%27Revient+%28pond%C3%A9r%C3%A9%29%27%2C%27Vente+%28pond%C3%A9r%C3%A9%29%27%2C%27Achat+%28carrez%29%27%2C%27Revient+%28carrez%29%27%2C%27Vente+%28carrez%29%27%5D%2Cdatasets%3A%5B%7Blabel%3A%27Prix%2Fm%C2%B2%27%2Cdata%3A%5B7000%2C7253.967961315756%2C10000%2C7000%2C7253.967961315756%2C10000%5D%2CbackgroundColor%3A%5B%27%23bfa77a%27%2C%27%23c97c2b%27%2C%27%230a6c9d%27%2C%27%23bfa77a55%27%2C%27%23c97c2b55%27%2C%27%230a6c9d55%27%5D%7D%2C%7Btype%3A%27line%27%2Clabel%3A%27Benchmark%27%2Cdata%3A%5B10233.94680626921%2C10233.94680626921%2C10233.94680626921%2C10233.94680626921%2C10233.94680626921%2C10233.94680626921%5D%2CborderColor%3A%27%23e53e3e%27%2CborderDash%3A%5B8%2C4%5D%2Cfill%3Afalse%2CpointRadius%3A0%2Corder%3A2%7D%5D%7D%2Coptions%3A%7Bplugins%3A%7Blegend%3A%7Bdisplay%3Atrue%7D%7D%2Cscales%3A%7ByAxes%3A%5B%7Bdisplay%3Atrue%2CscaleLabel%3A%7Bdisplay%3Atrue%2ClabelString%3A%27Prix+%28%E2%82%AC%2Fm%C2%B2%29%27%7D%2Cticks%3A%7Bmin%3A6500%7D%7D%5D%2Cy%3A%7Btitle%3A%7Bdisplay%3Atrue%2Ctext%3A%27Prix+%28%E2%82%AC%2Fm%C2%B2%29%27%7D%2Cmin%3A6500%7D%2Cx%3A%7Btitle%3A%7Bdisplay%3Atrue%2Ctext%3A%27Type%27%7D%7D%7D%7D%7D&amp;w&#x3D;700&amp;h&#x3D;320&amp;ref&#x3D;qc-js&amp;bkg&#x3D;transparent&amp;f&#x3D;png&amp;v&#x3D;2.9.4" alt="Comparatif prix" style="width:100%;max-width:700px;display:block;margin:0 auto;border-radius:10px;box-shadow:0 2px 8px #0001;">
+    </div>
+    <div style="max-width:420px;margin:2.5rem auto 0 auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:1.25rem;color:#b0b7c3;background:transparent;text-align:center;">
+        <thead>
+          <tr>
+            <th style="font-weight:700;font-size:1.15rem;color:#b0b7c3;background:transparent;border:none;"></th>
+            <th style="font-weight:700;font-size:1.15rem;color:#b0b7c3;background:transparent;border:none;">Pondéré</th>
+            <th style="font-weight:700;font-size:1.15rem;color:#b0b7c3;background:transparent;border:none;">Carrez</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:#b0b7c3;background:transparent;border:none;text-align:right;">Achat</td>
+            <td style="background:transparent;border:none;">7.0 k€</td>
+            <td style="background:transparent;border:none;">7.0 k€</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:#b0b7c3;background:transparent;border:none;text-align:right;">Revient</td>
+            <td style="background:transparent;border:none;">7.3 k€</td>
+            <td style="background:transparent;border:none;">7.3 k€</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:#b0b7c3;background:transparent;border:none;text-align:right;">Vente</td>
+            <td style="background:transparent;border:none;">10.0 k€</td>
+            <td style="background:transparent;border:none;">10.0 k€</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div style="page-break-after:always;"></div>
+</body>
+</html> <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f2f6fa;padding:60px 40px 40px 40px;border-radius:18px;box-shadow:0 8px 32px rgba(10,108,157,0.10);border-left:8px solid #0a6c9d;margin:0 0 2.5rem 0;">
+  <h2 style="font-size:2.5em;font-weight:800;color:#0a6c9d;margin-bottom:1.3em;letter-spacing:0.01em;text-shadow:0 2px 8px #0a6c9d11;">Annexe : Transactions DVF</h2>
+  <div style="font-size:1.28em;color:#2d3748;max-width:700px;text-align:center;line-height:1.7;margin:0 auto 1.5em auto;background:#f7fafd;border-radius:8px;padding:1.2em 1.5em;box-shadow:0 2px 8px #0a6c9d08; font-style:italic;">
+    Liste détaillée des transactions immobilières utilisées pour l&#x27;analyse comparative.
+    <br>
+    
+  </div>
+  <br> <br> <br>
+</div>
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -1511,309 +2178,4 @@ d&#x27;une surface de 146 m² carrez avec très belle hauteur sous plafond. (env
     </div>
   </div>
 </body>
-</html> <div class="page-break"></div><!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8fafc; color: #222; margin: 0; }
-    .section { padding: 2.2rem 1.5rem 1.2rem 1.5rem; max-width: 900px; margin: 0 auto; }
-    .section-title { font-size: 2rem; font-weight: 700; color: #0a6c9d; margin-bottom: 2rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
-    .outlier-phrase { margin: 0.7rem 0 1.5rem 0; font-size: 0.95rem; color: #2d3748; text-align: center; font-style: italic; }
-    .chart-block { margin-bottom: 2rem; }
-    .chart-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.5rem; color: #1a202c; }
-    .chart-image { width: 100%; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px #0001; background: #fff; }
-    .table-block { margin-bottom: 1.2rem; }
-    .data-table { width: 100%; border-collapse: collapse; font-size: 0.98rem; background: #fff; border-radius: 10px; overflow: hidden; }
-    .data-table th { background: #f8fafc; color: #64748b; font-weight: 600; text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1.2px solid #e2e8f0; }
-    .data-table td { padding: 0.5rem 0.7rem; border-bottom: 1px solid #f1f5f9; text-align: right; }
-    .data-table tr:last-child td { border-bottom: none; }
-    @media (max-width: 900px), print {
-      .section { padding: 1rem 0.5rem; }
-    }
-  </style>
-</head>
-<body>
-  <div class="section">
-    <div class="section-title">Analyse DVF</div>
-    <div class="outlier-phrase">
-      Les bornes d'outliers sont calculées à partir de la moyenne arrondissement brute (11.1 k€).<br>Les transactions avec un prix inferieur à <b>7 213 €</b> et supérieur à <b>33 291 €</b> ont été exclues.
-      
-    </div>
-    
-    <div style="display:flex;flex-direction:row;gap:1.5rem;margin-bottom:1.5rem;justify-content:center;align-items:stretch;width:100%;min-width:0;">
-      <div style="flex:1 1 0;min-width:0;max-width:100%;width:auto;display:flex;flex-direction:column;align-items:center;background:#fff;border-radius:14px;box-shadow:0 2px 8px #0a6c9d10;text-align:center;padding:1.2rem 0.7rem;">
-        <div style="font-size:1.05rem;color:#64748b;font-weight:600;margin-bottom:0.2rem;">Prix moyen <br>sélection</div>
-        <div style="font-size:1.7rem;font-weight:800;color:#1a237e;margin-bottom:0.1rem;">10.2 k€/m2</div>
-        <div style="font-size:0.97rem;color:#888;">basé sur 42 transactions</div>
-      </div>
-      <div style="flex:1 1 0;min-width:0;max-width:100%;width:auto;display:flex;flex-direction:column;align-items:center;background:#fff;border-radius:14px;box-shadow:0 2px 8px #0a6c9d10;text-align:center;padding:1.2rem 0.7rem;">
-        <div style="font-size:1.05rem;color:#64748b;font-weight:600;margin-bottom:0.2rem;">Prix moyen <br>arrondissement</div>
-        <div style="font-size:1.7rem;font-weight:800;color:#388e3c;margin-bottom:0.1rem;">10.6 k€/m2</div>
-        <div style="font-size:0.97rem;color:#888;">basé sur 18556 transactions</div>
-      </div>
-      <div style="flex:1 1 0;min-width:0;max-width:100%;width:auto;display:flex;flex-direction:column;align-items:center;background:#fff;border-radius:14px;box-shadow:0 2px 8px #0a6c9d10;text-align:center;padding:1.2rem 0.7rem;">
-        <div style="font-size:1.05rem;color:#64748b;font-weight:600;margin-bottom:0.2rem;">Moyenne Premium <br>(top 10%)</div>
-        <div style="font-size:1.7rem;font-weight:800;color:#d32f2f;margin-bottom:0.1rem;">17.3 k€/m2</div>
-        <div style="font-size:0.97rem;color:#888;">basé sur 1549 transactions</div>
-      </div>
-    </div>
-    <div class="chart-block">
-      <div class="chart-title">Évolution des prix</div>
-      <img src="https://quickchart.io/chart?c&#x3D;%7Btype%3A%27line%27%2Cdata%3A%7Blabels%3A%5B%272019%27%2C%272020%27%2C%272021%27%2C%272022%27%2C%272023%27%2C%272024%27%5D%2Cdatasets%3A%5B%7Blabel%3A%27S%C3%A9lection%27%2Cdata%3A%5B10.305222222222222%2C10.43412162162162%2C10.684719535783369%2C9.873794392523365%2C10.946444735516371%2C10.06633802816901%5D%2CborderColor%3A%27%231a237e%27%2CbackgroundColor%3A%27%231a237e22%27%2CyAxisID%3A%27y1%27%2Cfill%3Afalse%2CpointRadius%3A4%2CborderWidth%3A3%2ClineTension%3A0.4%7D%2C%7Blabel%3A%27Arrondissement%27%2Cdata%3A%5B10.674419117346941%2C10.96809100654351%2C11.043095908067901%2C10.93583388715591%2C10.495409598306379%2C10.30183482926523%5D%2CborderColor%3A%27%23388e3c%27%2CbackgroundColor%3A%27%23388e3c22%27%2CyAxisID%3A%27y1%27%2Cfill%3Afalse%2CpointRadius%3A4%2CborderWidth%3A3%2ClineTension%3A0.4%7D%2C%7Blabel%3A%27Premium+%28top+10%25%29%27%2Cdata%3A%5B17.48782447843823%2C17.5437848200313%2C17.54999983551279%2C17.194682859614108%2C16.44430766280026%2C17.03247046654929%5D%2CborderColor%3A%27%23d32f2f%27%2CbackgroundColor%3A%27%23d32f2f22%27%2CyAxisID%3A%27y2%27%2Cfill%3Afalse%2CpointRadius%3A4%2CborderWidth%3A3%2ClineTension%3A0.4%7D%5D%7D%2Coptions%3A%7Blegend%3A%7Bdisplay%3Atrue%2Cposition%3A%27bottom%27%7D%2Ctitle%3A%7Bdisplay%3Afalse%7D%2Cscales%3A%7ByAxes%3A%5B%7Bid%3A%27y1%27%2Ctype%3A%27linear%27%2Cposition%3A%27left%27%2CscaleLabel%3A%7Bdisplay%3Atrue%2ClabelString%3A%27k%E2%82%AC%2Fm%C2%B2%27%7D%2Cticks%3A%7Bmin%3A9%2Cmax%3A12%7D%7D%2C%7Bid%3A%27y2%27%2Ctype%3A%27linear%27%2Cposition%3A%27right%27%2CscaleLabel%3A%7Bdisplay%3Atrue%2ClabelString%3A%27Premium+%28k%E2%82%AC%2Fm%C2%B2%29%27%7D%2Cticks%3A%7Bmin%3A15%2Cmax%3A19%7D%2CgridLines%3A%7BdrawOnChartArea%3Afalse%7D%7D%5D%2CxAxes%3A%5B%7BscaleLabel%3A%7Bdisplay%3Atrue%2ClabelString%3A%27Ann%C3%A9e%27%7D%7D%5D%7D%7D%7D&amp;w&#x3D;600&amp;h&#x3D;220&amp;ref&#x3D;qc-js&amp;bkg&#x3D;transparent&amp;f&#x3D;png&amp;v&#x3D;2.9.4" alt="Évolution des prix" class="chart-image" />
-    </div>
-    <div class="table-block">
-      <div class="chart-title">Tableau annuel</div>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th style="text-align:left;">Année</th>
-            <th style="text-align:right;">Sélection</th>
-            <th style="text-align:right;">Arrondissement</th>
-            <th style="text-align:right;">Premium</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="text-align:left;">2019</td>
-            <td>10.3 k€ <span style="color:#888;font-size:0.93em;">(2)</span></td>
-            <td>10.7 k€ <span style="color:#888;font-size:0.93em;">(1676)</span></td>
-            <td>17.5 k€ <span style="color:#888;font-size:0.93em;">(167)</span></td>
-          </tr>
-          <tr>
-            <td style="text-align:left;">2020</td>
-            <td>10.4 k€ <span style="color:#888;font-size:0.93em;">(6)</span></td>
-            <td>11.0 k€ <span style="color:#888;font-size:0.93em;">(2836)</span></td>
-            <td>17.5 k€ <span style="color:#888;font-size:0.93em;">(283)</span></td>
-          </tr>
-          <tr>
-            <td style="text-align:left;">2021</td>
-            <td>10.7 k€ <span style="color:#888;font-size:0.93em;">(10)</span></td>
-            <td>11.0 k€ <span style="color:#888;font-size:0.93em;">(3151)</span></td>
-            <td>17.5 k€ <span style="color:#888;font-size:0.93em;">(315)</span></td>
-          </tr>
-          <tr>
-            <td style="text-align:left;">2022</td>
-            <td>9.9 k€ <span style="color:#888;font-size:0.93em;">(7)</span></td>
-            <td>10.9 k€ <span style="color:#888;font-size:0.93em;">(3376)</span></td>
-            <td>17.2 k€ <span style="color:#888;font-size:0.93em;">(337)</span></td>
-          </tr>
-          <tr>
-            <td style="text-align:left;">2023</td>
-            <td>10.9 k€ <span style="color:#888;font-size:0.93em;">(9)</span></td>
-            <td>10.5 k€ <span style="color:#888;font-size:0.93em;">(2496)</span></td>
-            <td>16.4 k€ <span style="color:#888;font-size:0.93em;">(249)</span></td>
-          </tr>
-          <tr>
-            <td style="text-align:left;">2024</td>
-            <td>10.1 k€ <span style="color:#888;font-size:0.93em;">(5)</span></td>
-            <td>10.3 k€ <span style="color:#888;font-size:0.93em;">(1956)</span></td>
-            <td>17.0 k€ <span style="color:#888;font-size:0.93em;">(195)</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</body>
-</html> <div class="page-break"></div><!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-</head>
-<body>
-  <!-- PAGE 1 : Inputs (version tableaux robustes et pimpées) -->
-  <div style="padding:2.2rem 1.5rem 1.2rem 1.5rem; font-family:Arial,sans-serif; background:#f8fafc;">
-    <h1 style="font-size:1.7rem;font-weight:700;color:#0a6c9d;margin-bottom:1.5rem;">Paramètres du business plan</h1>
-    <div style="display:flex;flex-wrap:wrap;gap:2.1rem 1.5rem;align-items:flex-start;">
-      <!-- Acquisition -->
-      <div style="flex:1 1 260px;min-width:220px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #bfa77a;">
-        <div style="font-size:1.15rem;font-weight:800;color:#0a6c9d;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Acquisition</div>
-        <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Prix affiché (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">0</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Prix d'achat (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">1 050 000</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Frais notaire (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">2,5%</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Frais agence achat (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">0%</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Frais agence vente (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">3,5%</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Frais dossier (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">5 000</td></tr>
-        </table>
-      </div>
-      <!-- Travaux -->
-      <div style="flex:1 1 220px;min-width:220px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #c97c2b;">
-        <div style="font-size:1.15rem;font-weight:800;color:#c97c2b;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Travaux</div>
-        <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Coût travaux (€/m²)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">1 500</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Maîtrise d'œuvre (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">0%</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Aléa travaux (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">3%</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Terrasse (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">0</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Démolition (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">10 000</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Honoraires techniques (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">1 500</td></tr>
-        </table>
-      </div>
-      <!-- Divers -->
-      <div style="flex:1 1 180px;min-width:180px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #64748b;">
-        <div style="font-size:1.15rem;font-weight:800;color:#64748b;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Divers</div>
-        <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Prorata foncier (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">4 500</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Diagnostics (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">1 500</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Mobilier (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">5 000</td></tr>
-        </table>
-      </div>
-      <!-- Financement -->
-      <div style="flex:1 1 220px;min-width:220px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #0a6c9d;">
-        <div style="font-size:1.15rem;font-weight:800;color:#0a6c9d;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Financement</div>
-        <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Crédit foncier (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">900 000</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Fonds propres (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">150 000</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Crédit accompagnement (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">500 000</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Taux crédit (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">4,5%</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Commission (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">1%</td></tr>
-        </table>
-      </div>
-      <!-- Surfaces après travaux -->
-      <div style="flex:1 1 180px;min-width:180px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #388e3c;">
-        <div style="font-size:1.15rem;font-weight:800;color:#388e3c;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Surfaces après travaux</div>
-        <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Carrez (m²)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#388e3c;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">205</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Terrasse (m²)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#388e3c;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">0</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Pondérée (m²)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#388e3c;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">205</td></tr>
-        </table>
-      </div>
-      <!-- Calendrier -->
-      <div style="flex:1 1 180px;min-width:180px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #64748b;">
-        <div style="font-size:1.15rem;font-weight:800;color:#64748b;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Calendrier</div>
-        <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Date d'achat</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">2025-09-01</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Durée (jours)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">365</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Date de vente</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">2026-09-01</td></tr>
-        </table>
-      </div>
-      <!-- Prix de vente -->
-      <div style="flex:1 1 220px;min-width:220px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #d32f2f;">
-        <div style="font-size:1.15rem;font-weight:800;color:#d32f2f;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Prix de vente</div>
-        <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Prix vente réel pondéré (€/m²)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#d32f2f;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">10 000</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Prix vente théorique (€/m²) <span style="font-size:0.8rem;color:#64748b;font-style: italic;">(benchmark * ponderation)</span></td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#d32f2f;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">11 257</td></tr>
-        </table>
-      </div>
-    </div>
-  </div>
-  <div style="page-break-after:always;"></div>
-
-  <!-- PAGE 2 : Détail des coûts et prix de revient -->
-  <div style="padding:2.2rem 1.5rem 1.2rem 1.5rem; font-family:Arial,sans-serif; background:#f8fafc;">
-    <!-- Bloc prix de revient total -->
-    <div style="background:#fff;border-radius:18px;padding:2.1rem 2.2rem 1.5rem 2.2rem;box-shadow:0 2px 16px #0a6c9d10;border:2.5px solid #0a6c9d;max-width:520px;margin:0 auto 2.5rem auto;text-align:center;">
-      <div style="font-size:2.1rem;font-weight:900;color:#0a6c9d;display:flex;align-items:center;justify-content:center;margin-bottom:0.7rem;"><span style='font-size:2.1rem;margin-right:0.7rem;'>💰</span>1 487 k€</div>
-      <div style="font-size:1.15rem;color:#64748b;font-weight:600;">Total du projet</div>
-    </div>
-    <!-- Tableaux des coûts -->
-    <div style="display:flex;flex-wrap:wrap;gap:2.2rem 1.5rem;align-items:flex-start;justify-content:center;">
-      <!-- Coût d'acquisition -->
-      <div style="flex:1 1 320px;min-width:260px;background:#fff;border-radius:10px;padding:1.1rem 1.1rem 0.7rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #bfa77a;">
-        <div style="font-size:1.13rem;font-weight:800;color:#bfa77a;margin-bottom:0.7rem;">Coût d'acquisition</div>
-        <table style="width:100%;border-collapse:collapse;font-size:1.07rem;">
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Acquisition</td><td style="text-align:right;padding:0.18rem 0.2rem;">1 050 k€</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Commission</td><td style="text-align:right;padding:0.18rem 0.2rem;">0 k€</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Frais notaire</td><td style="text-align:right;padding:0.18rem 0.2rem;">26 k€</td></tr>
-          <tr><td style="font-weight:800;color:#0a6c9d;padding:0.18rem 0.2rem;">Total achat</td><td style="text-align:right;padding:0.18rem 0.2rem;font-weight:800;color:#0a6c9d;">1 076 k€</td></tr>
-        </table>
-      </div>
-      <!-- Coût travaux -->
-      <div style="flex:1 1 320px;min-width:260px;background:#fff;border-radius:10px;padding:1.1rem 1.1rem 0.7rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #c97c2b;">
-        <div style="font-size:1.13rem;font-weight:800;color:#c97c2b;margin-bottom:0.7rem;">Coût travaux</div>
-        <table style="width:100%;border-collapse:collapse;font-size:1.07rem;">
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Intérieur habitable</td><td style="text-align:right;padding:0.18rem 0.2rem;">308 k€</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Terrasse</td><td style="text-align:right;padding:0.18rem 0.2rem;">0 k€</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Mobilier</td><td style="text-align:right;padding:0.18rem 0.2rem;">5 k€</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Démolition</td><td style="text-align:right;padding:0.18rem 0.2rem;">10 k€</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Aléa</td><td style="text-align:right;padding:0.18rem 0.2rem;">10 k€</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">MOE suivi</td><td style="text-align:right;padding:0.18rem 0.2rem;">0 k€</td></tr>
-          <tr><td style="font-weight:800;color:#c97c2b;padding:0.18rem 0.2rem;">Total travaux</td><td style="text-align:right;padding:0.18rem 0.2rem;font-weight:800;color:#c97c2b;">332 k€</td></tr>
-        </table>
-      </div>
-      <!-- Frais financement -->
-      <div style="flex:1 1 320px;min-width:260px;background:#fff;border-radius:10px;padding:1.1rem 1.1rem 0.7rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #0a6c9d;">
-        <div style="font-size:1.13rem;font-weight:800;color:#0a6c9d;margin-bottom:0.7rem;">Frais financement</div>
-        <table style="width:100%;border-collapse:collapse;font-size:1.07rem;">
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Intérêts prêt</td><td style="text-align:right;padding:0.18rem 0.2rem;">52 k€</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Accompagnement prêt</td><td style="text-align:right;padding:0.18rem 0.2rem;">14 k€</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Frais dossier</td><td style="text-align:right;padding:0.18rem 0.2rem;">5 k€</td></tr>
-          <tr><td style="font-weight:800;color:#0a6c9d;padding:0.18rem 0.2rem;">Total financement</td><td style="text-align:right;padding:0.18rem 0.2rem;font-weight:800;color:#0a6c9d;">71 k€</td></tr>
-        </table>
-      </div>
-      <!-- Frais divers -->
-      <div style="flex:1 1 320px;min-width:260px;background:#fff;border-radius:10px;padding:1.1rem 1.1rem 0.7rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #64748b;">
-        <div style="font-size:1.13rem;font-weight:800;color:#64748b;margin-bottom:0.7rem;">Frais divers</div>
-        <table style="width:100%;border-collapse:collapse;font-size:1.07rem;">
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Hon. techniques</td><td style="text-align:right;padding:0.18rem 0.2rem;">2 k€</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Prorata foncier</td><td style="text-align:right;padding:0.18rem 0.2rem;">5 k€</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Diagnostics</td><td style="text-align:right;padding:0.18rem 0.2rem;">2 k€</td></tr>
-          <tr><td style="font-weight:800;color:#64748b;padding:0.18rem 0.2rem;">Total frais divers</td><td style="text-align:right;padding:0.18rem 0.2rem;font-weight:800;color:#64748b;">8 k€</td></tr>
-        </table>
-      </div>
-    </div>
-    <!-- Bloc financement utilisé -->
-    <div style="margin:2.5rem auto 0 auto;max-width:700px;display:flex;gap:1.5rem;justify-content:center;align-items:center;">
-      <div style="background:#e0f2fe;border-radius:12px;padding:1.1rem 2.2rem;text-align:center;font-size:1.18rem;font-weight:800;color:#0a6c9d;box-shadow:0 2px 8px #0a6c9d10;">Foncier<br><span style='font-size:1.5rem;'>900 k€</span></div>
-      <div style="background:#fef9c3;border-radius:12px;padding:1.1rem 2.2rem;text-align:center;font-size:1.18rem;font-weight:800;color:#c97c2b;box-shadow:0 2px 8px #c97c2b10;">FP<br><span style='font-size:1.5rem;'>150 k€</span></div>
-      <div style="background:#fef3c7;border-radius:12px;padding:1.1rem 2.2rem;text-align:center;font-size:1.18rem;font-weight:800;color:#d97706;box-shadow:0 2px 8px #d9770610;">Acc.<br><span style='font-size:1.5rem;'>437 k€</span></div>
-    </div>
-  </div>
-  <div style="page-break-after:always;"></div>
-
-  <!-- PAGE UNIQUE : Synthèse financière et comparatif vente -->
-  <div style="padding:2.5rem 2rem; background:#f8fafc; min-height:100vh; font-family:Arial,sans-serif;">
-    <h1 style="font-size:1.7rem;font-weight:700;color:#0a6c9d;margin-bottom:2.2rem;">Synthèse financière</h1>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2.2rem 2.2rem;margin-bottom:2.5rem;max-width:700px;margin-left:auto;margin-right:auto;">
-      <div style="background:#fff;border-radius:16px;padding:2.1rem 1.1rem;text-align:center;box-shadow:0 2px 12px #0a6c9d10;display:flex;flex-direction:column;align-items:center;">
-        <div style="font-size:1.13rem;font-weight:700;color:#64748b;margin-bottom:0.7rem;">💰 Prix de revient</div>
-        <div style="font-size:2.1rem;font-weight:900;color:#0a6c9d;">1 487 k€</div>
-      </div>
-      <div style="background:#fff;border-radius:16px;padding:2.1rem 1.1rem;text-align:center;box-shadow:0 2px 12px #0a6c9d10;display:flex;flex-direction:column;align-items:center;">
-        <div style="font-size:1.13rem;font-weight:700;color:#64748b;margin-bottom:0.7rem;">💰 Marge nette</div>
-        <div style="font-size:2.1rem;font-weight:900;color:#0a6c9d;">494 k€</div>
-      </div>
-      <div style="background:#fff;border-radius:16px;padding:2.1rem 1.1rem;text-align:center;box-shadow:0 2px 12px #0a6c9d10;display:flex;flex-direction:column;align-items:center;">
-        <div style="font-size:1.13rem;font-weight:700;color:#64748b;margin-bottom:0.7rem;">📊 Rentabilité</div>
-        <div style="font-size:2.1rem;font-weight:900;color:#0a6c9d;">33,19%</div>
-      </div>
-      <div style="background:#fff;border-radius:16px;padding:2.1rem 1.1rem;text-align:center;box-shadow:0 2px 12px #0a6c9d10;display:flex;flex-direction:column;align-items:center;">
-        <div style="font-size:1.13rem;font-weight:700;color:#64748b;margin-bottom:0.7rem;">📈 Rendement fonds propres</div>
-        <div style="font-size:2.1rem;font-weight:900;color:#0a6c9d;">329,08%</div>
-      </div>
-    </div>
-    <div style="margin:2.5rem 0 2.5rem 0;">
-      <img src="https://quickchart.io/chart?c&#x3D;%7Btype%3A%27bar%27%2Cdata%3A%7Blabels%3A%5B%27Achat+%28pond%C3%A9r%C3%A9%29%27%2C%27Revient+%28pond%C3%A9r%C3%A9%29%27%2C%27Vente+%28pond%C3%A9r%C3%A9%29%27%2C%27Achat+%28carrez%29%27%2C%27Revient+%28carrez%29%27%2C%27Vente+%28carrez%29%27%5D%2Cdatasets%3A%5B%7Blabel%3A%27Prix%2Fm%C2%B2%27%2Cdata%3A%5B7000%2C7253.967961315756%2C10000%2C7000%2C7253.967961315756%2C10000%5D%2CbackgroundColor%3A%5B%27%23bfa77a%27%2C%27%23c97c2b%27%2C%27%230a6c9d%27%2C%27%23bfa77a55%27%2C%27%23c97c2b55%27%2C%27%230a6c9d55%27%5D%7D%2C%7Btype%3A%27line%27%2Clabel%3A%27Benchmark%27%2Cdata%3A%5B10233.94680626921%2C10233.94680626921%2C10233.94680626921%2C10233.94680626921%2C10233.94680626921%2C10233.94680626921%5D%2CborderColor%3A%27%23e53e3e%27%2CborderDash%3A%5B8%2C4%5D%2Cfill%3Afalse%2CpointRadius%3A0%2Corder%3A2%7D%5D%7D%2Coptions%3A%7Bplugins%3A%7Blegend%3A%7Bdisplay%3Atrue%7D%7D%2Cscales%3A%7ByAxes%3A%5B%7Bdisplay%3Atrue%2CscaleLabel%3A%7Bdisplay%3Atrue%2ClabelString%3A%27Prix+%28%E2%82%AC%2Fm%C2%B2%29%27%7D%2Cticks%3A%7Bmin%3A6500%7D%7D%5D%2Cy%3A%7Btitle%3A%7Bdisplay%3Atrue%2Ctext%3A%27Prix+%28%E2%82%AC%2Fm%C2%B2%29%27%7D%2Cmin%3A6500%7D%2Cx%3A%7Btitle%3A%7Bdisplay%3Atrue%2Ctext%3A%27Type%27%7D%7D%7D%7D%7D&amp;w&#x3D;700&amp;h&#x3D;320&amp;ref&#x3D;qc-js&amp;bkg&#x3D;transparent&amp;f&#x3D;png&amp;v&#x3D;2.9.4" alt="Comparatif prix" style="width:100%;max-width:700px;display:block;margin:0 auto;border-radius:10px;box-shadow:0 2px 8px #0001;">
-    </div>
-    <div style="max-width:420px;margin:2.5rem auto 0 auto;">
-      <table style="width:100%;border-collapse:collapse;font-size:1.25rem;color:#b0b7c3;background:transparent;text-align:center;">
-        <thead>
-          <tr>
-            <th style="font-weight:700;font-size:1.15rem;color:#b0b7c3;background:transparent;border:none;"></th>
-            <th style="font-weight:700;font-size:1.15rem;color:#b0b7c3;background:transparent;border:none;">Pondéré</th>
-            <th style="font-weight:700;font-size:1.15rem;color:#b0b7c3;background:transparent;border:none;">Carrez</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="font-weight:600;color:#b0b7c3;background:transparent;border:none;text-align:right;">Achat</td>
-            <td style="background:transparent;border:none;">7.0 k€</td>
-            <td style="background:transparent;border:none;">7.0 k€</td>
-          </tr>
-          <tr>
-            <td style="font-weight:600;color:#b0b7c3;background:transparent;border:none;text-align:right;">Revient</td>
-            <td style="background:transparent;border:none;">7.3 k€</td>
-            <td style="background:transparent;border:none;">7.3 k€</td>
-          </tr>
-          <tr>
-            <td style="font-weight:600;color:#b0b7c3;background:transparent;border:none;text-align:right;">Vente</td>
-            <td style="background:transparent;border:none;">10.0 k€</td>
-            <td style="background:transparent;border:none;">10.0 k€</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div style="page-break-after:always;"></div>
-</body>
-</html> </body></html>
+</html> <div class="page-break"></div></body></html>

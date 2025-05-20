@@ -121,14 +121,14 @@ export const calculateBusinessPlan = async (req: Request, res: Response) => {
     // Récupération du projet avec les inputs généraux
     console.log('Récupération du projet...');
     const project = await prisma.project.findUnique({
-      where: { id: projectId }
+      where: { project_id: projectId }
     });
 
     if (!project) {
       console.error('Projet non trouvé');
       return res.status(404).json({ error: 'Projet non trouvé' });
     }
-    console.log('Projet trouvé:', project.id);
+    console.log('Projet trouvé:', projectId);
 
     // Récupération de la pondération terrasse depuis les inputs généraux
     const generalInputs = project.inputsGeneral as InputsGeneral;
@@ -162,7 +162,7 @@ export const calculateBusinessPlan = async (req: Request, res: Response) => {
       // Mise à jour du projet
       console.log('Mise à jour du projet...');
       await prisma.project.update({
-        where: { id: projectId },
+        where: { project_id: projectId },
         data: {
           inputsBusinessPlan: validationResult.data,
           resultsBusinessPlan: resultsValidation.data
@@ -197,6 +197,9 @@ export const calculateBusinessPlan = async (req: Request, res: Response) => {
     });
   }
 };
+function applyDefaultIfNullUndefinedOrZero(value: any, fallback: number) {
+  return (value === null || value === undefined || value === 0) ? fallback : value;
+}
 
 const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: number, generalInputs: any): BusinessPlanResults => {
   console.log('=== Début du calcul des résultats ===');
@@ -208,20 +211,16 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
     const surface_terrasse_avant_travaux = generalInputs?.superficie_terrasse || 0;
     const surface_ponderee_avant_travaux = surface_carrez_avant_travaux + surface_terrasse_avant_travaux * ponderation_terrasse;
 
-    console.log('Surfaces avant travaux:', {
-      surface_carrez_avant_travaux,
-      surface_terrasse_avant_travaux,
-      surface_ponderee_avant_travaux
-    });
+
 
     // Appliquer le fallback pour tous les inputs numériques clés
     const safeInputs = {
       ...inputs,
       surface_carrez_apres_travaux: applyDefaultIfNullOrUndefined(inputs.surface_carrez_apres_travaux, surface_carrez_avant_travaux),
       surface_terrasse_apres_travaux: applyDefaultIfNullOrUndefined(inputs.surface_terrasse_apres_travaux, surface_terrasse_avant_travaux),
-      surface_ponderee_apres_travaux: applyDefaultIfNullOrUndefined(
+      surface_ponderee_apres_travaux: applyDefaultIfNullUndefinedOrZero(
         inputs.surface_ponderee_apres_travaux,
-        surface_carrez_avant_travaux + surface_terrasse_avant_travaux * ponderation_terrasse
+        inputs.surface_carrez_apres_travaux + (inputs.surface_terrasse_apres_travaux ?? 0) * ponderation_terrasse
       ),
       cout_travaux_m2: applyDefaultIfNullOrUndefined(inputs.cout_travaux_m2, DEFAULT_VALUES.cout_travaux_m2),
       cout_maitrise_oeuvre_percent: applyDefaultIfNullOrUndefined(inputs.cout_maitrise_oeuvre_percent, DEFAULT_VALUES.cout_maitrise_oeuvre_percent),
@@ -249,14 +248,12 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
 
     // Utiliser safeInputs partout dans la suite du calcul
     // --- surfaces après travaux ---
-    const surface = safeInputs.surface_carrez_apres_travaux;
-    const surface_terrasse = safeInputs.surface_terrasse_apres_travaux;
-    const surface_totale = surface;
+    
     const surface_carrez_apres_travaux = safeInputs.surface_carrez_apres_travaux;
-    const surface_terrasse_apres_travaux = safeInputs.surface_terrasse_apres_travaux;
+    
     const surface_ponderee_apres_travaux = safeInputs.surface_ponderee_apres_travaux;
     const prix_achat = safeInputs.prix_achat;
-    const prix_affiche = safeInputs.prix_affiche;
+    
     const duree_projet = safeInputs.duree_projet;
 
     // --- Calcul des coûts travaux ---

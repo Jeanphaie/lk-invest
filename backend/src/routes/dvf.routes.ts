@@ -128,7 +128,10 @@ router.post('/:projectId/analyse', async (req, res) => {
     }
 
     // 3. Calcul des bornes outliers arrondissement
-    const prix_m2_arr = rawRows.map(row => row.prix_m2).filter(Boolean);
+    // On filtre les prix_m2 extrêmes pour la moyenne brute d'arrondissement
+    const prix_m2_arr = rawRows
+      .map(row => row.prix_m2)
+      .filter(p => typeof p === 'number' && p >= 5000 && p <= 50000);
     const arr_avg_for_outliers = prix_m2_arr.length ? prix_m2_arr.reduce((a, b) => a + b, 0) / prix_m2_arr.length : 0;
     const lower_bound_arr = arr_avg_for_outliers * outlier_lower_bound_percent;
     const upper_bound_arr = arr_avg_for_outliers * outlier_upper_bound_coeff;
@@ -415,11 +418,15 @@ router.post('/:id/generate-quartier-description', async (req: Request, res: Resp
       return res.status(400).json({ error: 'ID de projet invalide' });
     }
 
+    console.log('[DVF][GENERATE][START] Génération de la description du quartier pour le projet:', projectId);
+    
     const project = await projectService.getProjectById(projectId);
     if (!project) {
       console.error('[OpenAI] Projet non trouvé pour id:', projectId);
       return res.status(404).json({ error: 'Projet non trouvé' });
     }
+
+    console.log('[DVF][GENERATE][PROJECT] Photos avant génération:', JSON.stringify(project.photos, null, 2));
 
     if (!project.inputsGeneral?.adresseBien) {
       console.error('[OpenAI] Adresse du bien manquante pour le projet:', projectId);
@@ -451,12 +458,23 @@ router.post('/:id/generate-quartier-description', async (req: Request, res: Resp
       throw new Error('Pas de réponse de l\'API OpenAI');
     }
 
+    console.log('[DVF][GENERATE][BEFORE_UPDATE] Données avant mise à jour:', {
+      description,
+      photos: project.photos,
+      inputsGeneral: project.inputsGeneral
+    });
+
     // Sauvegarder la description dans le projet
-    await projectService.updateProject(projectId, {
+    const updatedProject = await projectService.updateProject(projectId, {
       inputsGeneral: {
         ...project.inputsGeneral,
         description_quartier: description
       }
+    });
+
+    console.log('[DVF][GENERATE][AFTER_UPDATE] Projet mis à jour:', {
+      description: updatedProject.inputsGeneral?.description_quartier,
+      photos: updatedProject.photos
     });
 
     res.json({ description });

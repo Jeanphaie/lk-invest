@@ -7,11 +7,13 @@ import DvfAnalysis from './project-sections/DvfAnalysis';
 import BusinessPlanTab from './project-sections/BusinessPlanTab';
 import PdfReport from './project-sections/PdfReport';
 import PhotosTab from './project-sections/PhotosTab';
+import RenovationTab from './project-sections/RenovationTab';
 import { Project, ProjectSchema } from '../../../shared/types/project';
 import { useAppStore } from '../store/appStore';
 import { z } from 'zod';
 
-type TabType = 'description' | 'dvf' | 'business-plan' | 'pdf' | 'photos';
+
+type TabType = 'description' | 'renovation' | 'photos' | 'dvf' | 'business-plan' | 'pdf';
 
 export default function ProjectDetailView({ projectId }: { projectId: string }) {
   const [activeTab, setActiveTab] = useState<TabType>('description');
@@ -103,11 +105,11 @@ export default function ProjectDetailView({ projectId }: { projectId: string }) 
 
   const tabs = [
     { key: 'description', label: 'Description du bien' },
+    { key: 'renovation', label: 'Rénovation' },
     { key: 'photos', label: 'Photos' },
     { key: 'dvf', label: 'Analyse DVF' },
     { key: 'business-plan', label: 'Business Plan' },
     { key: 'pdf', label: 'Rapport PDF' },
-    
   ];
 
   return (
@@ -245,6 +247,12 @@ export default function ProjectDetailView({ projectId }: { projectId: string }) 
       <div className="max-w-7xl mx-auto px-4 py-6 w-full">
         {activeTab === 'description' && (
           <PropertyDescription
+            project={project}
+            handleUpdateProject={handleUpdateProject}
+          />
+        )}
+        {activeTab === 'renovation' && (
+          <RenovationTab
             project={project}
             handleUpdateProject={handleUpdateProject}
           />

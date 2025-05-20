@@ -1,0 +1,27 @@
+ok on va reapartir de zero avec structure vide
+{"3d":[],"after":[],"plans":[],"before":[],"during":[],"coverPhoto":"","selected3dPhotosForPdf":[],"selectedPlansPhotosForPdf":[],"selectedBeforePhotosForPdf":[]}
+
+et serveur vide
+
+Je change de tab et je lance description quartier puis reviens sur tab photo
+{"3d":[],"after":[],"plans":[],"before":[],"during":[],"coverPhoto":"","selected3dPhotosForPdf":[],"selectedPlansPhotosForPdf":[],"selectedBeforePhotosForPdf":[]}
+
+ok maintenant j'upload, je cahnge de tab et je reviens 
+{"3d":[],"after":[],"plans":[],"before":[{"id":1747740056886,"url":"/uploads/10/before/1747739345488.png","order":0,"category":"before","createdAt":"2025-05-20T11:09:05.520Z","updatedAt":"2025-05-20T11:09:05.520Z","selectedForPdf":false}],"during":[],"selected3dPhotosForPdf":[],"selectedPlansPhotosForPdf":[],"selectedBeforePhotosForPdf":[]}
+
+l'image est bien sur le serveur mais je perds le chmaps cover alors quil est dans les type shared (1er point a corrgier)
+
+je lance description quartier
+{"3d":[],"after":[],"plans":[],"before":[{"id":1747740056886,"url":"/uploads/10/before/1747739345488.png","order":0,"category":"before","createdAt":"2025-05-20T11:09:05.520Z","updatedAt":"2025-05-20T11:09:05.520Z","selectedForPdf":false}],"during":[],"selected3dPhotosForPdf":[],"selectedPlansPhotosForPdf":[],"selectedBeforePhotosForPdf":[]}
+
+ca n'a pas bougé
+
+je suppriem la phtoo
+{"3d":[],"after":[],"plans":[],"before":[],"during":[],"selected3dPhotosForPdf":[],"selectedPlansPhotosForPdf":[],"selectedBeforePhotosForPdf":[]}
+
+ok toujours sans le chmpa cover et serveur vide
+
+j'appuie sur description quartier et la photo appartait a nouveau en front dans la bdd mais pas sur le serveur encore vide (2ieme point a corriger)
+{"3d":[],"after":[],"plans":[],"before":[{"id":1747740056886,"url":"/uploads/10/before/1747739345488.png","order":0,"category":"before","createdAt":"2025-05-20T11:09:05.520Z","updatedAt":"2025-05-20T11:09:05.520Z","selectedForPdf":false}],"during":[],"selected3dPhotosForPdf":[],"selectedPlansPhotosForPdf":[],"selectedBeforePhotosForPdf":[]}
+
+Ecris ce prompt dans un fichier pour t'y refferer et corrige moi tout ca en prenant du recul, en etant tres intelligent et snas te laisser enfermer par des hypotheses simplistes, va au fond des choses 

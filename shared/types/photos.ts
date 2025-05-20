@@ -18,21 +18,28 @@ export type Photo = z.infer<typeof PhotoSchema>;
 
 export const PhotosSchema = z.object({
     before: z.array(PhotoSchema),
+    plans: z.array(PhotoSchema),
     during: z.array(PhotoSchema),
     after: z.array(PhotoSchema),
     '3d': z.array(PhotoSchema),
     selectedBeforePhotosForPdf: z.array(z.number()),
     selected3dPhotosForPdf: z.array(z.number()),
+    selectedPlansPhotosForPdf: z.array(z.number()),
     coverPhoto: z.string().optional()
 });
 
 export interface Photos {
     before: Photo[];
+    plans: Photo[];
     '3d': Photo[];
     during: Photo[];
     after: Photo[];
     selectedBeforePhotosForPdf: number[];
     selected3dPhotosForPdf: number[];
+    selectedPlansPhotosForPdf: number[];
     coverPhoto?: string;
     [key: string]: unknown; // Pour la compatibilité avec Prisma InputJsonValue
-} 
+}
+
+export const PhotoCategory = z.enum(['before', '3d', 'during', 'after', 'plans']);
+export type PhotoCategory = z.infer<typeof PhotoCategory>; 

@@ -28,12 +28,14 @@ LKI est une application complète pour l'analyse et la gestion de projets immobi
 - Générer des business plans détaillés
 - Créer des rapports PDF professionnels
 - Gérer une base de projets immobiliers
+- Générer des descriptions de quartier avec l'IA
 
 ## 🛠️ Prérequis
 - Node.js >= 18
 - npm >= 8
 - PostgreSQL >= 13
 - Google Maps API Key
+- OpenAI API Key (pour la génération de descriptions de quartier)
 
 ## ⚙️ Installation & Configuration
 
@@ -47,6 +49,7 @@ LKI est une application complète pour l'analyse et la gestion de projets immobi
    ```bash
    cd backend && npm install
    cd ../frontend && npm install
+   cd ../shared && npm install
    ```
 
 3. **Configurer les variables d'environnement**
@@ -60,12 +63,13 @@ JWT_SECRET="your-secret-key"
 PORT=3001
 NODE_ENV=development
 BASE_PDF_IMAGE_URL=http://localhost:3001
+OPENAI_API_KEY="your-openai-api-key"
 ```
 
 **Frontend** (`frontend/.env.local`) :
 ```env
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY='AIzaSyDrxyRde3ZTmrpmid5De5Wo33YjAx2MvT0'
-NEXT_PUBLIC_API_URL=http://163.172.32.45:3001
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY='your-google-maps-api-key'
+NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
 > ⚠️ **Ne jamais committer ces fichiers dans le dépôt !**
@@ -115,6 +119,7 @@ NEXT_PUBLIC_API_URL=http://163.172.32.45:3001
 - Calcul automatique du coefficient de pondération
 - Visualisation des impacts sur la valeur
 - Persistance des données entre les onglets
+- Génération automatique de description de quartier avec l'IA
 
 ### Analyse DVF
 - Recherche de transactions immobilières dans un rayon
@@ -124,6 +129,7 @@ NEXT_PUBLIC_API_URL=http://163.172.32.45:3001
 - Persistance des données DVF (transactions, séries, distributions)
 - Filtrage des transactions par rayon
 - Affichage du cercle de recherche sur la carte
+- Analyse des transactions premium (top 10%)
 
 ### Business Plan
 - Saisie et édition des données financières
@@ -150,6 +156,7 @@ NEXT_PUBLIC_API_URL=http://163.172.32.45:3001
 - Tables dédiées pour les transactions, séries et distributions
 - Chargement initial des données depuis la base
 - Évite les re-fetch inutiles lors des changements d'onglet
+- Optimisation des requêtes SQL avec des fonctions dédiées
 
 ### Interface utilisateur
 - Nouvelle interface pour la description du bien
@@ -157,18 +164,24 @@ NEXT_PUBLIC_API_URL=http://163.172.32.45:3001
 - Carte Google Maps interactive
 - Affichage du rayon de recherche DVF
 - Navigation fluide entre les onglets
+- Intégration de Material-UI v7
+- Support de Tailwind CSS
+- Animations avec Framer Motion
 
 ### Validation et robustesse
 - Validation Zod côté frontend et backend
 - Gestion des erreurs améliorée
 - Types TypeScript stricts
 - Protection contre les données manquantes
+- Gestion des erreurs API avec React Query
 
 ### Performance
 - Optimisation des requêtes DVF
 - Mise en cache des données
 - Chargement progressif des composants
 - Réduction des appels API
+- Utilisation de Zustand pour la gestion d'état
+- Optimisation des rendus avec React Query
 
 ## 🗂️ Structure du projet
 
@@ -193,10 +206,11 @@ NEXT_PUBLIC_API_URL=http://163.172.32.45:3001
 │   │   ├── services/     # Services front
 │   │   ├── hooks/        # Hooks React
 │   │   ├── context/      # Context React
-│   │   ├── store/        # État global
-│   │   └── styles/       # Styles CSS
+│   │   ├── store/        # État global (Zustand)
+│   │   └── styles/       # Styles CSS/Tailwind
 │   ├── public/           # Assets statiques
 │   └── .next/            # Build Next.js
+├── shared/               # Types et utilitaires partagés
 └── uploads/              # Photos et fichiers
 ```
 
@@ -215,14 +229,17 @@ NEXT_PUBLIC_API_URL=http://163.172.32.45:3001
 - `GET /api/business-plan/:projectId` : Récupération
 
 ### DVF (Analyse des transactions immobilières)
-- `POST /api/dvf/analyse` : **Route unifiée** pour toutes les analyses DVF (statistiques, propriétés, séries temporelles, distribution, scatter plot)
-  - Cette route retourne en une seule requête :
-    - Les statistiques globales (moyennes, bornes, premium, outliers, etc.)
+- `POST /api/dvf/:projectId/analyse` : **Route unifiée** pour toutes les analyses DVF
+  - Retourne en une seule requête :
+    - Les statistiques globales (moyennes, bornes, premium, outliers)
     - La liste des transactions filtrées
     - Les séries temporelles (évolution annuelle)
     - La distribution des prix (histogramme)
     - Le scatter plot (dispersion prix/surface)
-- Les anciennes routes (`/base-stats`, `/properties`, `/trend-series`, `/distribution-series`, `/scatter-series`, etc.) sont conservées pour compatibilité mais **ne sont plus nécessaires** pour un usage standard.
+    - Les transactions premium (top 10%)
+
+### Quartier
+- `POST /api/dvf/:id/generate-quartier-description` : Génération de description de quartier avec l'IA
 
 ### PDF
 - `GET /api/pdf/:projectId` : Génération

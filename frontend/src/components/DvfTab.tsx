@@ -633,11 +633,13 @@ const DvfTab: React.FC<DvfTabProps> = ({
                   return (
                     <tr
                       key={property.id}
-                      className={`text-xs ${property.is_outlier ? 'bg-red-50' : ''} ${selectedMarker?.id === property.id ? 'bg-yellow-100' : idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-100 cursor-pointer transition-all duration-100`}
-                      style={{ verticalAlign: 'middle', height: 38 }}
+                      style={{
+                        backgroundColor: property.is_outlier ? '#FEE2E2' : selectedMarker?.id === property.id ? '#FEF3C7' : idx % 2 === 0 ? '#FFFFFF' : '#F9FAFB',
+                        color: property.is_outlier ? '#DC2626' : 'inherit'
+                      }}
+                      className="text-xs hover:bg-blue-100 cursor-pointer transition-all duration-100"
                       onClick={() => setSelectedMarker(property)}
                       onMouseEnter={() => { console.log('hover', property.id); setSelectedMarker(property); }}
-                      onMouseLeave={() => setSelectedMarker(null)}
                     >
                       <td className="px-2 py-1 whitespace-nowrap align-middle">{new Date(property.date_mutation).toLocaleDateString('fr-FR')}</td>
                       <td className="px-2 py-1 whitespace-nowrap text-right align-middle">{Math.round(property.valeur_fonciere / 1000).toLocaleString('fr-FR')} k€</td>
@@ -645,10 +647,9 @@ const DvfTab: React.FC<DvfTabProps> = ({
                       <td className="px-2 py-1 whitespace-nowrap text-right align-middle">{(property.prix_m2 / 1000).toFixed(1)}</td>
                       <td
                         className="px-2 py-1 whitespace-nowrap overflow-hidden text-ellipsis max-w-[220px] align-middle"
-                      >{[
-                        property.numero ?? '',
-                        property.voie ?? ''
-                      ].filter(Boolean).join(' ') || '-'}</td>
+                      >
+                        {property.adresse_complete || [property.numero ?? '', property.voie ?? ''].filter(Boolean).join(' ') || '-'}
+                      </td>
                       <td className="px-2 py-1 whitespace-nowrap text-center align-middle">{property.code_postal}</td>
                       <td className="px-2 py-1 whitespace-nowrap text-center align-middle">{property.nombre_pieces_principales ?? '-'}</td>
                     </tr>

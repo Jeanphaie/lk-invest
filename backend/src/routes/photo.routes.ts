@@ -66,7 +66,7 @@ const ProjectIdParamSchema = z.object({
   projectId: z.string().regex(/^\d+$/),
 });
 const CategoryParamSchema = z.object({
-  category: z.enum(['before', '3d', 'during', 'after']),
+  category: z.enum(['before', '3d', 'during', 'after', 'plans']),
 });
 const DownloadQuerySchema = z.object({
   filename: z.string().min(1),
@@ -92,7 +92,7 @@ router.post('/:projectId/:category/multiple', upload.array('photos', 40), async 
     );
 
     // Récupérer l'état courant UNE SEULE FOIS
-    const project = await prisma.project.findUnique({ where: { id: projectId } });
+    const project = await prisma.project.findUnique({ where: { project_id: projectId } });
     let photos = project?.photos;
     if (typeof photos === 'string') {
       try { photos = JSON.parse(photos); } catch { photos = {}; }
@@ -105,8 +105,10 @@ router.post('/:projectId/:category/multiple', upload.array('photos', 40), async 
       '3d': (photos as any)['3d'] || [],
       during: (photos as any).during || [],
       after: (photos as any).after || [],
+      plans: (photos as any).plans || [],
       selectedBeforePhotosForPdf: (photos as any).selectedBeforePhotosForPdf || [],
       selected3dPhotosForPdf: (photos as any).selected3dPhotosForPdf || [],
+      selectedPlansPhotosForPdf: (photos as any).selectedPlansPhotosForPdf || [],
       coverPhoto: (photos as any).coverPhoto || undefined,
     };
 
@@ -131,7 +133,7 @@ router.post('/:projectId/:category/multiple', upload.array('photos', 40), async 
       throw new Error('Invalid photos data: ' + parsed.error.message);
     }
     await prisma.project.update({
-      where: { id: projectId },
+      where: { project_id: projectId },
       data: { photos: parsed.data }
     });
 
@@ -242,7 +244,7 @@ router.get('/project/:projectId', async (req: Request, res: Response) => {
     }
 
     // Patch: fetch project and robustly parse photos field
-    const project = await prisma.project.findUnique({ where: { id: projectId } });
+    const project = await prisma.project.findUnique({ where: { project_id: projectId } });
     let photos = project?.photos;
     if (typeof photos === 'string') {
       try {
@@ -253,6 +255,7 @@ router.get('/project/:projectId', async (req: Request, res: Response) => {
           during: [],
           after: [],
           '3d': [],
+          plans: [],
           selectedBeforePhotosForPdf: [],
           selected3dPhotosForPdf: [],
           coverPhoto: undefined
@@ -457,7 +460,7 @@ router.post('/project/:projectId/selected-for-pdf', async (req: Request, res: Re
     if (isNaN(projectId)) {
       return res.status(400).json({ error: 'Invalid project ID' });
     }
-    const { selectedBeforePhotosForPdf, selected3dPhotosForPdf } = req.body;
+    const { selectedBeforePhotosForPdf, selected3dPhotosForPdf, selectedPlansPhotosForPdf } = req.body;
     console.log('[BACK][PDF][ROUTE][BODY]', req.body);
     if (Array.isArray(selectedBeforePhotosForPdf)) {
       await photoService.setSelectedPhotosForPdf(projectId, 'selectedBeforePhotosForPdf', selectedBeforePhotosForPdf);
@@ -467,8 +470,12 @@ router.post('/project/:projectId/selected-for-pdf', async (req: Request, res: Re
       await photoService.setSelectedPhotosForPdf(projectId, 'selected3dPhotosForPdf', selected3dPhotosForPdf);
       console.log('[BACK][PDF][ROUTE][SET] selected3dPhotosForPdf', selected3dPhotosForPdf);
       return res.json({ success: true });
-      } else {
-      return res.status(400).json({ error: 'Payload must contain selectedBeforePhotosForPdf or selected3dPhotosForPdf as array' });
+    } else if (Array.isArray(selectedPlansPhotosForPdf)) {
+      await photoService.setSelectedPhotosForPdf(projectId, 'selectedPlansPhotosForPdf', selectedPlansPhotosForPdf);
+      console.log('[BACK][PDF][ROUTE][SET] selectedPlansPhotosForPdf', selectedPlansPhotosForPdf);
+      return res.json({ success: true });
+    } else {
+      return res.status(400).json({ error: 'Payload must contain selectedBeforePhotosForPdf, selected3dPhotosForPdf or selectedPlansPhotosForPdf as array' });
     }
   } catch (error) {
     console.error('Error updating selected photos for PDF:', error);
@@ -483,7 +490,7 @@ router.patch('/:projectId/pdf/:photoId', async (req: Request, res: Response) => 
     const photoId = parseInt(req.params.photoId, 10);
     const { selected, type } = req.body;
 
-    if (typeof selected !== 'boolean' || !['selectedBeforePhotosForPdf', 'selected3dPhotosForPdf'].includes(type)) {
+    if (typeof selected !== 'boolean' || !['selectedBeforePhotosForPdf', 'selected3dPhotosForPdf', 'selectedPlansPhotosForPdf'].includes(type)) {
       return res.status(400).json({ error: 'Invalid request body' });
     }
 

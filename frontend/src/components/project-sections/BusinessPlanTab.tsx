@@ -285,11 +285,31 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
   const [isLoading, setIsLoading] = useState(false);
   const [inputErrors, setInputErrors] = useState<Record<string, string>>({});
   const [financementError, setFinancementError] = useState<FinancementError | null>(null);
+  const [financementInsufficientError, setFinancementInsufficientError] = useState<string | null>(null);
 
   // Mise à jour des inputs locaux quand les inputs changent
   useEffect(() => {
     setLocalInputs(inputs);
   }, [inputs]);
+
+  // Vérification du financement total
+  useEffect(() => {
+    if (results?.resultats?.prix_revient) {
+      const totalFinancement = 
+        (localInputs.financement_credit_foncier_amount || 0) +
+        (localInputs.financement_fonds_propres_amount || 0) +
+        (localInputs.financement_credit_accompagnement_amount || 0);
+      
+      if (totalFinancement < results.resultats.prix_revient) {
+        const manquant = results.resultats.prix_revient - totalFinancement;
+        setFinancementInsufficientError(
+          `Le financement total (${formatK(totalFinancement)}) est insuffisant par rapport au coût de revient (${formatK(results.resultats.prix_revient)}). Il manque ${formatK(manquant)}.`
+        );
+      } else {
+        setFinancementInsufficientError(null);
+      }
+    }
+  }, [localInputs.financement_credit_foncier_amount, localInputs.financement_fonds_propres_amount, localInputs.financement_credit_accompagnement_amount, results?.resultats?.prix_revient]);
 
   const handleInputChange = (field: string, value: number | string) => {
     // Correction spécifique pour date_achat : toujours une string
@@ -338,14 +358,31 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
       setInputErrors({});
       setFinancementError(null);
 
+      console.log('Calling API at:', `${API_BASE_URL}/api/business-plan/${project.id}/calculate`);
+      console.log('With inputs:', updatedInputs);
+
       const response = await fetch(`${API_BASE_URL}/api/business-plan/${project.id}/calculate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify(updatedInputs)
       });
 
+      console.log('Response status:', response.status);
+      const responseText = await response.text();
+      console.log('Response text:', responseText);
+
       if (!response.ok) {
-        const errorData = await response.json();
+        let errorData;
+        try {
+          errorData = JSON.parse(responseText);
+        } catch (e) {
+          console.error('Failed to parse error response:', e);
+          throw new Error(`Server error: ${response.status} ${responseText}`);
+        }
+
         if (errorData.error === 'FINANCEMENT_ERROR') {
           setFinancementError(errorData.details);
         } else {
@@ -354,7 +391,14 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
         return;
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        console.error('Failed to parse success response:', e);
+        throw new Error('Invalid JSON response from server');
+      }
+
       const validation = validateResults(data);
       
       if (validation.valid && validation.data) {
@@ -371,7 +415,12 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
       }
     } catch (error) {
       console.error('Erreur lors du calcul:', error);
-      setInputErrors({ general: 'Erreur lors du calcul du business plan' });
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : typeof error === 'string'
+          ? error
+          : 'Une erreur inconnue est survenue';
+      setInputErrors({ general: `Erreur lors du calcul du business plan: ${errorMessage}` });
     } finally {
       setIsLoading(false);
     }
@@ -645,9 +694,56 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
   }, []);
 
   if (isCalculating) {
-    return <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(255,255,255,0.7)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ fontSize: 24, fontWeight: 600 }}>Calcul en cours...</div>
-    </div>;
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'rgba(255,255,255,0.9)',
+        zIndex: 9999,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backdropFilter: 'blur(4px)'
+      }}>
+        <div style={{
+          background: 'white',
+          padding: '2rem',
+          borderRadius: '1rem',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '1rem'
+        }}>
+          <div style={{
+            width: '50px',
+            height: '50px',
+            border: '4px solid #f3f3f3',
+            borderTop: '4px solid #0a6c9d',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }} />
+          <style>
+            {`
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+            `}
+          </style>
+          <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#1a3557' }}>
+            Calcul en cours...
+          </div>
+          <div style={{ fontSize: '1rem', color: '#64748b', textAlign: 'center', maxWidth: '300px' }}>
+            Nous calculons les résultats de votre business plan. Cela peut prendre quelques secondes.
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Dans le composant BusinessPlanTab, avant le return, ajouter :
@@ -733,6 +829,14 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
 
   return (
     <div className={styles['bp-tab-main-grid']}>
+      {/* Affichage de l'erreur de financement insuffisant */}
+      {financementInsufficientError && (
+        <Alert variant="danger" className="mb-3">
+          <Alert.Heading>Financement insuffisant</Alert.Heading>
+          <p>{financementInsufficientError}</p>
+        </Alert>
+      )}
+
       {/* Accordéon des inputs contrôlé */}
       <Accordion className={styles['bp-tab-inputs-accordion']} activeKey={isAccordionOpen ? '0' : undefined}>
         <Accordion.Item eventKey="0">

@@ -27,6 +27,10 @@ export class PdfMappingService {
     const selectedBeforeIds = hasPhotos && Array.isArray(photos.selectedBeforePhotosForPdf) ? photos.selectedBeforePhotosForPdf : [];
     const photos3d = hasPhotos && Array.isArray(photos['3d']) ? photos['3d'] : [];
     const selected3dIds = hasPhotos && Array.isArray(photos.selected3dPhotosForPdf) ? photos.selected3dPhotosForPdf : [];
+    const duringPhotos = hasPhotos && Array.isArray(photos.during) ? photos.during : [];
+    const selectedDuringIds = hasPhotos && Array.isArray(photos.selectedDuringPhotosForPdf) ? photos.selectedDuringPhotosForPdf : [];
+    const afterPhotos = hasPhotos && Array.isArray(photos.after) ? photos.after : [];
+    const selectedAfterIds = hasPhotos && Array.isArray(photos.selectedAfterPhotosForPdf) ? photos.selectedAfterPhotosForPdf : [];
 
     // Construction de l'objet PdfData
     const pdfData: PdfData = {
@@ -54,6 +58,8 @@ export class PdfMappingService {
       image3d2: photos3d.find(p => p.id === selected3dIds[1])?.url || '',
       image3d3: photos3d.find(p => p.id === selected3dIds[2])?.url || '',
       selectedBeforePhotosForPdf: selectedBeforeIds.map(id => beforePhotos.find(p => p.id === id)?.url).filter((url): url is string => typeof url === 'string'),
+      selectedDuringPhotosForPdf: selectedDuringIds.map(id => duringPhotos.find(p => p.id === id)?.url).filter((url): url is string => typeof url === 'string'),
+      selectedAfterPhotosForPdf: selectedAfterIds.map(id => afterPhotos.find(p => p.id === id)?.url).filter((url): url is string => typeof url === 'string'),
       inputsRenovationBien: project.inputsRenovationBien,
       resultsRenovationBien: project.resultsRenovationBien,
     };
@@ -76,6 +82,20 @@ export class PdfMappingService {
     }
     if (Array.isArray(pdfDataAny.selectedBeforePhotosForPdf)) {
       pdfDataAny.selectedBeforePhotosForPdf = pdfDataAny.selectedBeforePhotosForPdf.map(toHttpUrl);
+    }
+    if (Array.isArray(pdfDataAny.selectedDuringPhotosForPdf)) {
+      pdfDataAny.selectedDuringPhotosForPdf = pdfDataAny.selectedDuringPhotosForPdf.map(toHttpUrl);
+    }
+    if (Array.isArray(pdfDataAny.selectedAfterPhotosForPdf)) {
+      pdfDataAny.selectedAfterPhotosForPdf = pdfDataAny.selectedAfterPhotosForPdf.map(toHttpUrl);
+    }
+    // Correction : alimenter surface_ponderee_apres_travaux si absent dans le business plan
+    if (pdfData.inputsBusinessPlan && pdfData.inputsRenovationBien && pdfData.inputsGeneral) {
+      if (typeof pdfData.inputsBusinessPlan.surface_ponderee_apres_travaux !== 'number' || isNaN(pdfData.inputsBusinessPlan.surface_ponderee_apres_travaux)) {
+        const { superficie_apres = 0, superficie_exterieur_apres = 0 } = pdfData.inputsRenovationBien;
+        const ponderation = pdfData.inputsGeneral.ponderation_terrasse || 0;
+        pdfData.inputsBusinessPlan.surface_ponderee_apres_travaux = superficie_apres + (superficie_exterieur_apres * ponderation);
+      }
     }
     // Validation finale de l'objet complet
     return PdfDataSchema.parse(pdfData);

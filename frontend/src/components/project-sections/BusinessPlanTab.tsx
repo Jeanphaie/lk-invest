@@ -10,7 +10,12 @@ import { TooltipProps } from 'recharts';
 
 interface BusinessPlanTabProps {
   project: Project;
-  onUpdate: (updates: { inputsBusinessPlan?: BusinessPlanInputs; resultsBusinessPlan?: BusinessPlanResults }) => Promise<void>;
+  onUpdate: (updates: {
+    inputsBusinessPlan?: BusinessPlanInputs;
+    resultsBusinessPlan?: BusinessPlanResults;
+    inputsBusinessPlanRealises?: BusinessPlanInputs;
+    resultsBusinessPlanRealises?: BusinessPlanResults;
+  }) => Promise<void>;
 }
 
 interface FinancementError {
@@ -286,6 +291,11 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
   const [inputErrors, setInputErrors] = useState<Record<string, string>>({});
   const [financementError, setFinancementError] = useState<FinancementError | null>(null);
   const [financementInsufficientError, setFinancementInsufficientError] = useState<string | null>(null);
+  const [resultsRealises, setResultsRealises] = useState<BusinessPlanResults | null>(project.resultsBusinessPlanRealises || null);
+
+  useEffect(() => {
+    setResultsRealises(project.resultsBusinessPlanRealises || null);
+  }, [project.resultsBusinessPlanRealises]);
 
   // Mise à jour des inputs locaux quand les inputs changent
   useEffect(() => {
@@ -295,11 +305,11 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
   // Vérification du financement total
   useEffect(() => {
     if (results?.resultats?.prix_revient) {
-      const totalFinancement = 
+      const totalFinancement =
         (localInputs.financement_credit_foncier_amount || 0) +
         (localInputs.financement_fonds_propres_amount || 0) +
         (localInputs.financement_credit_accompagnement_amount || 0);
-      
+
       if (totalFinancement < results.resultats.prix_revient) {
         const manquant = results.resultats.prix_revient - totalFinancement;
         setFinancementInsufficientError(
@@ -359,20 +369,20 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
       setFinancementError(null);
 
       console.log('Calling API at:', `${API_BASE_URL}/api/business-plan/${project.id}/calculate`);
-      console.log('With inputs:', updatedInputs);
+      
 
       const response = await fetch(`${API_BASE_URL}/api/business-plan/${project.id}/calculate`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
         body: JSON.stringify(updatedInputs)
       });
 
-      console.log('Response status:', response.status);
+      
       const responseText = await response.text();
-      console.log('Response text:', responseText);
+      
 
       if (!response.ok) {
         let errorData;
@@ -400,7 +410,7 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
       }
 
       const validation = validateResults(data);
-      
+
       if (validation.valid && validation.data) {
         setResults(validation.data);
         await onUpdate({
@@ -415,8 +425,8 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
       }
     } catch (error) {
       console.error('Erreur lors du calcul:', error);
-      const errorMessage = error instanceof Error 
-        ? error.message 
+      const errorMessage = error instanceof Error
+        ? error.message
         : typeof error === 'string'
           ? error
           : 'Une erreur inconnue est survenue';
@@ -504,31 +514,31 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
 
   // Validation des résultats
   const validateResults = (data: unknown): { valid: boolean; errors?: Array<{ path: string; message: string }>; data?: BusinessPlanResults } => {
-    console.log('validateResults - Données reçues:', JSON.stringify(data, null, 2));
+    
 
     // Créer une copie profonde des données pour éviter de modifier l'original
     const processedData = data ? JSON.parse(JSON.stringify(data)) : data;
-    console.log('validateResults - Données copiées:', JSON.stringify(processedData, null, 2));
+    
 
     // Convertir les trimestres en nombres si nécessaire
     if (processedData && typeof processedData === 'object' && 'trimestre_details' in processedData) {
       const details = processedData.trimestre_details;
-      console.log('validateResults - Détails des trimestres avant conversion:', JSON.stringify(details, null, 2));
+    
 
       if (Array.isArray(details)) {
         processedData.trimestre_details = details.map(detail => {
-          console.log('validateResults - Détail avant conversion:', JSON.stringify(detail, null, 2));
+    
           const converted = {
             ...detail,
             trimestre: typeof detail.trimestre === 'string' ? parseInt(detail.trimestre, 10) : detail.trimestre
           };
-          console.log('validateResults - Détail après conversion:', JSON.stringify(converted, null, 2));
+    
           return converted;
         });
       }
     }
 
-    console.log('validateResults - Données avant validation:', JSON.stringify(processedData, null, 2));
+    
     const result = BusinessPlanResultsSchema.safeParse(processedData);
 
     if (!result.success) {
@@ -540,7 +550,7 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
       return { valid: false, errors };
     }
 
-    console.log('validateResults - Validation réussie:', JSON.stringify(result.data, null, 2));
+    
     return { valid: true, data: result.data };
   };
 
@@ -827,6 +837,116 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
     // Pas de return de JSX ici !
   }, [localInputs.date_achat, localInputs.duree_projet]);
 
+  // Ajout d'un état local pour les valeurs réalisées
+  const [realisedInputs, setRealisedInputs] = useState<Partial<BusinessPlanInputs>>((project as any).inputsBusinessPlanRealises || {});
+
+  // Gestion des changements pour les valeurs réalisées
+  const handleRealisedInputChange = (field: keyof BusinessPlanInputs, value: string | number) => {
+    // Special handling for date fields
+    if (field === 'date_achat' || field === 'date_vente') {
+      // If it's just a year, convert it to a full date
+      if (typeof value === 'string' && /^\d{4}$/.test(value)) {
+        value = `${value}-01-01`;
+      }
+      setRealisedInputs(prev => ({
+        ...prev,
+        [field]: value
+      }));
+    } else {
+      // For numeric fields, ensure we store a number
+      const numericValue = typeof value === 'string' ? parseFloat(value.replace(/[^\d,-]/g, '').replace(',', '.')) : value;
+      setRealisedInputs(prev => ({
+        ...prev,
+        [field]: numericValue
+      }));
+    }
+   
+  };
+
+  // Ajout de la fonction de sauvegarde des valeurs réalisées
+  const handleSaveRealised = async () => {
+   
+    // On cast realisedInputs en BusinessPlanInputs en remplissant les champs manquants par undefined
+    const { surface_ponderee_apres_travaux, ...realisedInputsSansPonderee } = realisedInputs;
+    const fullRealised: BusinessPlanInputs = {
+      ...DEFAULT_INPUTS,
+      ...realisedInputsSansPonderee
+    };
+    await onUpdate({ inputsBusinessPlanRealises: fullRealised });
+  };
+
+  // Juste avant le return du composant :
+  const [showRealised, setShowRealised] = useState(false);
+
+  // Ajout d'un état de chargement pour les calculs réalisés
+  const [isRealisedLoading, setIsRealisedLoading] = useState(false);
+
+  // Modifie handleRealisedInputBlur pour gérer le loading
+  const handleRealisedInputBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const field = e.target.name as keyof BusinessPlanInputs;
+    const value = parseInputNumber(e.target.value);
+    const updatedInputs = { ...realisedInputs, [field]: value };
+
+    // Sauvegarde côté backend
+    const { surface_ponderee_apres_travaux, ...realisedInputsSansPonderee } = updatedInputs;
+    const fullRealised: BusinessPlanInputs = {
+      ...DEFAULT_INPUTS,
+      ...realisedInputsSansPonderee
+    };
+    await onUpdate({ inputsBusinessPlanRealises: fullRealised });
+
+    setIsRealisedLoading(true);
+    try {
+      const response = await fetch(`/api/business-plan/${project.id}/calculate-realises`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(fullRealised),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors du calcul des résultats réalisés');
+      }
+
+      // Recharge le projet complet pour avoir les valeurs à jour
+      const projectRes = await fetch(`/api/projects/${project.id}`);
+      const updatedProject = await projectRes.json();
+      if (updatedProject.inputsBusinessPlanRealises) {
+        setRealisedInputs(updatedProject.inputsBusinessPlanRealises);
+      }
+      if (updatedProject.resultsBusinessPlanRealises) {
+        setResultsRealises(updatedProject.resultsBusinessPlanRealises);
+      }
+    } catch (error) {
+      console.error('Erreur lors du calcul des résultats réalisés:', error);
+    } finally {
+      setIsRealisedLoading(false);
+    }
+  };
+
+  // Affichage du spinner si loading ou si les inputs réalisés ne sont pas encore chargés
+  const showRealisedSpinner = isRealisedLoading || !realisedInputs || Object.keys(realisedInputs).length === 0;
+
+  // Calcul surface pondérée réalisée
+  const realisedCarrez = parseFloat(realisedInputs.surface_carrez_apres_travaux as any) || 0;
+  const realisedTerrasse = parseFloat(realisedInputs.surface_terrasse_apres_travaux as any) || 0;
+  const realisedPonderation = ponderationTerrasse;
+  const realisedSurfacePonderee = realisedCarrez + realisedTerrasse * realisedPonderation;
+  // Calcul date de vente réalisée
+  let realisedDateAchat = realisedInputs.date_achat ? new Date(realisedInputs.date_achat as string) : null;
+  let realisedDuree = realisedInputs.duree_projet ? Number(realisedInputs.duree_projet) : 0;
+  let realisedDateVente = '';
+  if (realisedDateAchat && !isNaN(realisedDateAchat.getTime()) && realisedDuree) {
+    const dateVente = new Date(realisedDateAchat);
+    dateVente.setDate(dateVente.getDate() + realisedDuree);
+    realisedDateVente = dateVente.toISOString().split('T')[0];
+  }
+
+  useEffect(() => {
+    setRealisedInputs((project as any).inputsBusinessPlanRealises || {});
+  }, [project.inputsBusinessPlanRealises]);
+
   return (
     <div className={styles['bp-tab-main-grid']}>
       {/* Affichage de l'erreur de financement insuffisant */}
@@ -893,16 +1013,7 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
                     <Form.Control type="number" name="cout_travaux_m2" value={safeNumberInputValue(localInputs.cout_travaux_m2)} onChange={e => handleInputChange('cout_travaux_m2', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_travaux_m2']} />
                     <Form.Control.Feedback type="invalid">{inputErrors['cout_travaux_m2']}</Form.Control.Feedback>
                   </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Maîtrise d'œuvre (%)</Form.Label>
-                    <Form.Control type="number" name="cout_maitrise_oeuvre_percent" value={safeNumberInputValue(localInputs.cout_maitrise_oeuvre_percent)} onChange={e => handleInputChange('cout_maitrise_oeuvre_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_maitrise_oeuvre_percent']} />
-                    <Form.Control.Feedback type="invalid">{inputErrors['cout_maitrise_oeuvre_percent']}</Form.Control.Feedback>
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Aléa travaux (%)</Form.Label>
-                    <Form.Control type="number" name="cout_alea_percent" value={safeNumberInputValue(localInputs.cout_alea_percent)} onChange={e => handleInputChange('cout_alea_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_alea_percent']} />
-                    <Form.Control.Feedback type="invalid">{inputErrors['cout_alea_percent']}</Form.Control.Feedback>
-                  </Form.Group>
+                  
                 </div>
                 <div className={styles['bp-tab-inputs-row']}>
                   <Form.Group>
@@ -916,10 +1027,21 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
                     <Form.Control.Feedback type="invalid">{inputErrors['cout_demolition_input_amount']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
-                    <Form.Label>Honoraires techniques (€)</Form.Label>
-                    <Form.Control type="number" name="cout_honoraires_tech_input_amount" value={safeNumberInputValue(localInputs.cout_honoraires_tech_input_amount)} onChange={e => handleInputChange('cout_honoraires_tech_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_honoraires_tech_input_amount']} />
-                    <Form.Control.Feedback type="invalid">{inputErrors['cout_honoraires_tech_input_amount']}</Form.Control.Feedback>
+                    <Form.Label>Mobilier (€)</Form.Label>
+                    <Form.Control type="number" name="cout_mobilier_input_amount" value={safeNumberInputValue(localInputs.cout_mobilier_input_amount)} onChange={e => handleInputChange('cout_mobilier_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_mobilier_input_amount']} />
+                    <Form.Control.Feedback type="invalid">{inputErrors['cout_mobilier_input_amount']}</Form.Control.Feedback>
                   </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Maîtrise d'œuvre (%)</Form.Label>
+                    <Form.Control type="number" name="cout_maitrise_oeuvre_percent" value={safeNumberInputValue(localInputs.cout_maitrise_oeuvre_percent)} onChange={e => handleInputChange('cout_maitrise_oeuvre_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_maitrise_oeuvre_percent']} />
+                    <Form.Control.Feedback type="invalid">{inputErrors['cout_maitrise_oeuvre_percent']}</Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Aléa travaux (%)</Form.Label>
+                    <Form.Control type="number" name="cout_alea_percent" value={safeNumberInputValue(localInputs.cout_alea_percent)} onChange={e => handleInputChange('cout_alea_percent', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_alea_percent']} />
+                    <Form.Control.Feedback type="invalid">{inputErrors['cout_alea_percent']}</Form.Control.Feedback>
+                  </Form.Group>
+                  
                 </div>
               </div>
 
@@ -938,10 +1060,11 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
                     <Form.Control.Feedback type="invalid">{inputErrors['cout_diagnostics_input_amount']}</Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group>
-                    <Form.Label>Mobilier (€)</Form.Label>
-                    <Form.Control type="number" name="cout_mobilier_input_amount" value={safeNumberInputValue(localInputs.cout_mobilier_input_amount)} onChange={e => handleInputChange('cout_mobilier_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_mobilier_input_amount']} />
-                    <Form.Control.Feedback type="invalid">{inputErrors['cout_mobilier_input_amount']}</Form.Control.Feedback>
+                    <Form.Label>Honoraires techniques (€)</Form.Label>
+                    <Form.Control type="number" name="cout_honoraires_tech_input_amount" value={safeNumberInputValue(localInputs.cout_honoraires_tech_input_amount)} onChange={e => handleInputChange('cout_honoraires_tech_input_amount', e.target.value)} onBlur={handleInputBlur} isInvalid={!!inputErrors['cout_honoraires_tech_input_amount']} />
+                    <Form.Control.Feedback type="invalid">{inputErrors['cout_honoraires_tech_input_amount']}</Form.Control.Feedback>
                   </Form.Group>
+                  
                 </div>
               </div>
 
@@ -1088,6 +1211,7 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
         </div>
 
       </div>
+
 
 
       {/* Section Hypothèses acquisition + vente + graph en 2 colonnes */}
@@ -1437,9 +1561,247 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
       </div>
 
 
-
-
-
+      {/* Tableau comparatif prévu vs réalisé */}
+      <div style={{
+        background: '#fff',
+        borderRadius: 16,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+        padding: '1.5rem',
+        marginBottom: '2rem'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.2rem' }}>
+          <span style={{ fontSize: '2rem', color: '#0a6c9d', background: '#e0f7fa', borderRadius: '50%', padding: '0.3em 0.5em' }}>📊</span>
+          <h2 style={{ fontWeight: 800, fontSize: '2rem', margin: 0, color: '#1a3557' }}>Comparatif prévu vs réalisé</h2>
+        </div>
+        <Table bordered hover className={styles['bp-tab-table']} style={{ marginBottom: '2rem' }}>
+          <thead>
+            <tr>
+              <th>Indicateur</th>
+              <th style={{ textAlign: 'right' }}>Prévu</th>
+              <th style={{ textAlign: 'right' }}>Réalisé</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Prix de revient</td><td style={{ textAlign: 'right' }}>{formatK(results?.resultats?.prix_revient ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.resultats?.prix_revient ?? 0)}</td></tr>
+            <tr><td>Marge nette</td><td style={{ textAlign: 'right' }}>{formatK(results?.resultats?.marge_nette ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.resultats?.marge_nette ?? 0)}</td></tr>
+            <tr><td>Rentabilité</td><td style={{ textAlign: 'right' }}>{formatPercent(results?.resultats?.rentabilite ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatPercent(resultsRealises?.resultats?.rentabilite ?? 0)}</td></tr>
+            <tr><td>Rendement fonds propres</td><td style={{ textAlign: 'right' }}>{formatPercent((results?.resultats?.retour_fonds_propres ?? 0) * 100)}</td><td style={{ textAlign: 'right' }}>{formatPercent((resultsRealises?.resultats?.retour_fonds_propres ?? 0) * 100)}</td></tr>
+            <tr><td>Prix FAI (vente)</td><td style={{ textAlign: 'right' }}>{formatK(results?.resultats?.prix_fai ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.resultats?.prix_fai ?? 0)}</td></tr>
+            <tr><td>Prix HFA (vente)</td><td style={{ textAlign: 'right' }}>{formatK(results?.resultats?.prix_hfa ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.resultats?.prix_hfa ?? 0)}</td></tr>
+            <tr><td>Prix total acquisition</td><td style={{ textAlign: 'right' }}>{formatK(results?.couts_acquisition?.total_acquisition ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.couts_acquisition?.total_acquisition ?? 0)}</td></tr>
+            <tr><td>Frais notaire (%)</td><td style={{ textAlign: 'right' }}>{safeNumberInputValue(localInputs.frais_notaire_percent)}</td><td style={{ textAlign: 'right' }}>{safeNumberInputValue(realisedInputs.frais_notaire_percent)}</td></tr>
+            <tr><td>Frais agence vente (%)</td><td style={{ textAlign: 'right' }}>{safeNumberInputValue(localInputs.frais_agence_vente_percent)}</td><td style={{ textAlign: 'right' }}>{safeNumberInputValue(realisedInputs.frais_agence_vente_percent)}</td></tr>
+            <tr><td>Prix de vente pondéré (€/m²)</td><td style={{ textAlign: 'right' }}>{formatK(results?.prix_m2?.prix_vente_pondere_m2 ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.prix_m2?.prix_vente_pondere_m2 ?? 0)}</td></tr>
+            <tr><td>Prix de revient pondéré (€/m²)</td><td style={{ textAlign: 'right' }}>{formatK(results?.prix_m2?.prix_revient_pondere_m2 ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.prix_m2?.prix_revient_pondere_m2 ?? 0)}</td></tr>
+            <tr><td>Prix de vente carrez (€/m²)</td><td style={{ textAlign: 'right' }}>{formatK(results?.prix_m2?.prix_vente_carrez_m2 ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.prix_m2?.prix_vente_carrez_m2 ?? 0)}</td></tr>
+            <tr><td>Prix de revient carrez (€/m²)</td><td style={{ textAlign: 'right' }}>{formatK(results?.prix_m2?.prix_revient_carrez_m2 ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.prix_m2?.prix_revient_carrez_m2 ?? 0)}</td></tr>
+            <tr><td>Cash-flow mensuel</td><td style={{ textAlign: 'right' }}>{formatK(results?.resultats?.cash_flow_mensuel ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.resultats?.cash_flow_mensuel ?? 0)}</td></tr>
+            <tr><td>TRI</td><td style={{ textAlign: 'right' }}>{formatPercent(results?.resultats?.tri ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatPercent(resultsRealises?.resultats?.tri ?? 0)}</td></tr>
+            <tr><td>Durée du projet (jours)</td><td style={{ textAlign: 'right' }}>{safeNumberInputValue(localInputs.duree_projet)}</td><td style={{ textAlign: 'right' }}>{safeNumberInputValue(realisedInputs.duree_projet)}</td></tr>
+            <tr><td>Total travaux</td><td style={{ textAlign: 'right' }}>{formatK(results?.couts_travaux?.total_travaux ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.couts_travaux?.total_travaux ?? 0)}</td></tr>
+            <tr><td>Total divers</td><td style={{ textAlign: 'right' }}>{formatK(results?.couts_divers?.total_divers ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.couts_divers?.total_divers ?? 0)}</td></tr>
+            <tr><td>Total financiers</td><td style={{ textAlign: 'right' }}>{formatK(results?.financement?.couts?.total_couts_financiers ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.financement?.couts?.total_couts_financiers ?? 0)}</td></tr>
+            <tr><td>Foncier utilisé</td><td style={{ textAlign: 'right' }}>{formatK(results?.financement?.montants_utilises?.credit_foncier_output_amount ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.financement?.montants_utilises?.credit_foncier_output_amount ?? 0)}</td></tr>
+            <tr><td>FP utilisé</td><td style={{ textAlign: 'right' }}>{formatK(results?.financement?.montants_utilises?.fonds_propres_output_amount ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.financement?.montants_utilises?.fonds_propres_output_amount ?? 0)}</td></tr>
+            <tr><td>Accompagnement utilisé</td><td style={{ textAlign: 'right' }}>{formatK(results?.financement?.montants_utilises?.credit_accompagnement_output_amount ?? 0)}</td><td style={{ textAlign: 'right' }}>{formatK(resultsRealises?.financement?.montants_utilises?.credit_accompagnement_output_amount ?? 0)}</td></tr>
+          </tbody>
+        </Table>
+      </div>
+      {/* Toggle/Accordéon valeurs réalisées */}
+      <div style={{ marginTop: '1.5rem', marginBottom: '0.5rem', textAlign: 'center' }}>
+        <button
+          type="button"
+          onClick={() => setShowRealised(v => !v)}
+          style={{
+            background: showRealised ? '#fff5f5' : '#ffe9e9',
+            color: '#b91c1c',
+            border: '1.5px solid #fecaca',
+            borderRadius: 8,
+            fontWeight: 700,
+            fontSize: '1.08rem',
+            padding: '0.5rem 1.3rem',
+            boxShadow: showRealised ? '0 2px 8px #fca5a5' : '0 1px 4px #fecaca',
+            cursor: 'pointer',
+            transition: 'all 0.18s',
+            outline: 'none',
+            marginBottom: showRealised ? '0.7rem' : 0
+          }}
+        >
+          {showRealised ? 'Masquer les valeurs réalisées' : 'Afficher les valeurs réalisées'}
+        </button>
+      </div>
+      {showRealisedSpinner ? (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 120 }}>
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Chargement des données réalisées...</span>
+          </Spinner>
+        </div>
+      ) : (
+        showRealised && (
+          <div className={styles.realisedTableGrid + ' ' + styles.realisedTableGridRed}>
+            {/* Colonne 1 */}
+            <div className={styles.realisedTableCol}>
+              <div className={styles.realisedHeaderRow}>
+                <div></div>
+                <div>Prévu</div>
+                <div>Réalisé</div>
+              </div>
+              {/* Première moitié des champs */}
+              <div className={styles.realisedSectionTitle}>Acquisition</div>
+              <div className={styles.realisedRow}>
+                <div>Prix affiché (€)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.prix_affiche)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.prix_affiche)} onChange={e => handleRealisedInputChange('prix_affiche', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Prix d'achat (€)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.prix_achat)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.prix_achat)} onChange={e => handleRealisedInputChange('prix_achat', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Frais notaire (%)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.frais_notaire_percent)} className={styles.readonlyInput} />
+                <input type="text" value={safeNumberInputValue(realisedInputs.frais_notaire_percent)} onChange={e => handleRealisedInputChange('frais_notaire_percent', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Frais agence achat (%)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.frais_agence_achat_percent)} className={styles.readonlyInput} />
+                <input type="text" value={safeNumberInputValue(realisedInputs.frais_agence_achat_percent)} onChange={e => handleRealisedInputChange('frais_agence_achat_percent', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Frais agence vente (%)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.frais_agence_vente_percent)} className={styles.readonlyInput} />
+                <input type="text" value={safeNumberInputValue(realisedInputs.frais_agence_vente_percent)} onChange={e => handleRealisedInputChange('frais_agence_vente_percent', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Frais dossier (€)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.frais_dossier_amount)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.frais_dossier_amount)} onChange={e => handleRealisedInputChange('frais_dossier_amount', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedSectionTitle}>Travaux</div>
+              <div className={styles.realisedRow}>
+                <div>Coût travaux (€/m²)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.cout_travaux_m2)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.cout_travaux_m2)} onChange={e => handleRealisedInputChange('cout_travaux_m2', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Terrasse (€)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.cout_terrasse_input_amount)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.cout_terrasse_input_amount)} onChange={e => handleRealisedInputChange('cout_terrasse_input_amount', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Démolition (€)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.cout_demolition_input_amount)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.cout_demolition_input_amount)} onChange={e => handleRealisedInputChange('cout_demolition_input_amount', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Mobilier (€)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.cout_mobilier_input_amount)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.cout_mobilier_input_amount)} onChange={e => handleRealisedInputChange('cout_mobilier_input_amount', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              
+              <div className={styles.realisedRow}>
+                <div>Maîtrise d'œuvre (%)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.cout_maitrise_oeuvre_percent)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.cout_maitrise_oeuvre_percent)} onChange={e => handleRealisedInputChange('cout_maitrise_oeuvre_percent', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Aléa travaux (%)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.cout_alea_percent)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.cout_alea_percent)} onChange={e => handleRealisedInputChange('cout_alea_percent', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+            </div>
+            {/* Colonne 2 */}
+            <div className={styles.realisedTableCol}>
+              <div className={styles.realisedHeaderRow}>
+                <div></div>
+                <div>Prévu</div>
+                <div>Réalisé</div>
+              </div>
+              <div className={styles.realisedSectionTitle}>Divers</div>
+              <div className={styles.realisedRow}>
+                <div>Prorata foncier (€)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.cout_prorata_foncier_input_amount)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.cout_prorata_foncier_input_amount)} onChange={e => handleRealisedInputChange('cout_prorata_foncier_input_amount', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Diagnostics (€)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.cout_diagnostics_input_amount)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.cout_diagnostics_input_amount)} onChange={e => handleRealisedInputChange('cout_diagnostics_input_amount', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Honoraires techniques (€)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.cout_honoraires_tech_input_amount)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.cout_honoraires_tech_input_amount)} onChange={e => handleRealisedInputChange('cout_honoraires_tech_input_amount', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedSectionTitle}>Financement</div>
+              <div className={styles.realisedRow}>
+                <div>Crédit foncier (€)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.financement_credit_foncier_amount)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.financement_credit_foncier_amount)} onChange={e => handleRealisedInputChange('financement_credit_foncier_amount', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Fonds propres (€)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.financement_fonds_propres_amount)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.financement_fonds_propres_amount)} onChange={e => handleRealisedInputChange('financement_fonds_propres_amount', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Crédit accompagnement (€)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.financement_credit_accompagnement_amount)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.financement_credit_accompagnement_amount)} onChange={e => handleRealisedInputChange('financement_credit_accompagnement_amount', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Taux crédit (%)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.financement_taux_credit_percent)} className={styles.readonlyInput} />
+                <input type="text" value={safeNumberInputValue(realisedInputs.financement_taux_credit_percent)} onChange={e => handleRealisedInputChange('financement_taux_credit_percent', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Commission (%)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.financement_commission_percent)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.financement_commission_percent)} onChange={e => handleRealisedInputChange('financement_commission_percent', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedSectionTitle}>Surfaces après travaux</div>
+              <div className={styles.realisedRow}>
+                <div>Carrez (m²)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.surface_carrez_apres_travaux)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.surface_carrez_apres_travaux)} onChange={e => handleRealisedInputChange('surface_carrez_apres_travaux', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Terrasse (m²)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.surface_terrasse_apres_travaux)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.surface_terrasse_apres_travaux)} onChange={e => handleRealisedInputChange('surface_terrasse_apres_travaux', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Pondérée (m²)</div>
+                <input readOnly value={safeNumberInputValue(surfacePondereeValue)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedSurfacePonderee)} readOnly className={styles.readonlyInput} />
+              </div>
+              <div className={styles.realisedSectionTitle}>Calendrier</div>
+              <div className={styles.realisedRow}>
+                <div>Date d'achat</div>
+                <input readOnly value={localInputs.date_achat} className={styles.readonlyInput} />
+                <input type="date" value={realisedInputs.date_achat ? (realisedInputs.date_achat as string).slice(0, 10) : ''} onChange={e => handleRealisedInputChange('date_achat', e.target.value)} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Durée (jours)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.duree_projet)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.duree_projet)} onChange={e => handleRealisedInputChange('duree_projet', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+              <div className={styles.realisedRow}>
+                <div>Date de vente</div>
+                <input readOnly value={localInputs.date_vente} className={styles.readonlyInput} />
+                <input type="date" value={realisedDateVente} readOnly className={styles.readonlyInput} />
+              </div>
+              <div className={styles.realisedSectionTitle}>Prix de vente</div>
+              <div className={styles.realisedRow}>
+                <div>Prix vente réel pondéré (€/m²)</div>
+                <input readOnly value={safeNumberInputValue(localInputs.prix_vente_reel_pondere_m2)} className={styles.readonlyInput} />
+                <input type="number" value={safeNumberInputValue(realisedInputs.prix_vente_reel_pondere_m2)} onChange={e => handleRealisedInputChange('prix_vente_reel_pondere_m2', e.target.value)} onBlur={handleRealisedInputBlur} className={styles.realisedInput} />
+              </div>
+            </div>
+          </div>
+        )
+      )}
     </div>
   );
 }

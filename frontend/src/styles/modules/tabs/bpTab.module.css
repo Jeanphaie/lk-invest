@@ -1553,4 +1553,292 @@
   letter-spacing: -1px;
   line-height: 1.1;
   margin-top: 0.1em;
+}
+
+.realisedBlock {
+  margin-top: 2rem;
+  background: #e6fffa;
+  border: 1px solid #b2f5ea;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.readonlyInput {
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+  color: #4a5568;
+  width: 48%;
+  display: inline-block;
+  margin-right: 2%;
+}
+
+.realisedInput {
+  background: #fff;
+  border: 1px solid #b2f5ea;
+  width: 48%;
+  display: inline-block;
+}
+
+.bp-tab-inputs-row > .form-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-width: 120px;
+  margin-right: 1.5rem;
+}
+
+.bp-tab-inputs-row > .form-group:last-child {
+  margin-right: 0;
+}
+
+@media (max-width: 900px) {
+  .readonlyInput, .realisedInput {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
+  .bp-tab-inputs-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+.realisedTable {
+  width: 100%;
+  background: #e6fffa;
+  border-radius: 10px;
+  padding: 0.7rem 0.5rem;
+  margin-top: 1.2rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.97rem;
+}
+
+.realisedHeaderRow {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  font-weight: 700;
+  color: #319795;
+  margin-bottom: 0.2rem;
+  font-size: 1rem;
+}
+
+.realisedSectionTitle {
+  grid-column: 1 / span 2;
+  font-weight: 700;
+  color: #1a3557;
+  margin-top: 0.7rem;
+  margin-bottom: 0.1rem;
+  font-size: 1.01rem;
+}
+
+.realisedRow {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  align-items: center;
+  gap: 0.2rem;
+  margin-bottom: 0.05rem;
+  border-bottom: 1px solid #d1f5ee;
+  background: #e6fffa;
+}
+
+.realisedRow:last-child {
+  border-bottom: none;
+}
+
+.realisedInputsStack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  padding: 2px 0.3rem;
+  border: 1px solid #d1f5ee;
+}
+
+.readonlyInput, .realisedInput {
+  width: 100%;
+  padding: 0.18rem 0.4rem;
+  font-size: 0.97rem;
+  margin: 0;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  background: #f7fafc;
+  color: #4a5568;
+}
+.realisedInput {
+  background: #fff;
+  border: 1px solid #b2f5ea;
+  margin-top: 2px;
+}
+
+@media (max-width: 900px) {
+  .realisedTable {
+    padding: 0.5rem 0.1rem;
+    font-size: 0.95rem;
+  }
+  .realisedHeaderRow, .realisedRow {
+    grid-template-columns: 1fr 1fr;
+  }
+  .realisedSectionTitle {
+    font-size: 0.97rem;
+    margin-top: 0.5rem;
+  }
+  .realisedInputsStack {
+    padding: 2px 0.1rem;
+  }
+}
+
+.realisedTableGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  width: 100%;
+  background: #fff;
+  border-radius: 14px;
+  padding: 0.7rem 1.2rem 1.2rem 1.2rem;
+  margin-top: 1.2rem;
+  box-shadow: 0 4px 18px rgba(30,60,90,0.07), 0 1.5px 6px #0001;
+  border: 1.5px solid #e0f7fa;
+  position: relative;
+}
+.realisedTableCol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  position: relative;
+}
+.realisedTableCol:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 0.5rem;
+  right: -0.35rem;
+  width: 1.5px;
+  height: calc(100% - 1rem);
+  background: linear-gradient(to bottom, #e0f7fa 10%, #b2f5ea 90%);
+  opacity: 0.7;
+  border-radius: 2px;
+}
+.realisedHeaderRow {
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr 0.9fr;
+  font-weight: 800;
+  color: #0a6c9d;
+  margin-bottom: 0.18rem;
+  font-size: 1.01rem;
+  min-height: 1.7em;
+  letter-spacing: 0.01em;
+}
+.realisedSectionTitle {
+  grid-column: 1 / span 3;
+  font-weight: 800;
+  color: #1a3557;
+  margin-top: 0.7rem;
+  margin-bottom: 0.08rem;
+  font-size: 1.07rem;
+  letter-spacing: 0.01em;
+  background: linear-gradient(90deg, #e0f7fa 60%, transparent 100%);
+  border-radius: 6px;
+  padding-left: 0.1em;
+}
+.realisedRow {
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr 0.9fr;
+  align-items: center;
+  gap: 0.1rem;
+  margin-bottom: 0.01rem;
+  border-bottom: 1px solid #e0f7fa;
+  background: transparent;
+  min-height: 1.8em;
+  transition: background 0.15s;
+}
+.realisedRow:last-child {
+  border-bottom: none;
+}
+.realisedRow:hover {
+  background: #f7fafc;
+}
+.readonlyInput, .realisedInput {
+  width: 100%;
+  padding: 0.13rem 0.5rem;
+  font-size: 0.98rem;
+  margin: 0;
+  border-radius: 5px;
+  border: 1.5px solid #e2e8f0;
+  background: #f7fafc;
+  color: #1a3557;
+  height: 2em;
+  min-height: 2em;
+  line-height: 1.2;
+  box-shadow: 0 1px 2px rgba(30,60,90,0.03);
+  transition: border 0.15s, box-shadow 0.15s;
+}
+.readonlyInput:focus, .realisedInput:focus {
+  border: 1.5px solid #0bc5ea;
+  box-shadow: 0 0 0 2px #b2f5ea;
+  outline: none;
+}
+.realisedInput {
+  background: #fff;
+  border: 1.5px solid #b2f5ea;
+}
+.realisedInput:hover {
+  border: 1.5px solid #0bc5ea;
+}
+@media (max-width: 900px) {
+  .realisedTableGrid {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+    padding: 0.2rem 0.05rem;
+  }
+  .realisedHeaderRow, .realisedRow {
+    grid-template-columns: 1fr 1fr 1fr;
+    font-size: 0.97rem;
+  }
+  .readonlyInput, .realisedInput {
+    font-size: 0.97rem;
+    height: 1.7em;
+    min-height: 1.7em;
+    padding: 0.09rem 0.3rem;
+  }
+  .realisedTableCol:not(:last-child)::after {
+    display: none;
+  }
+}
+
+.realisedTableGridRed {
+  background: #fff5f5;
+  border: 1.5px solid #fecaca;
+  box-shadow: 0 4px 18px rgba(252, 165, 165, 0.13), 0 1.5px 6px #fecaca;
+}
+.realisedTableGridRed .realisedTableCol:not(:last-child)::after {
+  background: linear-gradient(to bottom, #fecaca 10%, #fca5a5 90%);
+}
+.realisedTableGridRed .realisedHeaderRow {
+  color: #b91c1c;
+}
+.realisedTableGridRed .realisedSectionTitle {
+  color: #b91c1c;
+  background: linear-gradient(90deg, #ffe4e6 60%, transparent 100%);
+}
+.realisedTableGridRed .realisedRow {
+  border-bottom: 1px solid #fecaca;
+}
+.realisedTableGridRed .realisedRow:hover {
+  background: #fff1f2;
+}
+.realisedTableGridRed .readonlyInput, .realisedTableGridRed .realisedInput {
+  border: 1.5px solid #fecaca;
+  background: #fff1f2;
+  color: #b91c1c;
+}
+.realisedTableGridRed .readonlyInput:focus, .realisedTableGridRed .realisedInput:focus {
+  border: 1.5px solid #f87171;
+  box-shadow: 0 0 0 2px #fecaca;
+}
+.realisedTableGridRed .realisedInput:hover {
+  border: 1.5px solid #f87171;
 } 

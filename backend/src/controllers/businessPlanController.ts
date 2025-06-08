@@ -17,33 +17,33 @@ const prisma = new PrismaClient();
 console.log('[DEBUG] businessPlanController chargé');
 
 const cleanNumeric = (value: any, defaultValue: number = 0): number => {
-  console.log('cleanNumeric input:', { value, type: typeof value });
+  
   
   if (value === null || value === undefined) {
-    console.log('cleanNumeric: valeur null/undefined, retourne defaultValue:', defaultValue);
+  
     return defaultValue;
   }
   
   if (typeof value === 'number') {
-    console.log('cleanNumeric: valeur déjà numérique:', value);
+  
     return value;
   }
   
   if (typeof value === 'string') {
     // Supprime tous les caractères non numériques sauf le point et le moins
     const cleaned = value.replace(/[^\d.-]/g, '');
-    console.log('cleanNumeric: chaîne nettoyée:', cleaned);
+  
     
     const num = parseFloat(cleaned);
     if (isNaN(num)) {
-      console.log('cleanNumeric: parseFloat a échoué, retourne defaultValue:', defaultValue);
+  
       return defaultValue;
     }
-    console.log('cleanNumeric: valeur convertie:', num);
+  
     return num;
   }
   
-  console.log('cleanNumeric: type non géré:', typeof value, 'retourne defaultValue:', defaultValue);
+  
   return defaultValue;
 };
 
@@ -91,7 +91,7 @@ const applyDefaultIfNullOrUndefined = (value: any, fallback: number) => {
 };
 
 export const calculateBusinessPlan = async (req: Request, res: Response) => {
-  console.log(`[BP] Calcul business plan projet #${req.params.projectId} | Inputs:`, JSON.stringify(req.body));
+  console.log('[DEBUG][BP PREV] === Appel du contrôleur calculateBusinessPlan ===');
 
   try {
     const projectId = parseInt(req.params.projectId);
@@ -133,44 +133,43 @@ export const calculateBusinessPlan = async (req: Request, res: Response) => {
     // Récupération de la pondération terrasse depuis les inputs généraux
     const generalInputs = project.inputsGeneral as InputsGeneral;
     if (!generalInputs) {
-      console.error('Inputs généraux non trouvés');
       return res.status(400).json({ error: 'Inputs généraux non trouvés' });
     }
-    console.log('Inputs généraux récupérés');
-
     const ponderation_terrasse = generalInputs?.ponderation_terrasse ?? 0.3;
-    console.log('Pondération terrasse:', ponderation_terrasse);
 
-    // Calcul des résultats avec la pondération terrasse des inputs généraux
+    
     try {
       const results = calculateResults(validationResult.data, ponderation_terrasse, generalInputs);
-      // Log synthétique des résultats principaux
-      console.log(`[BP] Résultats projet #${req.params.projectId} | Prix de revient: ${results.resultats.prix_revient} | Total travaux: ${results.couts_travaux.total_travaux} | Total acquisition: ${results.couts_acquisition.total_acquisition} | Total divers: ${results.couts_divers.total_divers} | Total financiers: ${results.financement.couts.total_couts_financiers} | Marge nette: ${results.resultats.marge_nette} | Rentabilité: ${results.resultats.rentabilite}%`);
-
-      // Validation des résultats
-      console.log('Validation des résultats...');
       const resultsValidation = BusinessPlanResultsSchema.safeParse(results);
       if (!resultsValidation.success) {
-        console.error('Erreur de validation des résultats:', resultsValidation.error.errors);
         return res.status(400).json({
           error: 'Données invalides',
           details: resultsValidation.error.errors
         });
       }
-      console.log('Validation des résultats réussie');
+
+      // Avant la sauvegarde, recalculer la valeur pour la forcer dans les inputs sauvegardés
+      const surface_carrez_apres_travaux = validationResult.data.surface_carrez_apres_travaux ?? generalInputs?.superficie ?? 0;
+      const surface_terrasse_apres_travaux = validationResult.data.surface_terrasse_apres_travaux ?? generalInputs?.superficie_terrasse ?? 0;
+      validationResult.data.surface_ponderee_apres_travaux =
+        surface_carrez_apres_travaux + (surface_terrasse_apres_travaux * ponderation_terrasse);
+    
 
       // Mise à jour du projet
-      console.log('Mise à jour du projet...');
       await prisma.project.update({
         where: { project_id: projectId },
-        data: {
-          inputsBusinessPlan: validationResult.data,
-          resultsBusinessPlan: resultsValidation.data
-        }
+        data: (req as any)._isRealises
+          ? {
+              inputsBusinessPlanRealises: validationResult.data,
+              resultsBusinessPlanRealises: resultsValidation.data
+            }
+          : {
+              inputsBusinessPlan: validationResult.data,
+              resultsBusinessPlan: resultsValidation.data
+            }
       });
-      console.log('Projet mis à jour avec succès');
 
-      // Ajout : calcul des pourcentages pour le template PDF
+      // Calcul des pourcentages pour le template PDF
       const total_montants_utilises = resultsValidation.data.financement.montants_utilises.total_montants_utilises || 1;
       const pct_credit_foncier_utilise = resultsValidation.data.financement.montants_utilises.credit_foncier_output_amount / total_montants_utilises * 100;
       const pct_fonds_propres_utilise = resultsValidation.data.financement.montants_utilises.fonds_propres_output_amount / total_montants_utilises * 100;
@@ -182,7 +181,6 @@ export const calculateBusinessPlan = async (req: Request, res: Response) => {
       });
 
     } catch (calcError) {
-      console.error('Erreur lors du calcul des résultats:', calcError);
       return res.status(500).json({ 
         error: 'Erreur lors du calcul des résultats',
         details: calcError instanceof Error ? calcError.message : String(calcError)
@@ -202,26 +200,21 @@ function applyDefaultIfNullUndefinedOrZero(value: any, fallback: number) {
 }
 
 const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: number, generalInputs: any): BusinessPlanResults => {
-  console.log('=== Début du calcul des résultats ===');
-  console.log('Inputs pour le calcul:', JSON.stringify(inputs, null, 2));
-
+  
   try {
     // --- Récupération des surfaces AVANT travaux depuis les inputs généraux ---
     const surface_carrez_avant_travaux = generalInputs?.superficie || 0;
     const surface_terrasse_avant_travaux = generalInputs?.superficie_terrasse || 0;
     const surface_ponderee_avant_travaux = surface_carrez_avant_travaux + surface_terrasse_avant_travaux * ponderation_terrasse;
 
-
-
     // Appliquer le fallback pour tous les inputs numériques clés
     const safeInputs = {
       ...inputs,
       surface_carrez_apres_travaux: applyDefaultIfNullOrUndefined(inputs.surface_carrez_apres_travaux, surface_carrez_avant_travaux),
       surface_terrasse_apres_travaux: applyDefaultIfNullOrUndefined(inputs.surface_terrasse_apres_travaux, surface_terrasse_avant_travaux),
-      surface_ponderee_apres_travaux: applyDefaultIfNullUndefinedOrZero(
-        inputs.surface_ponderee_apres_travaux,
-        inputs.surface_carrez_apres_travaux + (inputs.surface_terrasse_apres_travaux ?? 0) * ponderation_terrasse
-      ),
+      surface_ponderee_apres_travaux:
+        (inputs.surface_carrez_apres_travaux ?? surface_carrez_avant_travaux) +
+        ((inputs.surface_terrasse_apres_travaux ?? surface_terrasse_avant_travaux) * ponderation_terrasse),
       cout_travaux_m2: applyDefaultIfNullOrUndefined(inputs.cout_travaux_m2, DEFAULT_VALUES.cout_travaux_m2),
       cout_maitrise_oeuvre_percent: applyDefaultIfNullOrUndefined(inputs.cout_maitrise_oeuvre_percent, DEFAULT_VALUES.cout_maitrise_oeuvre_percent),
       cout_alea_percent: applyDefaultIfNullOrUndefined(inputs.cout_alea_percent, DEFAULT_VALUES.cout_alea_percent),
@@ -248,9 +241,7 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
 
     // Utiliser safeInputs partout dans la suite du calcul
     // --- surfaces après travaux ---
-    
     const surface_carrez_apres_travaux = safeInputs.surface_carrez_apres_travaux;
-    
     const surface_ponderee_apres_travaux = safeInputs.surface_ponderee_apres_travaux;
     const prix_achat = safeInputs.prix_achat;
     
@@ -268,15 +259,7 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
     const cout_aleas = base_travaux * (safeInputs.cout_alea_percent / 100);
     const cout_maitrise_oeuvre = (base_travaux + cout_aleas) * (safeInputs.cout_maitrise_oeuvre_percent / 100);
     
-    console.log('Coûts travaux calculés:', {
-      cout_travaux_total,
-      cout_amenagement_terrasse,
-      mobilier,
-      cout_demolition,
-      base_travaux,
-      cout_aleas,
-      cout_maitrise_oeuvre
-    });
+
 
     // --- Calcul des frais ---
     console.log('Calcul des frais...');
@@ -298,11 +281,7 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
     const prorata_foncier = safeInputs.cout_prorata_foncier_input_amount;
     const diagnostics = safeInputs.cout_diagnostics_input_amount;
 
-    console.log('Frais divers calculés:', {
-      honoraires_techniques,
-      prorata_foncier,
-      diagnostics
-    });
+
 
     // --- Calcul des totaux par catégorie (hors financement) ---
     console.log('Calcul des totaux par catégorie...');
@@ -310,11 +289,7 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
     const total_travaux = base_travaux + cout_aleas + cout_maitrise_oeuvre;
     const total_divers = honoraires_techniques + prorata_foncier + diagnostics;
 
-    console.log('Totaux calculés:', {
-      total_acquisition,
-      total_travaux,
-      total_divers
-    });
+
 
     // --- Calcul du prix de vente FAI et HFA ---
     console.log('Calcul des prix de vente...');
@@ -322,11 +297,6 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
     const prix_fai = surface_ponderee_apres_travaux * prix_vente_reel_pondere_m2;
     const prix_hfa = prix_fai / (1 + (safeInputs.frais_agence_vente_percent || 0) / 100);
 
-    console.log('Prix de vente calculés:', {
-      prix_vente_reel_pondere_m2,
-      prix_fai,
-      prix_hfa
-    });
 
     // --- Calculs trimestriels ---
     console.log('Début des calculs trimestriels...');
@@ -334,11 +304,7 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
     const date_vente = new Date(date_achat);
     date_vente.setDate(date_achat.getDate() + duree_projet);
 
-    console.log('Dates calculées:', {
-      date_achat: date_achat.toISOString(),
-      date_vente: date_vente.toISOString(),
-      duree_projet
-    });
+    
 
     // Génération des trimestres
     const trimestres = [];
@@ -366,16 +332,7 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
     console.log('Initialisation des variables de financement...');
     const nb_trimestres = trimestres.length;
     
-    // Log des valeurs et types avant nettoyage
-    console.log('DEBUG financement types:', {
-      credit_foncier: safeInputs.financement_credit_foncier_amount,
-      type_credit_foncier: typeof safeInputs.financement_credit_foncier_amount,
-      fonds_propres: safeInputs.financement_fonds_propres_amount,
-      type_fonds_propres: typeof safeInputs.financement_fonds_propres_amount,
-      credit_accompagnement: safeInputs.financement_credit_accompagnement_amount,
-      type_credit_accompagnement: typeof safeInputs.financement_credit_accompagnement_amount,
-    });
-
+    
     // Conversion robuste
     const credit_foncier = Number(safeInputs.financement_credit_foncier_amount) || 0;
     const fonds_propres = Number(safeInputs.financement_fonds_propres_amount) || 0;
@@ -383,24 +340,11 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
     const taux_credit = Number(safeInputs.financement_taux_credit_percent) || 0;
     const commission_rate = Number(safeInputs.financement_commission_percent) || 0;
 
-    console.log('DEBUG cleanNumeric results:', {
-      credit_foncier,
-      fonds_propres,
-      credit_accompagnement,
-      taux_credit,
-      commission_rate
-    });
+
 
     // Vérification du financement total avec logs détaillés
     const financement_total = credit_foncier + fonds_propres + credit_accompagnement;
-    console.log('Détail du financement:', {
-      credit_foncier,
-      fonds_propres,
-      credit_accompagnement,
-      financement_total,
-      total_acquisition,
-      difference: financement_total - total_acquisition
-    });
+
 
     if (financement_total < total_acquisition) {
       console.error('Financement insuffisant:', {
@@ -423,12 +367,7 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
     const prorata_foncier_par_trimestre = prorata_foncier / nb_trimestres;
     const diagnostics_par_trimestre = diagnostics / nb_trimestres;
 
-    console.log('Coûts par trimestre:', {
-      travaux_par_trimestre,
-      honoraires_techniques_par_trimestre,
-      prorata_foncier_par_trimestre,
-      diagnostics_par_trimestre
-    });
+
 
     // Variables de suivi
     let credit_foncier_restant = credit_foncier;
@@ -454,14 +393,11 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
     const assiette_commission = credit_foncier + credit_accompagnement;
     const commission_annuelle = assiette_commission * (commission_rate / 100);
 
-    console.log('Commission calculée:', {
-      assiette_commission,
-      commission_annuelle
-    });
+
 
     // Fonction utilitaire pour financer une dépense dans l'ordre foncier > fonds propres > accompagnement
     function financer(montant: number) {
-      console.log(`Financer montant: ${montant}`);
+      
       let foncier = 0, fonds = 0, accomp = 0;
       if (credit_foncier_restant > 0) {
         foncier = Math.min(montant, credit_foncier_restant);
@@ -469,7 +405,7 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
         encours_foncier += foncier;
         credit_foncier_utilise_total += foncier;
         montant -= foncier;
-        console.log(`Utilisation crédit foncier: ${foncier}, reste: ${credit_foncier_restant}`);
+        
       }
       if (montant > 0 && fonds_propres_restant > 0) {
         fonds = Math.min(montant, fonds_propres_restant);
@@ -477,7 +413,7 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
         encours_fonds_propres += fonds;
         fonds_propres_utilise_total += fonds;
         montant -= fonds;
-        console.log(`Utilisation fonds propres: ${fonds}, reste: ${fonds_propres_restant}`);
+        
       }
       if (montant > 0 && credit_accomp_restant > 0) {
         accomp = Math.min(montant, credit_accomp_restant);
@@ -485,7 +421,7 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
         encours_accompagnement += accomp;
         credit_accomp_utilise_total += accomp;
         montant -= accomp;
-        console.log(`Utilisation crédit accompagnement: ${accomp}, reste: ${credit_accomp_restant}`);
+        
       }
       if (montant > 0) {
         console.warn(`Montant non financé: ${montant}`);
@@ -497,7 +433,7 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
     console.log('Début du calcul des détails trimestriels...');
     const trimestre_details = [];
     for (let i = 0; i < nb_trimestres; i++) {
-      console.log(`Calcul du trimestre ${i + 1}/${nb_trimestres}...`);
+      
       const trimestre = trimestres[i];
       const jours = trimestre.jours;
 
@@ -594,13 +530,7 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
     console.log('Calcul du total des frais financiers...');
     const total_couts_financiers = total_interets_foncier + total_interets_accompagnement + total_commission + frais_dossier;
 
-    console.log('Frais financiers calculés:', {
-      total_interets_foncier,
-      total_interets_accompagnement,
-      total_commission,
-      frais_dossier,
-      total_couts_financiers
-    });
+
 
     // --- Calcul du prix de revient ---
     const prix_revient = total_acquisition + total_travaux + total_divers + total_couts_financiers;
@@ -720,8 +650,7 @@ const calculateResults = (inputs: BusinessPlanInputs, ponderation_terrasse: numb
       financement_suffisant
     };
 
-    console.log('Résultats finaux:', JSON.stringify(results, null, 2));
-    console.log('=== Fin du calcul des résultats ===');
+
 
     return results;
   } catch (error) {

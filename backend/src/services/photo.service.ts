@@ -24,6 +24,8 @@ export class PhotoService {
       selectedBeforePhotosForPdf: [],
       selected3dPhotosForPdf: [],
       selectedPlansPhotosForPdf: [],
+      selectedDuringPhotosForPdf: [],
+      selectedAfterPhotosForPdf: [],
       coverPhoto: undefined
     };
     // Validation stricte
@@ -59,6 +61,8 @@ export class PhotoService {
       selectedBeforePhotosForPdf: currentSelectedBefore,
       selected3dPhotosForPdf: currentSelected3d,
       selectedPlansPhotosForPdf: currentSelectedPlans,
+      selectedDuringPhotosForPdf: (photos as any).selectedDuringPhotosForPdf || [],
+      selectedAfterPhotosForPdf: (photos as any).selectedAfterPhotosForPdf || [],
       coverPhoto: currentCover,
     };
     // Ajouter la photo à la bonne catégorie
@@ -96,10 +100,12 @@ export class PhotoService {
         console.log('[BACK][DELETE][COVER] Removing coverPhoto reference');
         photos.coverPhoto = undefined;
       }
-      // Remove from selectedBeforePhotosForPdf/selected3dPhotosForPdf/selectedPlansPhotosForPdf if needed
+      // Remove from selected*PhotosForPdf if needed
       photos.selectedBeforePhotosForPdf = photos.selectedBeforePhotosForPdf.filter(id => id !== deletedPhoto!.id);
       photos.selected3dPhotosForPdf = photos.selected3dPhotosForPdf.filter(id => id !== deletedPhoto!.id);
       photos.selectedPlansPhotosForPdf = photos.selectedPlansPhotosForPdf.filter(id => id !== deletedPhoto!.id);
+      photos.selectedDuringPhotosForPdf = photos.selectedDuringPhotosForPdf.filter(id => id !== deletedPhoto!.id);
+      photos.selectedAfterPhotosForPdf = photos.selectedAfterPhotosForPdf.filter(id => id !== deletedPhoto!.id);
     }
     // Validation stricte
     const parsed = PhotosSchema.safeParse(photos);
@@ -121,7 +127,7 @@ export class PhotoService {
   }
 
   // Sélectionner/désélectionner une photo pour le PDF (par id)
-  async togglePhotoForPdf(projectId: number, photoId: number, selected: boolean, type: 'selectedBeforePhotosForPdf' | 'selected3dPhotosForPdf' | 'selectedPlansPhotosForPdf'): Promise<void> {
+  async togglePhotoForPdf(projectId: number, photoId: number, selected: boolean, type: 'selectedBeforePhotosForPdf' | 'selected3dPhotosForPdf' | 'selectedPlansPhotosForPdf' | 'selectedDuringPhotosForPdf' | 'selectedAfterPhotosForPdf'): Promise<void> {
     const photos = await this.getProjectPhotos(projectId);
     console.log('[BACK][PDF][BEFORE]', { photoId, selected, type, current: photos[type] });
     if (selected && !photos[type].includes(photoId)) {
@@ -139,6 +145,8 @@ export class PhotoService {
       selectedBeforePhotosForPdf: parsed.data.selectedBeforePhotosForPdf.map(x => typeof x),
       selected3dPhotosForPdf: parsed.data.selected3dPhotosForPdf.map(x => typeof x),
       selectedPlansPhotosForPdf: parsed.data.selectedPlansPhotosForPdf.map(x => typeof x),
+      selectedDuringPhotosForPdf: parsed.data.selectedDuringPhotosForPdf.map(x => typeof x),
+      selectedAfterPhotosForPdf: parsed.data.selectedAfterPhotosForPdf.map(x => typeof x),
     });
     await prisma.project.update({
       where: { project_id: projectId },
@@ -147,12 +155,20 @@ export class PhotoService {
   }
 
   // Récupérer les photos sélectionnées pour le PDF
-  async getSelectedPhotosForPdf(projectId: number): Promise<{ selectedBeforePhotosForPdf: number[]; selected3dPhotosForPdf: number[]; selectedPlansPhotosForPdf: number[] }> {
+  async getSelectedPhotosForPdf(projectId: number): Promise<{ 
+    selectedBeforePhotosForPdf: number[]; 
+    selected3dPhotosForPdf: number[]; 
+    selectedPlansPhotosForPdf: number[];
+    selectedDuringPhotosForPdf: number[];
+    selectedAfterPhotosForPdf: number[];
+  }> {
     const photos = await this.getProjectPhotos(projectId);
     return {
       selectedBeforePhotosForPdf: photos.selectedBeforePhotosForPdf,
       selected3dPhotosForPdf: photos.selected3dPhotosForPdf,
-      selectedPlansPhotosForPdf: photos.selectedPlansPhotosForPdf
+      selectedPlansPhotosForPdf: photos.selectedPlansPhotosForPdf,
+      selectedDuringPhotosForPdf: photos.selectedDuringPhotosForPdf,
+      selectedAfterPhotosForPdf: photos.selectedAfterPhotosForPdf
     };
   }
 
@@ -177,7 +193,8 @@ export class PhotoService {
       selectedBeforePhotosForPdf: (photos as any).selectedBeforePhotosForPdf || [],
       selected3dPhotosForPdf: (photos as any).selected3dPhotosForPdf || [],
       selectedPlansPhotosForPdf: (photos as any).selectedPlansPhotosForPdf || [],
-      
+      selectedDuringPhotosForPdf: (photos as any).selectedDuringPhotosForPdf || [],
+      selectedAfterPhotosForPdf: (photos as any).selectedAfterPhotosForPdf || [],
       ...photos // merge tout le reste au cas où
     };
 
@@ -211,7 +228,7 @@ export class PhotoService {
   }
 
   // Remplace toute la sélection PDF pour un type donné
-  async setSelectedPhotosForPdf(projectId: number, type: 'selectedBeforePhotosForPdf' | 'selected3dPhotosForPdf' | 'selectedPlansPhotosForPdf', ids: number[]): Promise<void> {
+  async setSelectedPhotosForPdf(projectId: number, type: 'selectedBeforePhotosForPdf' | 'selected3dPhotosForPdf' | 'selectedPlansPhotosForPdf' | 'selectedDuringPhotosForPdf' | 'selectedAfterPhotosForPdf', ids: number[]): Promise<void> {
     const photos = await this.getProjectPhotos(projectId);
     photos[type] = ids;
     const parsed = PhotosSchema.safeParse(photos);

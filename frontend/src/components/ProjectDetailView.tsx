@@ -64,6 +64,7 @@ export default function ProjectDetailView({ projectId }: { projectId: string }) 
 
   const handleUpdateProject = async (updates: Partial<Project>) => {
     try {
+      console.log('[handleUpdateProject] Payload envoyé:', updates);
       const parseResult = ProjectSchema.partial().safeParse(updates);
       if (!parseResult.success) {
         setError('Erreur de validation des données envoyées: ' + parseResult.error.errors.map((e: z.ZodIssue) => e.message).join(', '));

@@ -4,15 +4,10 @@
   <meta charset="UTF-8">
   <style>
     .photos-section {
-      position: relative;
-      width: 100vw;
+      display: flex;
+      flex-direction: column;
       height: 100vh;
-      min-height: 100vh;
-      background: #fff;
-      overflow: hidden;
       box-sizing: border-box;
-      padding: 0;
-      margin: 0;
     }
     .section-title {
       font-size: 1.7rem;
@@ -24,32 +19,39 @@
       z-index: 2;
       position: relative;
     }
-    .photos-table-container {
-      position: relative;
-      width: 100vw;
-      height: calc(100vh - 3.5rem);
-      margin: 0;
-      padding: 0;
-      overflow: visible;
+    .photos-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      justify-content: center;
+      width: 100%;
+      padding: 1.2rem 24px 2rem 24px;
+      box-sizing: border-box;
+      background: #fff;
     }
     .photo-item {
-      position: absolute;
-      box-shadow: 0 6px 32px rgba(0,0,0,0.18), 0 1.5px 8px rgba(0,0,0,0.10);
-      border-radius: 18px;
+      flex: 1 1 320px;
+      max-width: 320px;
+      min-width: 220px;
+      height: 200px;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      overflow: hidden;
       background: #fff;
       border: 1.5px solid #e2e8f0;
-      overflow: hidden;
-      z-index: 2;
-      transition: box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .photo-item img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
+      border-radius: 14px;
     }
     @media print {
-      .photos-section, .photos-table-container {
+      .photos-section, .photos-grid {
         width: 100vw;
         height: 100vh;
         min-height: 100vh;
@@ -66,11 +68,11 @@
 <body>
   <div class="photos-section">
     <div class="section-title">Photos avant travaux</div>
-    <div class="photos-table-container">
+    <div class="photos-grid">
       {{#each images}}
-      <div class="photo-item" style="{{style}}">
-        <img src="{{url}}" alt="Photo avant travaux">
-      </div>
+        <div class="photo-item">
+          <img src="{{url}}" alt="Photo avant travaux">
+        </div>
       {{/each}}
     </div>
   </div>

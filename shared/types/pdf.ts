@@ -19,7 +19,9 @@ const DEFAULT_SECTIONS = {
   valuation_casa: true,
   financial: true,
   plans: true,
-  photos_3d: true
+  photos_3d: true,
+  photos_during: true,
+  photos_after: true
 } as const;
 
 const DEFAULT_DYNAMIC_FIELDS = {
@@ -45,7 +47,9 @@ export const PdfSectionsSchema = z.object({
   valuation_casa: z.boolean().optional().default(DEFAULT_SECTIONS.valuation_casa),
   financial: z.boolean().optional().default(DEFAULT_SECTIONS.financial),
   plans: z.boolean().optional().default(DEFAULT_SECTIONS.plans),
-  photos_3d: z.boolean().optional().default(DEFAULT_SECTIONS.photos_3d)
+  photos_3d: z.boolean().optional().default(DEFAULT_SECTIONS.photos_3d),
+  photos_during: z.boolean().optional().default(DEFAULT_SECTIONS.photos_during),
+  photos_after: z.boolean().optional().default(DEFAULT_SECTIONS.photos_after)
 });
 
 // Schéma des champs dynamiques du PDF
@@ -163,6 +167,8 @@ export const PdfDataSchema = z.object({
   selectedBeforePhotosForPdf: z.array(z.string()).optional(),
   selected3dPhotosForPdf: z.array(z.string()).optional(),
   selectedPlansPhotosForPdf: z.array(z.string()).optional(),
+  selectedDuringPhotosForPdf: z.array(z.string()).optional(),
+  selectedAfterPhotosForPdf: z.array(z.string()).optional(),
   image1: z.string().optional(),
   image2: z.string().optional(),
   image3: z.string().optional(),
@@ -182,4 +188,55 @@ export const PdfDataSchema = z.object({
   date_modification: z.date()
 });
 
-export type PdfData = z.infer<typeof PdfDataSchema>; 
+export type PdfData = z.infer<typeof PdfDataSchema>;
+
+// Type pour les données PDF de clôture
+export const PdfClosingDataSchema = PdfDataSchema.extend({
+  // Données de base
+  date_cloture: z.string(),
+
+  // Résumé exécutif (KPI cards)
+  resultats_prix_revient: z.number(),
+  resultats_realises_prix_revient: z.number(),
+  ecart_prix_revient: z.number(),
+
+  resultats_marge_nette: z.number(),
+  resultats_realises_marge_nette: z.number(),
+  ecart_marge_nette: z.number(),
+
+  resultats_rentabilite: z.number(),
+  resultats_realises_rentabilite: z.number(),
+  ecart_rentabilite: z.number(),
+
+  resultats_tri: z.number(),
+  resultats_realises_tri: z.number(),
+
+  // Synthèse financière détaillée
+  couts_acquisition_total: z.number(),
+  couts_travaux_total: z.number(),
+  couts_financement_total: z.number(),
+  couts_divers_total: z.number(),
+  couts_total: z.number(),
+
+  // Synthèse des surfaces
+  surface_carrez_avant: z.number(),
+  surface_carrez_apres: z.number(),
+  surface_carrez_apres_realise: z.number(),
+
+  surface_terrasse_avant: z.number(),
+  surface_terrasse_apres: z.number(),
+  surface_terrasse_apres_realise: z.number(),
+
+  surface_ponderee_apres: z.number(),
+  surface_ponderee_apres_realise: z.number(),
+
+  // Détail par trimestre
+  trimestre_details: z.array(z.any()),
+  trimestre_details_realises: z.array(z.any()),
+
+  // Ajout pour process modern
+  resultsBusinessPlanRealises: BusinessPlanResultsSchema.optional(),
+  inputsBusinessPlanRealises: BusinessPlanInputsSchema.optional(),
+});
+
+export type PdfClosingData = z.infer<typeof PdfClosingDataSchema>; 

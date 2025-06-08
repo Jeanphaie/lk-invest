@@ -109,6 +109,8 @@ router.post('/:projectId/:category/multiple', upload.array('photos', 40), async 
       selectedBeforePhotosForPdf: (photos as any).selectedBeforePhotosForPdf || [],
       selected3dPhotosForPdf: (photos as any).selected3dPhotosForPdf || [],
       selectedPlansPhotosForPdf: (photos as any).selectedPlansPhotosForPdf || [],
+      selectedDuringPhotosForPdf: (photos as any).selectedDuringPhotosForPdf || [],
+      selectedAfterPhotosForPdf: (photos as any).selectedAfterPhotosForPdf || [],
       coverPhoto: (photos as any).coverPhoto || undefined,
     };
 
@@ -216,7 +218,10 @@ router.get('/project/:projectId/selected-for-pdf', async (req: Request, res: Res
       success: true, 
       selectedPhotos: {
         before: selectedPhotos.selectedBeforePhotosForPdf,
-        '3d': selectedPhotos.selected3dPhotosForPdf
+        '3d': selectedPhotos.selected3dPhotosForPdf,
+        plans: selectedPhotos.selectedPlansPhotosForPdf,
+        during: selectedPhotos.selectedDuringPhotosForPdf,
+        after: selectedPhotos.selectedAfterPhotosForPdf
       }
     };
     
@@ -258,6 +263,9 @@ router.get('/project/:projectId', async (req: Request, res: Response) => {
           plans: [],
           selectedBeforePhotosForPdf: [],
           selected3dPhotosForPdf: [],
+          selectedPlansPhotosForPdf: [],
+          selectedDuringPhotosForPdf: [],
+          selectedAfterPhotosForPdf: [],
           coverPhoto: undefined
         };
       }
@@ -319,7 +327,13 @@ router.post('/:projectId/:category/toggle-pdf', async (req: Request, res: Respon
       return res.status(400).json({ error: 'Photo not found in database' });
     }
     // On déduit le type pour togglePhotoForPdf
-    const pdfType = category === 'before' ? 'selectedBeforePhotosForPdf' : 'selected3dPhotosForPdf';
+    let pdfType: 'selectedBeforePhotosForPdf' | 'selected3dPhotosForPdf' | 'selectedPlansPhotosForPdf' | 'selectedDuringPhotosForPdf' | 'selectedAfterPhotosForPdf';
+    if (category === 'before') pdfType = 'selectedBeforePhotosForPdf';
+    else if (category === '3d') pdfType = 'selected3dPhotosForPdf';
+    else if (category === 'plans') pdfType = 'selectedPlansPhotosForPdf';
+    else if (category === 'during') pdfType = 'selectedDuringPhotosForPdf';
+    else if (category === 'after') pdfType = 'selectedAfterPhotosForPdf';
+    else return res.status(400).json({ error: 'Invalid category for PDF selection' });
     await photoService.togglePhotoForPdf(
       projectId,
       photo.id,
@@ -460,7 +474,7 @@ router.post('/project/:projectId/selected-for-pdf', async (req: Request, res: Re
     if (isNaN(projectId)) {
       return res.status(400).json({ error: 'Invalid project ID' });
     }
-    const { selectedBeforePhotosForPdf, selected3dPhotosForPdf, selectedPlansPhotosForPdf } = req.body;
+    const { selectedBeforePhotosForPdf, selected3dPhotosForPdf, selectedPlansPhotosForPdf, selectedDuringPhotosForPdf, selectedAfterPhotosForPdf } = req.body;
     console.log('[BACK][PDF][ROUTE][BODY]', req.body);
     if (Array.isArray(selectedBeforePhotosForPdf)) {
       await photoService.setSelectedPhotosForPdf(projectId, 'selectedBeforePhotosForPdf', selectedBeforePhotosForPdf);
@@ -474,8 +488,16 @@ router.post('/project/:projectId/selected-for-pdf', async (req: Request, res: Re
       await photoService.setSelectedPhotosForPdf(projectId, 'selectedPlansPhotosForPdf', selectedPlansPhotosForPdf);
       console.log('[BACK][PDF][ROUTE][SET] selectedPlansPhotosForPdf', selectedPlansPhotosForPdf);
       return res.json({ success: true });
+    } else if (Array.isArray(selectedDuringPhotosForPdf)) {
+      await photoService.setSelectedPhotosForPdf(projectId, 'selectedDuringPhotosForPdf', selectedDuringPhotosForPdf);
+      console.log('[BACK][PDF][ROUTE][SET] selectedDuringPhotosForPdf', selectedDuringPhotosForPdf);
+      return res.json({ success: true });
+    } else if (Array.isArray(selectedAfterPhotosForPdf)) {
+      await photoService.setSelectedPhotosForPdf(projectId, 'selectedAfterPhotosForPdf', selectedAfterPhotosForPdf);
+      console.log('[BACK][PDF][ROUTE][SET] selectedAfterPhotosForPdf', selectedAfterPhotosForPdf);
+      return res.json({ success: true });
     } else {
-      return res.status(400).json({ error: 'Payload must contain selectedBeforePhotosForPdf, selected3dPhotosForPdf or selectedPlansPhotosForPdf as array' });
+      return res.status(400).json({ error: 'Payload must contain selectedBeforePhotosForPdf, selected3dPhotosForPdf, selectedPlansPhotosForPdf, selectedDuringPhotosForPdf or selectedAfterPhotosForPdf as array' });
     }
   } catch (error) {
     console.error('Error updating selected photos for PDF:', error);
@@ -490,7 +512,13 @@ router.patch('/:projectId/pdf/:photoId', async (req: Request, res: Response) => 
     const photoId = parseInt(req.params.photoId, 10);
     const { selected, type } = req.body;
 
-    if (typeof selected !== 'boolean' || !['selectedBeforePhotosForPdf', 'selected3dPhotosForPdf', 'selectedPlansPhotosForPdf'].includes(type)) {
+    if (typeof selected !== 'boolean' || ![
+      'selectedBeforePhotosForPdf',
+      'selected3dPhotosForPdf',
+      'selectedPlansPhotosForPdf',
+      'selectedDuringPhotosForPdf',
+      'selectedAfterPhotosForPdf'
+    ].includes(type)) {
       return res.status(400).json({ error: 'Invalid request body' });
     }
 

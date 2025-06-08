@@ -23,8 +23,8 @@ const categories: { key: PhotoCategory; label: string; canSelectForPdf: boolean 
   { key: 'before', label: 'Avant', canSelectForPdf: true },
   { key: 'plans', label: 'Plans', canSelectForPdf: true },
   { key: '3d', label: '3D', canSelectForPdf: true },
-  { key: 'during', label: 'Pendant', canSelectForPdf: false },
-  { key: 'after', label: 'Après', canSelectForPdf: false },
+  { key: 'during', label: 'Pendant', canSelectForPdf: true },
+  { key: 'after', label: 'Après', canSelectForPdf: true },
 ];
 
 // Fonction utilitaire pour trier les photos d'une catégorie
@@ -48,11 +48,15 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
     after: [], 
     selectedBeforePhotosForPdf: [], 
     selected3dPhotosForPdf: [],
-    selectedPlansPhotosForPdf: []
+    selectedPlansPhotosForPdf: [],
+    selectedDuringPhotosForPdf: [],
+    selectedAfterPhotosForPdf: []
   });
   const [selectedBeforePhotosForPdf, setSelectedBeforePhotosForPdf] = useState<number[]>([]);
   const [selected3dPhotosForPdf, setSelected3dPhotosForPdf] = useState<number[]>([]);
   const [selectedPlansPhotosForPdf, setSelectedPlansPhotosForPdf] = useState<number[]>([]);
+  const [selectedDuringPhotosForPdf, setSelectedDuringPhotosForPdf] = useState<number[]>([]);
+  const [selectedAfterPhotosForPdf, setSelectedAfterPhotosForPdf] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -106,6 +110,8 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
       setSelectedBeforePhotosForPdf(parse.data.selectedBeforePhotosForPdf || []);
       setSelected3dPhotosForPdf(parse.data.selected3dPhotosForPdf || []);
       setSelectedPlansPhotosForPdf(parse.data.selectedPlansPhotosForPdf || []);
+      setSelectedDuringPhotosForPdf(parse.data.selectedDuringPhotosForPdf || []);
+      setSelectedAfterPhotosForPdf(parse.data.selectedAfterPhotosForPdf || []);
       setCoverPhoto(parse.data.coverPhoto || null);
       console.log('[FRONT][FETCH][PARSED]', parse.data);
       console.log('[FRONT][FETCH][COVER]', {
@@ -117,7 +123,9 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
         during: parse.data.during?.length,
         selectedBeforePhotosForPdf: parse.data.selectedBeforePhotosForPdf,
         selected3dPhotosForPdf: parse.data.selected3dPhotosForPdf,
-        selectedPlansPhotosForPdf: parse.data.selectedPlansPhotosForPdf
+        selectedPlansPhotosForPdf: parse.data.selectedPlansPhotosForPdf,
+        selectedDuringPhotosForPdf: parse.data.selectedDuringPhotosForPdf,
+        selectedAfterPhotosForPdf: parse.data.selectedAfterPhotosForPdf
       });
       console.log('=== fetchPhotos END ===\n');
     } catch (e) {
@@ -146,7 +154,9 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
     console.log('selectedBeforePhotosForPdf:', selectedBeforePhotosForPdf);
     console.log('selected3dPhotosForPdf:', selected3dPhotosForPdf);
     console.log('selectedPlansPhotosForPdf:', selectedPlansPhotosForPdf);
-  }, [selectedBeforePhotosForPdf, selected3dPhotosForPdf, selectedPlansPhotosForPdf]);
+    console.log('selectedDuringPhotosForPdf:', selectedDuringPhotosForPdf);
+    console.log('selectedAfterPhotosForPdf:', selectedAfterPhotosForPdf);
+  }, [selectedBeforePhotosForPdf, selected3dPhotosForPdf, selectedPlansPhotosForPdf, selectedDuringPhotosForPdf, selectedAfterPhotosForPdf]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, category: string) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -284,34 +294,54 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
   };
 
   const handleTogglePdfSelection = async (category: PhotoCategory, photoId: number) => {
-    console.log('[FRONT][PDF][BEFORE]', { category, photoId, selectedBeforePhotosForPdf, selected3dPhotosForPdf, selectedPlansPhotosForPdf });
-    if (!(category === 'before' || category === '3d' || category === 'plans')) return;
+    console.log('[FRONT][PDF][BEFORE]', { category, photoId, selectedBeforePhotosForPdf, selected3dPhotosForPdf, selectedPlansPhotosForPdf, selectedDuringPhotosForPdf, selectedAfterPhotosForPdf });
     let updated: number[];
-    if (category === 'before') {
-      updated = selectedBeforePhotosForPdf.includes(photoId)
-        ? selectedBeforePhotosForPdf.filter(id => id !== photoId)
-        : [...selectedBeforePhotosForPdf, photoId];
-      setSelectedBeforePhotosForPdf(updated);
-      console.log('[FRONT][PDF][AFTER SETSTATE before]', updated);
-    } else if (category === '3d') {
-      updated = selected3dPhotosForPdf.includes(photoId)
-        ? selected3dPhotosForPdf.filter(id => id !== photoId)
-        : [...selected3dPhotosForPdf, photoId];
-      setSelected3dPhotosForPdf(updated);
-      console.log('[FRONT][PDF][AFTER SETSTATE 3d]', updated);
-    } else {
-      updated = selectedPlansPhotosForPdf.includes(photoId)
-        ? selectedPlansPhotosForPdf.filter(id => id !== photoId)
-        : [...selectedPlansPhotosForPdf, photoId];
-      setSelectedPlansPhotosForPdf(updated);
-      console.log('[FRONT][PDF][AFTER SETSTATE plans]', updated);
+    let setter: React.Dispatch<React.SetStateAction<number[]>>;
+    let payload: Record<string, number[]>;
+
+    switch (category) {
+      case 'before':
+        updated = selectedBeforePhotosForPdf.includes(photoId)
+          ? selectedBeforePhotosForPdf.filter(id => id !== photoId)
+          : [...selectedBeforePhotosForPdf, photoId];
+        setter = setSelectedBeforePhotosForPdf;
+        payload = { selectedBeforePhotosForPdf: updated };
+        break;
+      case '3d':
+        updated = selected3dPhotosForPdf.includes(photoId)
+          ? selected3dPhotosForPdf.filter(id => id !== photoId)
+          : [...selected3dPhotosForPdf, photoId];
+        setter = setSelected3dPhotosForPdf;
+        payload = { selected3dPhotosForPdf: updated };
+        break;
+      case 'plans':
+        updated = selectedPlansPhotosForPdf.includes(photoId)
+          ? selectedPlansPhotosForPdf.filter(id => id !== photoId)
+          : [...selectedPlansPhotosForPdf, photoId];
+        setter = setSelectedPlansPhotosForPdf;
+        payload = { selectedPlansPhotosForPdf: updated };
+        break;
+      case 'during':
+        updated = selectedDuringPhotosForPdf.includes(photoId)
+          ? selectedDuringPhotosForPdf.filter(id => id !== photoId)
+          : [...selectedDuringPhotosForPdf, photoId];
+        setter = setSelectedDuringPhotosForPdf;
+        payload = { selectedDuringPhotosForPdf: updated };
+        break;
+      case 'after':
+        updated = selectedAfterPhotosForPdf.includes(photoId)
+          ? selectedAfterPhotosForPdf.filter(id => id !== photoId)
+          : [...selectedAfterPhotosForPdf, photoId];
+        setter = setSelectedAfterPhotosForPdf;
+        payload = { selectedAfterPhotosForPdf: updated };
+        break;
+      default:
+        return;
     }
-    const payload = category === 'before'
-      ? { selectedBeforePhotosForPdf: updated }
-      : category === '3d'
-        ? { selected3dPhotosForPdf: updated }
-        : { selectedPlansPhotosForPdf: updated };
-    console.log('[FRONT][PDF][API PAYLOAD]', payload);
+
+    setter(updated);
+    console.log('[FRONT][PDF][AFTER SETSTATE]', { category, updated });
+
     try {
       setLoading(true);
       const res = await fetch(`${API_BASE_URL}/api/photos/project/${projectId}/selected-for-pdf`, {
@@ -390,7 +420,11 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
                         ? selected3dPhotosForPdf.includes(photo.id)
                         : cat.key === 'plans'
                           ? selectedPlansPhotosForPdf.includes(photo.id)
-                          : false;
+                          : cat.key === 'during'
+                            ? selectedDuringPhotosForPdf.includes(photo.id)
+                            : cat.key === 'after'
+                              ? selectedAfterPhotosForPdf.includes(photo.id)
+                              : false;
                     
 
 

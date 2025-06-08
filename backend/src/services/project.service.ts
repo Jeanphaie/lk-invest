@@ -13,6 +13,8 @@ import { RenovationBienInputsSchema, RenovationBienInputs } from '../../../share
 import { RenovationBienResultsSchema, RenovationBienResults } from '../../../shared/types/renovationBienResults';
 import fs from 'fs';
 import path from 'path';
+import { ProjectSchema } from '../../../shared/types/project';
+import { BusinessPlanRealised, BusinessPlanRealisedSchema } from '../../../shared/types/businessPlanRealised';
 
 const prisma = new PrismaClient();
 
@@ -42,6 +44,8 @@ interface ProjectPhotos {
   selected3dPhotosForPdf: number[];
   selectedPlansPhotosForPdf: number[];
   selectedBeforePhotosForPdf: number[];
+  selectedDuringPhotosForPdf: number[];
+  selectedAfterPhotosForPdf: number[];
 }
 
 export class ProjectService {
@@ -85,6 +89,8 @@ export class ProjectService {
       selectedBeforePhotosForPdf: Array.isArray(photos.selectedBeforePhotosForPdf) ? photos.selectedBeforePhotosForPdf : [],
       selected3dPhotosForPdf: Array.isArray(photos.selected3dPhotosForPdf) ? photos.selected3dPhotosForPdf : [],
       selectedPlansPhotosForPdf: Array.isArray(photos.selectedPlansPhotosForPdf) ? photos.selectedPlansPhotosForPdf : [],
+      selectedDuringPhotosForPdf: Array.isArray(photos.selectedDuringPhotosForPdf) ? photos.selectedDuringPhotosForPdf : [],
+      selectedAfterPhotosForPdf: Array.isArray(photos.selectedAfterPhotosForPdf) ? photos.selectedAfterPhotosForPdf : [],
       coverPhoto: photos.coverPhoto ?? undefined
     };
     const project = await prisma.project.create({
@@ -107,9 +113,7 @@ export class ProjectService {
 
   // Mettre à jour un projet
   async updateProject(id: number, data: any): Promise<Project> {
-    console.log('[updateProject] Starting update for project:', id);
-    console.log('[updateProject] Input data:', JSON.stringify(data, null, 2));
-
+    console.log('[LOG][updateProject] Appelée avec id:', id, 'et data:', JSON.stringify(data, null, 2));
     // Récupérer le projet existant pour préserver les photos
     const existingProject = await prisma.project.findUnique({
       where: { project_id: id },
@@ -117,9 +121,11 @@ export class ProjectService {
         photos: true,
         inputsGeneral: true,
         inputsBusinessPlan: true,
+        inputsBusinessPlanRealises: true,
         inputsDescriptionBien: true,
         inputsDvf: true,
         resultsBusinessPlan: true,
+        resultsBusinessPlanRealises: true,
         resultsDescriptionBien: true,
         resultsDvfMetadata: true,
         pdfConfig: true
@@ -130,37 +136,16 @@ export class ProjectService {
       throw new Error(`Project with id ${id} not found`);
     }
 
-    console.log('[updateProject] Existing project photos:', {
-      raw: existingProject.photos,
-      parsed: this.validateJson(existingProject.photos),
-      coverPhoto: existingProject.photos ? (existingProject.photos as any).coverPhoto : undefined
-    });
-
+    
     // Normaliser les données
     const normalizedData = this.normalizeProjectData(data);
-    console.log('[updateProject] Normalized data:', {
-      raw: normalizedData,
-      photos: normalizedData.photos,
-      coverPhoto: normalizedData.photos ? (normalizedData.photos as any).coverPhoto : undefined
-    });
-
+    console.log('[LOG][updateProject] normalizedData:', JSON.stringify(normalizedData, null, 2));
+    
     // Préserver les sélections PDF existantes
     const existingPhotos = existingProject.photos as unknown as ProjectPhotos;
     const newPhotos = (normalizedData.photos || {}) as unknown as ProjectPhotos;
     
-    console.log('[updateProject] Photos comparison:', {
-      existing: {
-        coverPhoto: existingPhotos.coverPhoto,
-        hasCoverPhoto: !!existingPhotos.coverPhoto,
-        coverPhotoType: typeof existingPhotos.coverPhoto
-      },
-      new: {
-        coverPhoto: newPhotos.coverPhoto,
-        hasCoverPhoto: !!newPhotos.coverPhoto,
-        coverPhotoType: typeof newPhotos.coverPhoto
-      }
-    });
-
+    
     // Fusionner les photos en préservant les sélections PDF
     let mergedCoverPhoto = (typeof newPhotos.coverPhoto === 'string' && newPhotos.coverPhoto.trim() !== '')
       ? newPhotos.coverPhoto
@@ -181,33 +166,16 @@ export class ProjectService {
         : existingPhotos.selectedPlansPhotosForPdf || [],
       selectedBeforePhotosForPdf: Array.isArray(newPhotos.selectedBeforePhotosForPdf) && newPhotos.selectedBeforePhotosForPdf.length > 0 
         ? [...new Set([...existingPhotos.selectedBeforePhotosForPdf, ...newPhotos.selectedBeforePhotosForPdf])]
-        : existingPhotos.selectedBeforePhotosForPdf || []
+        : existingPhotos.selectedBeforePhotosForPdf || [],
+      selectedDuringPhotosForPdf: Array.isArray(newPhotos.selectedDuringPhotosForPdf) && newPhotos.selectedDuringPhotosForPdf.length > 0 
+        ? [...new Set([...existingPhotos.selectedDuringPhotosForPdf, ...newPhotos.selectedDuringPhotosForPdf])]
+        : existingPhotos.selectedDuringPhotosForPdf || [],
+      selectedAfterPhotosForPdf: Array.isArray(newPhotos.selectedAfterPhotosForPdf) && newPhotos.selectedAfterPhotosForPdf.length > 0 
+        ? [...new Set([...existingPhotos.selectedAfterPhotosForPdf, ...newPhotos.selectedAfterPhotosForPdf])]
+        : existingPhotos.selectedAfterPhotosForPdf || [],
     };
 
-    console.log('[updateProject] Cover photo state:', {
-      existingCoverPhoto: existingPhotos.coverPhoto,
-      newCoverPhoto: newPhotos.coverPhoto,
-      isNewCoverEmpty: newPhotos.coverPhoto === '',
-      isNewCoverSameAsExisting: newPhotos.coverPhoto === existingPhotos.coverPhoto,
-      finalCoverPhoto: mergedPhotos.coverPhoto,
-      context: 'Tab change detected, preserving existing cover photo'
-    });
-
-    console.log('[updateProject] Merged photos state:', {
-      coverPhoto: {
-        value: mergedPhotos.coverPhoto,
-        exists: !!mergedPhotos.coverPhoto,
-        type: typeof mergedPhotos.coverPhoto
-      },
-      photos: {
-        '3d': mergedPhotos['3d']?.length || 0,
-        after: mergedPhotos.after?.length || 0,
-        before: mergedPhotos.before?.length || 0,
-        during: mergedPhotos.during?.length || 0,
-        plans: mergedPhotos.plans?.length || 0
-      }
-    });
-
+    
     // Filtrage des photos inexistantes AVANT sauvegarde
     const uploadsRoot = path.resolve(__dirname, '../../../uploads');
     const filterExisting = (arr: any[]) => arr.filter(photo => {
@@ -231,34 +199,52 @@ export class ProjectService {
     }
 
     // Log détaillé de la structure des photos juste avant la sauvegarde
-    console.log('[updateProject][BEFORE SAVE][PHOTOS STRUCTURE]', JSON.stringify({
-      '3d': mergedPhotos['3d'],
-      after: mergedPhotos.after,
-      before: mergedPhotos.before,
-      during: mergedPhotos.during,
-      plans: mergedPhotos.plans,
-      coverPhoto: mergedPhotos.coverPhoto,
-      selected3dPhotosForPdf: mergedPhotos.selected3dPhotosForPdf,
-      selectedPlansPhotosForPdf: mergedPhotos.selectedPlansPhotosForPdf,
-      selectedBeforePhotosForPdf: mergedPhotos.selectedBeforePhotosForPdf
-    }, null, 2));
+    
+    // Log détaillé pour inputsBusinessPlanRealises
+    let mergedInputsBusinessPlanRealises = existingProject.inputsBusinessPlanRealises;
+    if (normalizedData.inputsBusinessPlanRealises) {
+      mergedInputsBusinessPlanRealises = JSON.parse(JSON.stringify({
+        ...(existingProject.inputsBusinessPlanRealises as BusinessPlanRealised),
+        ...(normalizedData.inputsBusinessPlanRealises as BusinessPlanRealised)
+      }));
+    
+    }
+
+    if (mergedInputsBusinessPlanRealises === null || mergedInputsBusinessPlanRealises === undefined) {
+      // On n'inclut pas la clé dans l'objet de mise à jour
+    }
+
+    // Construction stricte de updateData :
+    const updateData: any = {};
+    if ('inputsBusinessPlan' in normalizedData) {
+      updateData.inputsBusinessPlan = normalizedData.inputsBusinessPlan;
+    }
+    if ('inputsBusinessPlanRealises' in normalizedData) {
+      updateData.inputsBusinessPlanRealises = normalizedData.inputsBusinessPlanRealises;
+    }
+    if ('resultsBusinessPlan' in normalizedData) {
+      updateData.resultsBusinessPlan = normalizedData.resultsBusinessPlan;
+    }
+    if ('resultsBusinessPlanRealises' in normalizedData) {
+      updateData.resultsBusinessPlanRealises = normalizedData.resultsBusinessPlanRealises;
+    }
+    if ('photos' in normalizedData) {
+      updateData.photos = mergedPhotos;
+    }
+    console.log('[LOG][updateProject] updateData envoyé à Prisma:', JSON.stringify(updateData, null, 2));
+
+    if (updateData.inputsBusinessPlan) {
+      console.trace('[ALERTE][SERVICE] updateData.inputsBusinessPlan va être modifié !', JSON.stringify(updateData.inputsBusinessPlan, null, 2));
+    }
 
     // Mettre à jour le projet avec les données normalisées et les photos fusionnées
     const updatedProject = await prisma.project.update({
       where: { project_id: id },
-      data: {
-        ...normalizedData,
-        photos: mergedPhotos as any
-      }
+      data: updateData
     });
+    console.log('[LOG][updateProject] Résultat complet retourné par Prisma:', JSON.stringify(updatedProject, null, 2));
 
-    console.log('[updateProject] Updated project photos:', {
-      raw: updatedProject.photos,
-      parsed: this.validateJson(updatedProject.photos),
-      coverPhoto: updatedProject.photos ? (updatedProject.photos as any).coverPhoto : undefined
-    });
-
-    return {
+    const projectData = {
       ...updatedProject,
       id: updatedProject.project_id,
       projectTitle: updatedProject.projectTitle,
@@ -271,7 +257,9 @@ export class ProjectService {
       inputsDescriptionBien: this.validateJson(updatedProject.inputsDescriptionBien),
       resultsDescriptionBien: this.validateJson(updatedProject.resultsDescriptionBien),
       inputsBusinessPlan: this.validateJson(updatedProject.inputsBusinessPlan),
+      inputsBusinessPlanRealises: this.validateJson(updatedProject.inputsBusinessPlanRealises),
       resultsBusinessPlan: this.validateJson(updatedProject.resultsBusinessPlan),
+      resultsBusinessPlanRealises: this.validateJson(updatedProject.resultsBusinessPlanRealises),
       inputsDvf: this.validateJson(updatedProject.inputsDvf),
       resultsDvfMetadata: this.validateJson(updatedProject.resultsDvfMetadata),
       inputsRenovationBien: this.validateJson(updatedProject.inputsRenovationBien),
@@ -285,6 +273,8 @@ export class ProjectService {
         selectedBeforePhotosForPdf: [],
         selected3dPhotosForPdf: [],
         selectedPlansPhotosForPdf: [],
+        selectedDuringPhotosForPdf: [],
+        selectedAfterPhotosForPdf: [],
         coverPhoto: undefined
       },
       pdfConfig: this.validateJson(updatedProject.pdfConfig) ?? DEFAULT_PDF_CONFIG,
@@ -293,6 +283,22 @@ export class ProjectService {
       dvfDistributions: [],
       dvfPremiumTransactions: []
     };
+    console.log('[LOG][updateProject] projectData retourné au contrôleur:', JSON.stringify({
+      id: projectData.id,
+      inputsBusinessPlan: projectData.inputsBusinessPlan,
+      inputsBusinessPlanRealises: projectData.inputsBusinessPlanRealises,
+      resultsBusinessPlan: projectData.resultsBusinessPlan,
+      resultsBusinessPlanRealises: projectData.resultsBusinessPlanRealises
+    }, null, 2));
+
+    // Filtrer les clés undefined avant de retourner le projet
+    Object.keys(projectData).forEach(key => {
+      if ((projectData as any)[key] === undefined) {
+        delete (projectData as any)[key];
+      }
+    });
+
+    return ProjectSchema.parse(projectData);
   }
 
   // Parse JSON deeply (handles string, double-string, or object)
@@ -317,24 +323,44 @@ export class ProjectService {
         createdAt: true,
         updatedAt: true,
         inputsGeneral: true,
+        inputsBusinessPlan: true,
+        inputsBusinessPlanRealises: true,
         inputsDescriptionBien: true,
         resultsDescriptionBien: true,
-        inputsBusinessPlan: true,
         resultsBusinessPlan: true,
+        resultsBusinessPlanRealises: true,
         inputsDvf: true,
         resultsDvfMetadata: true,
         photos: true,
         pdfConfig: true,
         inputsRenovationBien: true,
         resultsRenovationBien: true,
-        dvfTransactions: true,
-        dvfSeries: true,
-        dvfDistributions: true,
-        dvfPremiumTransactions: true
+        dvfTransactions: {
+          select: {
+            data: true
+          }
+        },
+        dvfSeries: {
+          select: {
+            data: true
+          }
+        },
+        dvfDistributions: {
+          select: {
+            data: true
+          }
+        },
+        dvfPremiumTransactions: {
+          select: {
+            data: true
+          }
+        }
       }
     });
 
     if (!project) return null;
+
+    console.log('[LOG][getProjectById] id:', id, 'inputsBusinessPlan:', project.inputsBusinessPlan, 'inputsBusinessPlanRealises:', project.inputsBusinessPlanRealises);
 
     // Parse photos with default values
     let photos: Photos;
@@ -348,6 +374,8 @@ export class ProjectService {
         selectedBeforePhotosForPdf: [],
         selected3dPhotosForPdf: [],
         selectedPlansPhotosForPdf: [],
+        selectedDuringPhotosForPdf: [],
+        selectedAfterPhotosForPdf: [],
         coverPhoto: ''
       };
     } else {
@@ -360,6 +388,8 @@ export class ProjectService {
         selectedBeforePhotosForPdf: [],
         selected3dPhotosForPdf: [],
         selectedPlansPhotosForPdf: [],
+        selectedDuringPhotosForPdf: [],
+        selectedAfterPhotosForPdf: [],
         coverPhoto: ''
       };
     }
@@ -386,7 +416,15 @@ export class ProjectService {
       photos.coverPhoto = '';
     }
 
-    return {
+    // Après avoir obtenu ou construit l'objet photos :
+    if (!photos.selectedDuringPhotosForPdf) photos.selectedDuringPhotosForPdf = [];
+    if (!photos.selectedAfterPhotosForPdf) photos.selectedAfterPhotosForPdf = [];
+
+    const raw = project.inputsBusinessPlanRealises;
+    const parsed = this.validateJson<BusinessPlanInputs>(raw);
+    const inputsBusinessPlanRealises = (parsed === null || parsed === undefined) ? undefined : parsed;
+
+    const projectData = {
       id: project.project_id,
       projectTitle: project.projectTitle,
       createdAt: project.createdAt.toISOString(),
@@ -398,7 +436,9 @@ export class ProjectService {
       inputsDescriptionBien: this.validateJson<DescriptionBienInputs>(project.inputsDescriptionBien) ?? undefined,
       resultsDescriptionBien: this.validateJson<DescriptionBienResults>(project.resultsDescriptionBien) ?? undefined,
       inputsBusinessPlan: this.validateJson<BusinessPlanInputs>(project.inputsBusinessPlan) ?? undefined,
+      inputsBusinessPlanRealises: this.validateJson<BusinessPlanInputs>(project.inputsBusinessPlanRealises) ?? undefined,
       resultsBusinessPlan: this.validateJson<BusinessPlanResults>(project.resultsBusinessPlan) ?? undefined,
+      resultsBusinessPlanRealises: this.validateJson<BusinessPlanResults>(project.resultsBusinessPlanRealises) ?? undefined,
       inputsDvf: this.validateJson<InputsDvf>(project.inputsDvf) ?? undefined,
       resultsDvfMetadata: this.validateJson<ResultsDvfMetadata>(project.resultsDvfMetadata) ?? undefined,
       photos,
@@ -428,14 +468,19 @@ export class ProjectService {
           valeur_fonciere: d.valeur_fonciere ?? 0,
           surface_reelle_bati: d.surface_reelle_bati ?? 0,
           nombre_pieces_principales: d.nombre_pieces_principales ?? 0
-        };
+        } as const;
       }).filter(Boolean) ?? [],
       dvfSeries: project.dvfSeries?.map(s => {
         const d = s.data as any;
         return {
-          ...d,
-          type: s.type
-        };
+          year: d.year ?? 0,
+          selection_avg: d.selection_avg ?? 0,
+          selection_count: d.selection_count ?? 0,
+          arrondissement_avg: d.arrondissement_avg ?? 0,
+          arrondissement_count: d.arrondissement_count ?? 0,
+          premium_avg: d.premium_avg ?? 0,
+          premium_count: d.premium_count ?? 0
+        } as const;
       }).filter(Boolean) ?? [],
       dvfDistributions: project.dvfDistributions?.map(d => {
         const dist = d.data as any;
@@ -453,10 +498,9 @@ export class ProjectService {
             ? dist.nombreTransactions
             : 0;
         return {
-          ...dist,
           prixM2,
-          nombreTransactions,
-        };
+          nombreTransactions
+        } as const;
       }).filter(Boolean) ?? [],
       dvfPremiumTransactions: project.dvfPremiumTransactions?.map(t => {
         const d = t.data as any;
@@ -481,9 +525,11 @@ export class ProjectService {
           valeur_fonciere: d.valeur_fonciere ?? 0,
           surface_reelle_bati: d.surface_reelle_bati ?? 0,
           nombre_pieces_principales: d.nombre_pieces_principales ?? 0
-        };
+        } as const;
       }).filter(Boolean) ?? []
     };
+
+    return ProjectSchema.parse(projectData);
   }
 
   async getAllProjects(): Promise<Project[]> {

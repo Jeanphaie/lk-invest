@@ -20,7 +20,9 @@ model Project {
   inputsDvf              Json?                   @map("inputs_dvf")
   resultsDvfMetadata     Json?                   @map("results_dvf_metadata")
   inputsBusinessPlan     Json?                   @map("inputs_business_plan")
+  inputsBusinessPlanRealises Json?               @map("inputs_business_plan_realises")
   resultsBusinessPlan    Json?                   @map("results_business_plan")
+  resultsBusinessPlanRealises Json?               @map("results_business_plan_realises")
   photos                 Json?                   @map("photos")
   pdfConfig              Json?                   @map("pdf_config")
   dvfDistributions       DvfDistribution[]

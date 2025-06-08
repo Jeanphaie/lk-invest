@@ -23,7 +23,9 @@ router.get('/:projectId', async (req: Request, res: Response) => {
 
     res.json({ 
       inputs: project.inputsBusinessPlan, 
-      results: project.resultsBusinessPlan 
+      results: project.resultsBusinessPlan,
+      inputsRealises: project.inputsBusinessPlanRealises,
+      resultsRealises: project.resultsBusinessPlanRealises
     });
   } catch (error) {
     console.error('Erreur lors de la récupération du business plan:', error);
@@ -72,75 +74,38 @@ function convertKeysToSnakeCase(obj: any): any {
   );
 }
 
-// POST /api/business-plan/:projectId/calculate - Calcule les résultats du business plan
-router.post('/:projectId/calculate', async (req, res, next) => {
+// POST /api/business-plan/:projectId/calculate - Calcule le business plan
+router.post('/:projectId/calculate', calculateBusinessPlan);
+
+// POST /api/business-plan/:projectId/calculate-realises - Calcule et sauvegarde les résultats réalisés
+router.post('/:projectId/calculate-realises', async (req, res) => {
   try {
     const projectId = parseInt(req.params.projectId);
     if (isNaN(projectId)) {
       return res.status(400).json({ error: 'ID de projet invalide' });
     }
 
-    const project = await projectService.getProjectById(projectId);
-    if (!project) {
-      return res.status(404).json({ error: 'Projet non trouvé' });
-    }
-
-    // Log du body reçu
-    console.log('[LKI LOG] Body reçu pour calcul:', req.body);
-    
-    // Si inputsBusinessPlan est null, initialiser avec les valeurs par défaut
-    const currentInputs = project.inputsBusinessPlan || {};
-    console.log('[LKI LOG] Valeurs actuelles de la BDD:', currentInputs);
-    
-    // Conversion camelCase -> snake_case sur toutes les clés
-    const snakeBody = convertKeysToSnakeCase(currentInputs);
-    console.log('[LKI LOG] Body inputsBusinessPlan converti snake_case:', snakeBody);
-    
-    // Ajoute les valeurs du body de la requête (venant du front) si elles existent
-    Object.assign(snakeBody, convertKeysToSnakeCase(req.body));
-    console.log('[LKI LOG] Body final transmis au contrôleur:', snakeBody);
-    
-    // Validation des données avec Zod
-    const validatedInputs = BusinessPlanInputsSchema.parse(snakeBody);
-
-    // Vérification du financement avec les nouveaux noms
-    const prix_achat = validatedInputs.prix_achat;
-    const frais_notaire = prix_achat * (validatedInputs.frais_notaire_percent || 0) / 100;
-    const frais_dossier = validatedInputs.frais_dossier_amount || 0;
-    const besoin_acquisition = prix_achat + frais_notaire + frais_dossier;
-    
-    const credit_foncier = validatedInputs.financement_credit_foncier_amount || 0;
-    const fonds_propres = validatedInputs.financement_fonds_propres_amount || 0;
-    const credit_accompagnement = validatedInputs.financement_credit_accompagnement_amount || 0;
-    const financement_total = credit_foncier + fonds_propres + credit_accompagnement;
-
-    if (financement_total < besoin_acquisition) {
+    // Valider les inputs réalisés
+    const validatedInputs = BusinessPlanInputsSchema.safeParse(req.body);
+    if (!validatedInputs.success) {
       return res.status(400).json({
-        error: 'Financement insuffisant',
-        details: `Le financement total (${financement_total}€) est insuffisant pour couvrir l'acquisition (${besoin_acquisition}€). Il manque ${besoin_acquisition - financement_total}€.`,
-        required: {
-          besoin_acquisition,
-          financement_disponible: financement_total,
-          manquant: besoin_acquisition - financement_total
-        }
+        error: 'Données invalides',
+        details: validatedInputs.error.errors
       });
     }
 
-    req.body = validatedInputs;
+    // Calculer les résultats réalisés (réutilise la logique du contrôleur)
+    const { calculateBusinessPlan } = require('../controllers/businessPlanController');
+    // On simule un req/res pour la fonction existante
+    req.body = validatedInputs.data;
+    (req as any)._isRealises = true; // Indique au contrôleur d'utiliser les champs Realises
     return calculateBusinessPlan(req, res);
   } catch (error) {
-    console.error('Erreur lors du calcul du business plan:', error);
-    if (error instanceof z.ZodError) {
-      res.status(400).json({ 
-        error: 'Données invalides', 
-        details: error.errors 
-      });
-    } else {
-      res.status(500).json({
-        error: 'Erreur lors du calcul du business plan',
-        details: error instanceof Error ? error.message : 'Erreur inconnue'
-      });
-    }
+    console.error('Erreur lors du calcul du business plan réalisé:', error);
+    res.status(500).json({
+      error: 'Erreur lors du calcul du business plan réalisé',
+      details: error instanceof Error ? error.message : 'Erreur inconnue'
+    });
   }
 });
 

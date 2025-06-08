@@ -38,28 +38,35 @@
       color: #4a5568;
     }
     .photos-table-container {
-      position: relative;
-      width: 100vw;
-      height: calc(100vh - 12rem);
-      margin: 0;
-      padding: 0;
-      overflow: visible;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      width: 100%;
+      padding: 1.2rem 2vw 2rem 2vw;
+      box-sizing: border-box;
+      background: #fff;
+      align-items: center;
     }
     .photo-item {
-      position: absolute;
-      box-shadow: 0 6px 32px rgba(0,0,0,0.18), 0 1.5px 8px rgba(0,0,0,0.10);
-      border-radius: 18px;
+      width: 100%;
+      max-width: 900px;
+      aspect-ratio: 16/9;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      overflow: hidden;
       background: #fff;
       border: 1.5px solid #e2e8f0;
-      overflow: hidden;
-      z-index: 2;
-      transition: box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px auto;
     }
     .photo-item img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
+      border-radius: 14px;
     }
     @media print {
       .photos-section, .photos-table-container {
@@ -84,7 +91,7 @@
     </div>
     <div class="photos-table-container">
       {{#each images}}
-      <div class="photo-item" style="{{style}}">
+      <div class="photo-item">
         <img src="{{url}}" alt="Vue 3D">
       </div>
       {{/each}}

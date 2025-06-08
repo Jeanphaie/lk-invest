@@ -6,6 +6,7 @@ import * as Handlebars from 'handlebars';
 import { ProjectService } from '../services/project.service';
 import { PdfMappingService } from '../services/pdfMappingService';
 import { PdfConfigSchema, PdfConfig, PdfData } from '../../../shared/types/pdf';
+import { PdfMappingClosingService } from '../services/pdfMappingClosing';
 const QuickChart = require('quickchart-js');
 
 const router: Router = express.Router();
@@ -56,6 +57,18 @@ Handlebars.registerHelper('formatNumber', formatNumber);
 Handlebars.registerHelper('multiply', (a: number, b: number) => a * b);
 Handlebars.registerHelper('eq', function (a, b) {
   return a === b;
+});
+Handlebars.registerHelper('subtract', function(a: number, b: number) {
+  return (Number(a) || 0) - (Number(b) || 0);
+});
+
+// Helper pour la couleur d'écart
+Handlebars.registerHelper('ecartColor', function(realise, prevu, type) {
+  if (type === 'cout' || type === 'duree') {
+    return (Number(realise) <= Number(prevu)) ? 'color: #16a34a; font-weight:700' : 'color: #d32f2f; font-weight:700';
+  }
+  // type === 'marge' ou 'prix'
+  return (Number(realise) >= Number(prevu)) ? 'color: #16a34a; font-weight:700' : 'color: #d32f2f; font-weight:700';
 });
 
 // Fonction pour convertir une image en base64
@@ -829,7 +842,7 @@ router.post('/generate-modern', async (req: Request, res: Response) => {
       const plansImagesStyled = plansImagesRaw.map((url, i) => {
         let left, top, width, height, rotate, z = 2, shadow = '0 6px 32px rgba(0,0,0,0.18)';
         if (i === 0) {
-          left = '50%'; top = '50%'; width = '70vw'; height = '52vh'; rotate = '-2deg'; z = 10;
+          left = '50%'; top = '30%'; width = '70vw'; height = '52vh'; rotate = '-2deg'; z = 10;
           shadow = '0 12px 40px rgba(0,0,0,0.22)';
         } else {
           const nSat = plansN - 1;
@@ -837,7 +850,7 @@ router.post('/generate-modern', async (req: Request, res: Response) => {
           const rad = (angle * Math.PI) / 180;
           const r = plansN < 7 ? 40 : 44;
           left = `${50 + Math.cos(rad) * r}%`;
-          top = `${50 + Math.sin(rad) * r}%`;
+          top = `${30 + Math.sin(rad) * r}%`;
           width = plansN < 7 ? '48vw' : '38vw';
           height = plansN < 7 ? '36vh' : '28vh';
           rotate = `${-10 + (i * 13) % 21}deg`;
@@ -875,17 +888,17 @@ router.post('/generate-modern', async (req: Request, res: Response) => {
       const images3dStyled = images3dRaw.map((url, i) => {
         let left, top, width, height, rotate, z = 2, shadow = '0 6px 32px rgba(0,0,0,0.18)';
         if (i === 0) {
-          left = '50%'; top = '50%'; width = '70vw'; height = '52vh'; rotate = '-2deg'; z = 10;
+          left = '50%'; top = '35%'; width = '50vw'; height = '40vh'; rotate = '-2deg'; z = 10;
           shadow = '0 12px 40px rgba(0,0,0,0.22)';
         } else {
           const nSat = images3dN - 1;
           const angle = (360 / nSat) * (i - 1) - 90 + (nSat > 1 ? 360 / (2 * nSat) : 0);
           const rad = (angle * Math.PI) / 180;
-          const r = images3dN < 7 ? 40 : 44;
+          const r = images3dN < 7 ? 30 : 30;
           left = `${50 + Math.cos(rad) * r}%`;
-          top = `${50 + Math.sin(rad) * r}%`;
-          width = images3dN < 7 ? '48vw' : '38vw';
-          height = images3dN < 7 ? '36vh' : '28vh';
+          top = `${35 + Math.sin(rad) * r}%`;
+          width = images3dN < 7 ? '38vw' : '38vw';
+          height = images3dN < 7 ? '28vh' : '28vh';
           rotate = `${-10 + (i * 13) % 21}deg`;
           z = 2 + i;
         }
@@ -1052,7 +1065,7 @@ router.post('/generate-modern', async (req: Request, res: Response) => {
         title: 'Données financières',
         description: 'Reprise de toutes les hypothèses du business plan, Synthèse des coûts, financement, marges et indicateurs financiers du projet.',
         description_2: 'Nous prenons une hypothèse de prix de vente du mètre carré conservateur par rapport au prix moyen du mètre carré des appartements avoisinants et du coefficient de pondération du bien.',
-        summary: 'Selon les hypothèses de financement et de cout des travaux, le prix de revient sera de <strong>' + formatKCurrency(pdfData.resultsBusinessPlan?.couts_total, 0) + '</strong> et la marge nette sera de <strong>' + formatKCurrency(pdfData.resultsBusinessPlan?.resultats?.marge_nette, 0) + '</strong> (' + formatPercentage(pdfData.resultsBusinessPlan?.resultats?.rentabilite) + ').'
+        summary: 'Selon les hypothèses de financement et de cout des travaux, le prix de revient sera de <br><strong>' + formatKCurrency(pdfData.resultsBusinessPlan?.couts_total, 0) + '</strong> et la marge nette sera de <br><strong>' + formatKCurrency(pdfData.resultsBusinessPlan?.resultats?.marge_nette, 0) + '</strong> (' + formatPercentage(pdfData.resultsBusinessPlan?.resultats?.rentabilite) + ').'
       });
       console.log('[PDF] --> Entrée dans la section FINANCIAL (modern)');
       const financialTemplate = await fs.promises.readFile(
@@ -1245,6 +1258,205 @@ router.post('/generate-modern', async (req: Request, res: Response) => {
     console.error('Erreur lors de la génération du PDF moderne:', error);
     res.status(500).json({
       error: 'Erreur lors de la génération du PDF moderne',
+      details: error instanceof Error ? error.message : 'Erreur inconnue'
+    });
+  }
+});
+
+// Route pour générer le PDF de clôture de projet
+router.post('/generate-closing', async (req: Request, res: Response) => {
+  try {
+    const { projectId, pdfConfig } = req.body;
+    if (!projectId) {
+      return res.status(400).json({ error: 'projectId requis' });
+    }
+
+    // Validation de la config PDF si présente
+    let validatedConfig: PdfConfig | undefined = undefined;
+    if (pdfConfig) {
+      const result = PdfConfigSchema.safeParse(pdfConfig);
+      if (!result.success) {
+        return res.status(400).json({
+          error: 'Config PDF invalide',
+          details: result.error.errors.map(err => ({ path: err.path.join('.'), message: err.message }))
+        });
+      }
+      validatedConfig = result.data;
+    }
+
+    // Récupérer le projet
+    const project = await projectService.getProjectById(projectId);
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    // Utiliser le PdfMappingClosingService pour extraire les données
+    const pdfData = PdfMappingClosingService.mapProjectToPdfData(project, validatedConfig || {});
+
+    // 1. Préparation des données
+    const project_title = project.projectTitle || 'Sans titre';
+    const includeSections = (pdfConfig && pdfConfig.sections) || {};
+    const dynamicFields = req.body.dynamicFields || {};
+
+    // 2. Préparation des assets
+    const logo_path = '/data/lki/uploads/LOGO-LK-noir_2025.png';
+    const cover_image_path = '/data/lki/uploads/cover_LKI.png';
+    const css_path = path.join(__dirname, '..', 'static', 'pdf_assets', 'styles_modern.css');
+
+    // Conversion des images logo/cover en base64
+    const logo_base64 = imageToBase64(logo_path);
+    const cover_image_base64 = imageToBase64(cover_image_path);
+
+    // 3. Lecture des templates et du CSS
+    const templatesDir = path.join(__dirname, '..', 'templates', 'pdf', 'closing');
+    const cssContent = await fs.promises.readFile(css_path, 'utf-8');
+
+    // Lecture du template de clôture
+    const closingTemplate = await fs.promises.readFile(
+      path.join(templatesDir, 'closing.html'),
+      'utf-8'
+    );
+    const compiledClosing = Handlebars.compile(closingTemplate);
+
+    // Génération du graphique financier (comparatif prix achat/revient/vente) pour le réalisé
+    let vente_chart_url = '';
+    try {
+      const prix_achat = pdfData.resultsBusinessPlanRealises?.prix_m2?.prix_achat_pondere_m2 || 0;
+      const prix_revient = pdfData.resultsBusinessPlanRealises?.prix_m2?.prix_revient_pondere_m2 || 0;
+      const prix_vente = pdfData.resultsBusinessPlanRealises?.prix_m2?.prix_vente_pondere_m2 || 0;
+      const prix_achat_carrez = pdfData.resultsBusinessPlanRealises?.prix_m2?.prix_achat_carrez_m2 || 0;
+      const prix_revient_carrez = pdfData.resultsBusinessPlanRealises?.prix_m2?.prix_revient_carrez_m2 || 0;
+      const prix_vente_carrez = pdfData.resultsBusinessPlanRealises?.prix_m2?.prix_vente_carrez_m2 || 0;
+      const prix_m2_benchmark = pdfData.resultsDvfMetadata?.sel_final_avg || null;
+
+      const allVals = [prix_achat, prix_revient, prix_vente, prix_achat_carrez, prix_revient_carrez, prix_vente_carrez].filter(v => typeof v === 'number' && v > 0);
+      const minVal = allVals.length > 0 ? Math.min(...allVals) : 0;
+      const yMin = Math.max(0, Math.floor(minVal - 500));
+
+      const chartConfig = {
+        type: 'bar',
+        data: {
+          labels: ['Achat (pondéré)', 'Revient (pondéré)', 'Vente (pondéré)', 'Achat (carrez)', 'Revient (carrez)', 'Vente (carrez)'],
+          datasets: [
+            {
+              label: 'Prix/m²',
+              data: [prix_achat, prix_revient, prix_vente, prix_achat_carrez, prix_revient_carrez, prix_vente_carrez],
+              backgroundColor: ['#bfa77a', '#c97c2b', '#0a6c9d', '#bfa77a55', '#c97c2b55', '#0a6c9d55'],
+            },
+            ...(prix_m2_benchmark ? [{
+              type: 'line',
+              label: 'Benchmark',
+              data: [prix_m2_benchmark, prix_m2_benchmark, prix_m2_benchmark, prix_m2_benchmark, prix_m2_benchmark, prix_m2_benchmark],
+              borderColor: '#e53e3e',
+              borderDash: [8, 4],
+              fill: false,
+              pointRadius: 0,
+              order: 2
+            }] : [])
+          ]
+        },
+        options: {
+          plugins: { legend: { display: true } },
+          scales: {
+            yAxes: [{
+              display: true,
+              scaleLabel: { display: true, labelString: 'Prix (€/m²)' },
+              ticks: { min: yMin }
+            }],
+            y: { title: { display: true, text: 'Prix (€/m²)' }, min: yMin },
+            x: { title: { display: true, text: 'Type' } }
+          }
+        }
+      };
+      const chart = new QuickChart();
+      chart.setConfig(chartConfig);
+      chart.setWidth(700).setHeight(320).setBackgroundColor('transparent');
+      vente_chart_url = chart.getUrl();
+    } catch (err) {
+      console.error('[PDF] Erreur génération graphique vente (closing):', err);
+    }
+
+    // Préparation des données pour le template
+    const templateData = {
+      ...pdfData,
+      vente_chart_url,
+      logo_path: logo_base64,
+      cover_image_path: cover_image_base64,
+      ...(pdfData.pdf_config?.dynamic_fields || {})
+    };
+
+    // Génération du HTML
+    const htmlContent = compiledClosing(templateData);
+
+    // DEBUG: Sauvegarder le HTML généré
+    const tempHtmlPath = `/data/lki/pdf_closing_debug_${projectId}.html`;
+    try {
+      fs.writeFileSync(tempHtmlPath, htmlContent, 'utf-8');
+      console.log(`[PDF DEBUG] HTML closing sauvegardé dans ${tempHtmlPath}`);
+    } catch (err) {
+      console.error('[PDF DEBUG] Erreur lors de la sauvegarde du HTML:', err);
+    }
+
+    // 5. Génération du PDF avec Puppeteer
+    console.log('[PDF] Début de la génération du PDF closing avec Puppeteer');
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    const page = await browser.newPage();
+
+    // Configurer Puppeteer pour accéder aux fichiers locaux
+    await page.setRequestInterception(true);
+    page.on('request', request => {
+      if (request.resourceType() === 'image') {
+        const url = request.url();
+        if (url.startsWith('/data/lki/')) {
+          const filePath = url;
+          try {
+            const imageBuffer = fs.readFileSync(filePath);
+            request.respond({
+              status: 200,
+              contentType: 'image/png',
+              body: imageBuffer
+            });
+          } catch (error) {
+            console.error(`Erreur lors de la lecture de l'image ${filePath}:`, error);
+            request.abort();
+          }
+        } else {
+          request.continue();
+        }
+      } else {
+        request.continue();
+      }
+    });
+
+    await page.setContent(htmlContent, {
+      waitUntil: 'networkidle0'
+    });
+
+    const pdf = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      margin: {
+        top: '0mm',
+        right: '0mm',
+        bottom: '0mm',
+        left: '0mm'
+      }
+    });
+    await browser.close();
+    console.log('[PDF] PDF closing généré avec succès');
+
+    // 6. Envoi du PDF
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=Project_Closing_${project_title.replace(/\s+/g, '_')}.pdf`);
+    res.end(pdf);
+
+  } catch (error) {
+    console.error('Erreur lors de la génération du PDF closing:', error);
+    res.status(500).json({
+      error: 'Erreur lors de la génération du PDF closing',
       details: error instanceof Error ? error.message : 'Erreur inconnue'
     });
   }

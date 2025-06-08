@@ -20,6 +20,7 @@ Application web pour l'analyse des transactions immobilières (DVF), la généra
 - [Changelog](#-changelog)
 - [🔄 Migration & Refactoring (2024)](#-migration--refactoring-2024)
 - [Architecture des Types et Flux de Données](#-architecture-des-types-et-flux-de-données)
+- [🛑 Pièges courants et retours d'expérience (2024)](#-pièges-courants-et-retours-d'expérience-2024)
 
 ## 🚀 Description
 
@@ -1036,3 +1037,41 @@ export type Project = z.infer<typeof ProjectSchema>;
 1. Ajouter/modifier le fichier du champ concerné
 2. Mettre à jour le schéma Project si besoin
 3. Utiliser/importer le type partout (front, back, tests)
+
+## 🛑 Pièges courants et retours d'expérience (2024)
+
+### Problème rencontré : persistance des inputs (ex : onglet Rénovation)
+- **Symptôme** : une valeur modifiée côté front (ex : surface après travaux) est immédiatement écrasée par l'ancienne valeur de la BDD après sauvegarde ou changement d'onglet.
+- **Cause** : le backend (route PUT /api/projects/:id) ne mergeait pas explicitement le champ `inputsRenovationBien` (ou tout autre sous-objet ajouté après coup). Résultat : toute modification envoyée par le front était ignorée lors de la sauvegarde.
+- **Diagnostic** :
+  - Le front envoyait bien la bonne valeur (vérifiable avec des logs dans les handlers front)
+  - Le backend renvoyait toujours l'ancienne valeur (logs backend sur le body reçu et la data mergée)
+- **Correction** :
+  - Ajouter explicitement le merge de chaque sous-objet (inputsRenovationBien, resultsRenovationBien, etc.) dans la route PUT backend, comme pour les autres champs.
+  - Ajouter des logs backend pour tracer le body reçu, la donnée validée, la data mergée avant update.
+  - Toujours tester le roundtrip complet : front → backend → BDD → front.
+
+### Bonnes pratiques pour éviter ces bugs
+- **À chaque ajout d'un nouveau champ ou d'un nouvel onglet** :
+  - Vérifier que le champ est bien inclus dans le schéma de validation Zod côté backend ET dans le merge de la route PUT/PATCH.
+  - Logger systématiquement le body reçu et la data mergée lors des updates.
+  - Tester la persistance réelle : modifier une valeur côté front, changer d'onglet, revenir, et vérifier que la valeur reste bien celle saisie.
+- **Pour les flux complexes (plusieurs états locaux)** :
+  - Toujours synchroniser l'état local avec la prop reçue du parent, sauf si l'utilisateur édite (optimistic UI).
+  - Ne jamais faire de setState sur l'état "BDD" dans les handlers front (seul le parent doit gérer la synchro après update).
+- **En cas de bug de persistance** :
+  - Ajouter des logs côté front ET backend pour suivre la valeur à chaque étape.
+  - Vérifier la logique de merge dans la route backend.
+
+### Exemple de merge correct dans la route PUT backend
+```js
+const data = {
+  ...
+  inputsRenovationBien: validatedData.inputsRenovationBien
+    ? { ...existingProject.inputsRenovationBien, ...validatedData.inputsRenovationBien }
+    : existingProject.inputsRenovationBien,
+  // idem pour tous les sous-objets
+};
+```
+
+**En suivant ces conseils, on évite 90% des bugs de persistance et de synchro front/back sur les nouveaux onglets ou champs !**

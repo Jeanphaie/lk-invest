@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Button, Row, Col, Spinner, Form, Badge, Alert } from 'react-bootstrap';
 import Image from 'next/image';
-import { FaUpload, FaTrash, FaStar, FaDownload, FaCheck } from 'react-icons/fa';
+import { FaUpload, FaTrash, FaStar, FaDownload, FaCheck, FaFilePdf } from 'react-icons/fa';
 import { Photos, Photo, PhotosSchema } from '../../../../shared/types/photos';
 
 interface PhotosTabProps {
   projectId: string;
 }
 
-// Définition des catégories valides
-const photoCategories = ['before', 'plans', '3d', 'during', 'after'] as const;
+// Définition des catégories valides (plans est maintenant dans PlansTab)
+const photoCategories = ['before', '3d', 'during', 'after'] as const;
 type PhotoCategory = typeof photoCategories[number];
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://163.172.32.45:3001';
@@ -19,9 +19,13 @@ const normalizePath = (path: string) => {
   return path.startsWith('/uploads/') ? path : `/uploads/${path}`;
 };
 
+// Fonction utilitaire pour détecter si un fichier est un PDF
+const isPdfFile = (url: string): boolean => {
+  return url.toLowerCase().endsWith('.pdf');
+};
+
 const categories: { key: PhotoCategory; label: string; canSelectForPdf: boolean }[] = [
   { key: 'before', label: 'Avant', canSelectForPdf: true },
-  { key: 'plans', label: 'Plans', canSelectForPdf: true },
   { key: '3d', label: '3D', canSelectForPdf: true },
   { key: 'during', label: 'Pendant', canSelectForPdf: true },
   { key: 'after', label: 'Après', canSelectForPdf: true },
@@ -48,13 +52,11 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
     after: [], 
     selectedBeforePhotosForPdf: [], 
     selected3dPhotosForPdf: [],
-    selectedPlansPhotosForPdf: [],
     selectedDuringPhotosForPdf: [],
     selectedAfterPhotosForPdf: []
   });
   const [selectedBeforePhotosForPdf, setSelectedBeforePhotosForPdf] = useState<number[]>([]);
   const [selected3dPhotosForPdf, setSelected3dPhotosForPdf] = useState<number[]>([]);
-  const [selectedPlansPhotosForPdf, setSelectedPlansPhotosForPdf] = useState<number[]>([]);
   const [selectedDuringPhotosForPdf, setSelectedDuringPhotosForPdf] = useState<number[]>([]);
   const [selectedAfterPhotosForPdf, setSelectedAfterPhotosForPdf] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
@@ -109,7 +111,6 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
       setPhotos(parse.data);
       setSelectedBeforePhotosForPdf(parse.data.selectedBeforePhotosForPdf || []);
       setSelected3dPhotosForPdf(parse.data.selected3dPhotosForPdf || []);
-      setSelectedPlansPhotosForPdf(parse.data.selectedPlansPhotosForPdf || []);
       setSelectedDuringPhotosForPdf(parse.data.selectedDuringPhotosForPdf || []);
       setSelectedAfterPhotosForPdf(parse.data.selectedAfterPhotosForPdf || []);
       setCoverPhoto(parse.data.coverPhoto || null);
@@ -123,9 +124,12 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
         during: parse.data.during?.length,
         selectedBeforePhotosForPdf: parse.data.selectedBeforePhotosForPdf,
         selected3dPhotosForPdf: parse.data.selected3dPhotosForPdf,
-        selectedPlansPhotosForPdf: parse.data.selectedPlansPhotosForPdf,
         selectedDuringPhotosForPdf: parse.data.selectedDuringPhotosForPdf,
-        selectedAfterPhotosForPdf: parse.data.selectedAfterPhotosForPdf
+        selectedAfterPhotosForPdf: parse.data.selectedAfterPhotosForPdf,
+        floor1Description: parse.data.floor1Description,
+        floor2Description: parse.data.floor2Description,
+        floor1Prompt: parse.data.floor1Prompt,
+        floor2Prompt: parse.data.floor2Prompt
       });
       console.log('=== fetchPhotos END ===\n');
     } catch (e) {
@@ -153,10 +157,9 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
     console.log('\n=== State Update ===');
     console.log('selectedBeforePhotosForPdf:', selectedBeforePhotosForPdf);
     console.log('selected3dPhotosForPdf:', selected3dPhotosForPdf);
-    console.log('selectedPlansPhotosForPdf:', selectedPlansPhotosForPdf);
     console.log('selectedDuringPhotosForPdf:', selectedDuringPhotosForPdf);
     console.log('selectedAfterPhotosForPdf:', selectedAfterPhotosForPdf);
-  }, [selectedBeforePhotosForPdf, selected3dPhotosForPdf, selectedPlansPhotosForPdf, selectedDuringPhotosForPdf, selectedAfterPhotosForPdf]);
+  }, [selectedBeforePhotosForPdf, selected3dPhotosForPdf, selectedDuringPhotosForPdf, selectedAfterPhotosForPdf]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, category: string) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -256,16 +259,19 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
   };
 
   const handleDownload = (photoPath: string) => {
+    // Normaliser le chemin si nécessaire
+    const normalizedPath = photoPath.startsWith('/uploads/') ? photoPath : `/uploads/${photoPath}`;
+    
     // Extraire le nom du fichier du chemin
-    const filename = photoPath.split('/').pop();
+    const filename = normalizedPath.split('/').pop();
     if (!filename) return;
 
-    // Extraire la catégorie du chemin (before, 3d, during, after)
-    const pathParts = photoPath.split('/');
-    const category = pathParts[pathParts.length - 2];
+    // Extraire la catégorie du chemin (before, 3d, during, after, plans)
+    const pathParts = normalizedPath.split('/');
+    const category = pathParts[pathParts.length - 2] || 'plans'; // Fallback sur 'plans' si non trouvé
     
     // Construire l'URL de téléchargement
-    const downloadUrl = `${API_BASE_URL}/api/photos/${projectId}/${category}/download?filename=${filename}`;
+    const downloadUrl = `${API_BASE_URL}/api/photos/${projectId}/${category}/download?filename=${encodeURIComponent(filename)}`;
     
     // Créer un lien temporaire pour le téléchargement
     const link = document.createElement('a');
@@ -294,7 +300,7 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
   };
 
   const handleTogglePdfSelection = async (category: PhotoCategory, photoId: number) => {
-    console.log('[FRONT][PDF][BEFORE]', { category, photoId, selectedBeforePhotosForPdf, selected3dPhotosForPdf, selectedPlansPhotosForPdf, selectedDuringPhotosForPdf, selectedAfterPhotosForPdf });
+    console.log('[FRONT][PDF][BEFORE]', { category, photoId, selectedBeforePhotosForPdf, selected3dPhotosForPdf, selectedDuringPhotosForPdf, selectedAfterPhotosForPdf });
     let updated: number[];
     let setter: React.Dispatch<React.SetStateAction<number[]>>;
     let payload: Record<string, number[]>;
@@ -313,13 +319,6 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
           : [...selected3dPhotosForPdf, photoId];
         setter = setSelected3dPhotosForPdf;
         payload = { selected3dPhotosForPdf: updated };
-        break;
-      case 'plans':
-        updated = selectedPlansPhotosForPdf.includes(photoId)
-          ? selectedPlansPhotosForPdf.filter(id => id !== photoId)
-          : [...selectedPlansPhotosForPdf, photoId];
-        setter = setSelectedPlansPhotosForPdf;
-        payload = { selectedPlansPhotosForPdf: updated };
         break;
       case 'during':
         updated = selectedDuringPhotosForPdf.includes(photoId)
@@ -351,8 +350,14 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
       });
       const data = await res.json();
       console.log('[FRONT][PDF][API RESPONSE]', data);
+      
+      // Rafraîchir les photos pour avoir l'état à jour
+      if (res.ok) {
+        await fetchPhotos();
+      }
     } catch (e) {
       setError('Erreur lors de la sélection PDF');
+      console.error('[FRONT][PDF][ERROR]', e);
     } finally {
       setLoading(false);
     }
@@ -418,28 +423,50 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
                       ? selectedBeforePhotosForPdf.includes(photo.id)
                       : cat.key === '3d'
                         ? selected3dPhotosForPdf.includes(photo.id)
-                        : cat.key === 'plans'
-                          ? selectedPlansPhotosForPdf.includes(photo.id)
-                          : cat.key === 'during'
-                            ? selectedDuringPhotosForPdf.includes(photo.id)
-                            : cat.key === 'after'
-                              ? selectedAfterPhotosForPdf.includes(photo.id)
-                              : false;
+                        : cat.key === 'during'
+                          ? selectedDuringPhotosForPdf.includes(photo.id)
+                          : cat.key === 'after'
+                            ? selectedAfterPhotosForPdf.includes(photo.id)
+                            : false;
                     
 
+
+                    const isPdf = isPdfFile(photo.url);
+                    const fileUrl = `${API_BASE_URL}${normalizedPath}`;
 
                     return (
                       <div key={normalizedPath} className="photo-thumbnail">
                         <div className={`photo-container ${coverPhoto === normalizedPath ? 'selected-cover' : ''} ${isSelected ? 'selected-for-pdf' : ''}`}>
-                          <Image
-                            src={`${API_BASE_URL}${normalizedPath}`}
-                            alt="photo"
-                            fill
-                            sizes="150px"
-                            className="photo-image"
-                            style={{ objectFit: 'cover' }}
-                            onClick={() => window.open(`${API_BASE_URL}${normalizedPath}`, '_blank')}
-                          />
+                          {isPdf ? (
+                            <div 
+                              className="pdf-preview-container"
+                              onClick={() => window.open(fileUrl, '_blank')}
+                              title="Cliquer pour ouvrir le PDF"
+                            >
+                              <iframe
+                                src={`${API_BASE_URL}/api/photos/${projectId}/${cat.key}/view?filename=${encodeURIComponent(normalizedPath.split('/').pop() || '')}#page=1&zoom=50`}
+                                className="pdf-iframe"
+                                title="PDF Preview"
+                                style={{
+                                  border: 'none',
+                                  pointerEvents: 'none'
+                                }}
+                              />
+                              <div className="pdf-overlay">
+                                <FaFilePdf size={20} />
+                              </div>
+                            </div>
+                          ) : (
+                            <Image
+                              src={fileUrl}
+                              alt="photo"
+                              fill
+                              sizes="150px"
+                              className="photo-image"
+                              style={{ objectFit: 'cover' }}
+                              onClick={() => window.open(fileUrl, '_blank')}
+                            />
+                          )}
                         </div>
                         <div className="photo-actions">
                           <Button
@@ -661,6 +688,38 @@ export default function PhotosTab({ projectId }: PhotosTabProps) {
 
         .photo-container.selected-for-pdf {
           box-shadow: 0 0 0 3px #28a745;
+        }
+
+        .pdf-preview-container {
+          width: 100%;
+          height: 100%;
+          position: relative;
+          overflow: hidden;
+          background: #f5f5f5;
+          cursor: pointer;
+        }
+
+        .pdf-iframe {
+          width: 100%;
+          height: 100%;
+          transform: scale(0.5);
+          transform-origin: top left;
+          width: 200%;
+          height: 200%;
+        }
+
+        .pdf-overlay {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          background: rgba(220, 38, 38, 0.9);
+          border-radius: 4px;
+          padding: 4px 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
       `}</style>
     </div>

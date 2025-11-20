@@ -2,203 +2,286 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <style>
+    .financial-section {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .financial-params-grid {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .financial-card {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    @media print {
+      .financial-section,
+      .financial-params-grid,
+      .financial-card {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!-- PAGE 1 : Inputs (version tableaux robustes et pimpées) -->
-  <div style="padding:2.2rem 1.5rem 1.2rem 1.5rem; font-family:Arial,sans-serif; background:#f8fafc;">
-    <h1 style="font-size:1.7rem;font-weight:700;color:#0a6c9d;margin-bottom:1.5rem;">Paramètres du business plan</h1>
-    <div style="display:flex;flex-wrap:wrap;gap:2.1rem 1.5rem;align-items:flex-start;">
+  <!-- PAGE 1 : Paramètres du business plan - Optimisé pour une page -->
+  <div class="financial-section" style="padding:1.2rem 1.2rem 1rem 1.2rem; font-family:var(--font-family); background:var(--bg-secondary);min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;">
+    <h1 style="font-size:1.5rem;font-weight:700;color:var(--color-primary);margin-bottom:1rem;text-align:center;">Paramètres du business plan</h1>
+    
+    <!-- SECTION COÛTS - Grille principale avec backgrounds colorés -->
+    <div style="margin-bottom:0.5rem;flex:0 1 auto;">
+      <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-primary);margin-bottom:0.8rem;text-align:center;">Coûts du projet</h2>
+      <div class="financial-params-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;">
       <!-- Acquisition -->
-      <div style="flex:1 1 260px;min-width:220px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #bfa77a;">
-        <div style="font-size:1.15rem;font-weight:800;color:#0a6c9d;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Acquisition</div>
+        <div class="financial-card" style="background:linear-gradient(135deg, rgba(219,234,254,0.4) 0%, rgba(191,219,254,0.4) 100%);border-radius:12px;padding:1rem;box-shadow:var(--shadow-md);border:2.5px solid var(--color-primary);">
+          <div style="font-size:1.1rem;font-weight:900;color:var(--color-primary);margin-bottom:0.8rem;text-align:center;border-bottom:2px solid var(--color-primary);padding-bottom:0.5rem;">Acquisition</div>
         <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Prix affiché (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.prix_affiche}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Prix d'achat (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.prix_achat}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Frais notaire (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatPercentage inputsBusinessPlan.frais_notaire_percent}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Frais agence achat (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatPercentage inputsBusinessPlan.frais_agence_achat_percent}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Frais agence vente (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatPercentage inputsBusinessPlan.frais_agence_vente_percent}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Frais dossier (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.frais_dossier_amount}}</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#1e3a8a;font-weight:600;font-size:0.85rem;">Prix affiché</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#1e40af;font-weight:800;font-size:0.95rem;">{{formatNumber inputsBusinessPlan.prix_affiche}} €</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#1e3a8a;font-weight:600;font-size:0.85rem;">Prix d'achat</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#1e40af;font-weight:800;font-size:0.95rem;">{{formatNumber inputsBusinessPlan.prix_achat}} €</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#1e3a8a;font-weight:600;font-size:0.85rem;">Frais notaire</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#1e40af;font-weight:800;font-size:0.95rem;">{{formatPercentage inputsBusinessPlan.frais_notaire_percent}}</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#1e3a8a;font-weight:600;font-size:0.85rem;">Frais agence achat</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#1e40af;font-weight:800;font-size:0.95rem;">{{formatPercentage inputsBusinessPlan.frais_agence_achat_percent}}</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#1e3a8a;font-weight:600;font-size:0.85rem;">Frais agence vente</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#1e40af;font-weight:800;font-size:0.95rem;">{{formatPercentage inputsBusinessPlan.frais_agence_vente_percent}}</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#1e3a8a;font-weight:600;font-size:0.85rem;">Frais dossier</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#1e40af;font-weight:800;font-size:0.95rem;">{{formatNumber inputsBusinessPlan.frais_dossier_amount}} €</td></tr>
         </table>
       </div>
       <!-- Travaux -->
-      <div style="flex:1 1 220px;min-width:220px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #c97c2b;">
-        <div style="font-size:1.15rem;font-weight:800;color:#c97c2b;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Travaux</div>
+        <div class="financial-card" style="background:linear-gradient(135deg, rgba(254,215,170,0.4) 0%, rgba(253,186,116,0.4) 100%);border-radius:12px;padding:1rem;box-shadow:var(--shadow-md);border:2.5px solid var(--color-secondary);">
+          <div style="font-size:1.1rem;font-weight:900;color:#9a3412;margin-bottom:0.8rem;text-align:center;border-bottom:2px solid var(--color-secondary);padding-bottom:0.5rem;">Travaux</div>
         <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Coût travaux (€/m²)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.cout_travaux_m2}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Maîtrise d'œuvre (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatPercentage inputsBusinessPlan.cout_maitrise_oeuvre_percent}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Aléa travaux (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatPercentage inputsBusinessPlan.cout_alea_percent}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Terrasse (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.cout_terrasse_input_amount}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Démolition (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.cout_demolition_input_amount}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Honoraires techniques (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#c97c2b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.cout_honoraires_tech_input_amount}}</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#7c2d12;font-weight:600;font-size:0.85rem;">Coût travaux</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#9a3412;font-weight:800;font-size:0.95rem;">{{formatNumber inputsBusinessPlan.cout_travaux_m2}} €/m²</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#7c2d12;font-weight:600;font-size:0.85rem;">Maîtrise d'œuvre</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#9a3412;font-weight:800;font-size:0.95rem;">{{formatPercentage inputsBusinessPlan.cout_maitrise_oeuvre_percent}}</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#7c2d12;font-weight:600;font-size:0.85rem;">Aléa travaux</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#9a3412;font-weight:800;font-size:0.95rem;">{{formatPercentage inputsBusinessPlan.cout_alea_percent}}</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#7c2d12;font-weight:600;font-size:0.85rem;">Terrasse</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#9a3412;font-weight:800;font-size:0.95rem;">{{formatNumber inputsBusinessPlan.cout_terrasse_input_amount}} €</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#7c2d12;font-weight:600;font-size:0.85rem;">Démolition</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#9a3412;font-weight:800;font-size:0.95rem;">{{formatNumber inputsBusinessPlan.cout_demolition_input_amount}} €</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#7c2d12;font-weight:600;font-size:0.85rem;">Honoraires techniques</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#9a3412;font-weight:800;font-size:0.95rem;">{{formatNumber inputsBusinessPlan.cout_honoraires_tech_input_amount}} €</td></tr>
         </table>
       </div>
       <!-- Divers -->
-      <div style="flex:1 1 180px;min-width:180px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #64748b;">
-        <div style="font-size:1.15rem;font-weight:800;color:#64748b;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Divers</div>
+        <div class="financial-card" style="background:linear-gradient(135deg, rgba(226,232,240,0.4) 0%, rgba(203,213,225,0.4) 100%);border-radius:12px;padding:1rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #64748b;">
+          <div style="font-size:1.1rem;font-weight:900;color:#334155;margin-bottom:0.8rem;text-align:center;border-bottom:2px solid #64748b;padding-bottom:0.5rem;">Divers</div>
         <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Prorata foncier (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.cout_prorata_foncier_input_amount}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Diagnostics (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.cout_diagnostics_input_amount}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Mobilier (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.cout_mobilier_input_amount}}</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#1e293b;font-weight:600;font-size:0.85rem;">Prorata foncier</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#334155;font-weight:800;font-size:0.95rem;">{{formatNumber inputsBusinessPlan.cout_prorata_foncier_input_amount}} €</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#1e293b;font-weight:600;font-size:0.85rem;">Diagnostics</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#334155;font-weight:800;font-size:0.95rem;">{{formatNumber inputsBusinessPlan.cout_diagnostics_input_amount}} €</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#1e293b;font-weight:600;font-size:0.85rem;">Mobilier</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#334155;font-weight:800;font-size:0.95rem;">{{formatNumber inputsBusinessPlan.cout_mobilier_input_amount}} €</td></tr>
         </table>
       </div>
       <!-- Financement -->
-      <div style="flex:1 1 220px;min-width:220px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #0a6c9d;">
-        <div style="font-size:1.15rem;font-weight:800;color:#0a6c9d;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Financement</div>
+        <div class="financial-card" style="background:linear-gradient(135deg, rgba(219,234,254,0.4) 0%, rgba(191,219,254,0.4) 100%);border-radius:12px;padding:1rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #0a6c9d;">
+          <div style="font-size:1.1rem;font-weight:900;color:#1e40af;margin-bottom:0.8rem;text-align:center;border-bottom:2px solid #0a6c9d;padding-bottom:0.5rem;">Financement</div>
         <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Crédit foncier (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.financement_credit_foncier_amount}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Fonds propres (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.financement_fonds_propres_amount}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Crédit accompagnement (€)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.financement_credit_accompagnement_amount}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Taux crédit (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatPercentage inputsBusinessPlan.financement_taux_credit_percent}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Commission (%)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#0a6c9d;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatPercentage inputsBusinessPlan.financement_commission_percent}}</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#1e3a8a;font-weight:600;font-size:0.85rem;">Crédit foncier</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#1e40af;font-weight:800;font-size:0.95rem;">{{formatNumber inputsBusinessPlan.financement_credit_foncier_amount}} €</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#1e3a8a;font-weight:600;font-size:0.85rem;">Fonds propres</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#1e40af;font-weight:800;font-size:0.95rem;">{{formatNumber inputsBusinessPlan.financement_fonds_propres_amount}} €</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#1e3a8a;font-weight:600;font-size:0.85rem;">Crédit accompagnement</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#1e40af;font-weight:800;font-size:0.95rem;">{{formatNumber inputsBusinessPlan.financement_credit_accompagnement_amount}} €</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#1e3a8a;font-weight:600;font-size:0.85rem;">Taux crédit</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#1e40af;font-weight:800;font-size:0.95rem;">{{formatPercentage inputsBusinessPlan.financement_taux_credit_percent}}</td></tr>
+            <tr><td style="width:55%;padding:0.25rem 0.2rem;color:#1e3a8a;font-weight:600;font-size:0.85rem;">Commission</td><td style="width:45%;text-align:right;padding:0.25rem 0.2rem;color:#1e40af;font-weight:800;font-size:0.95rem;">{{formatPercentage inputsBusinessPlan.financement_commission_percent}}</td></tr>
         </table>
+        </div>
       </div>
+    </div>
+
+    <!-- SECTION PARAMÈTRES STRUCTURANTS - Surfaces, Calendrier et Prix de vente -->
+    <div style="flex:0 1 auto;margin-top:0.5rem;">
+      <h2 style="font-size:1.1rem;font-weight:700;color:var(--color-primary);margin-bottom:0.8rem;text-align:center;">Paramètres structurants</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem;">
       <!-- Surfaces après travaux -->
-      <div style="flex:1 1 180px;min-width:180px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #388e3c;">
-        <div style="font-size:1.15rem;font-weight:800;color:#388e3c;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Surfaces après travaux</div>
+        <div class="financial-card" style="background:#fff;border-radius:12px;padding:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:2.5px solid #388e3c;">
+          <div style="font-size:1.1rem;font-weight:900;color:#388e3c;margin-bottom:0.8rem;text-align:center;border-bottom:2px solid #388e3c;padding-bottom:0.5rem;">Surfaces après travaux</div>
         <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Carrez (m²)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#388e3c;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.surface_carrez_apres_travaux}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Terrasse (m²)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#388e3c;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.surface_terrasse_apres_travaux}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Pondérée (m²)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#388e3c;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.surface_ponderee_apres_travaux}}</td></tr>
+            <tr><td style="width:55%;padding:0.3rem 0.2rem;color:#2d3748;font-weight:700;font-size:0.9rem;">Carrez</td><td style="width:45%;text-align:right;padding:0.3rem 0.2rem;color:#388e3c;font-weight:900;font-size:1.1rem;">{{formatNumber inputsBusinessPlan.surface_carrez_apres_travaux}} <span style="font-size:0.8rem;font-weight:600;">m²</span></td></tr>
+            <tr><td style="width:55%;padding:0.3rem 0.2rem;color:#2d3748;font-weight:700;font-size:0.9rem;">Terrasse</td><td style="width:45%;text-align:right;padding:0.3rem 0.2rem;color:#388e3c;font-weight:900;font-size:1.1rem;">{{formatNumber inputsBusinessPlan.surface_terrasse_apres_travaux}} <span style="font-size:0.8rem;font-weight:600;">m²</span></td></tr>
+            <tr><td style="width:55%;padding:0.3rem 0.2rem;color:#2d3748;font-weight:700;font-size:0.9rem;">Pondérée</td><td style="width:45%;text-align:right;padding:0.3rem 0.2rem;color:#388e3c;font-weight:900;font-size:1.1rem;">{{formatNumber inputsBusinessPlan.surface_ponderee_apres_travaux}} <span style="font-size:0.8rem;font-weight:600;">m²</span></td></tr>
         </table>
       </div>
       <!-- Calendrier -->
-      <div style="flex:1 1 180px;min-width:180px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #64748b;">
-        <div style="font-size:1.15rem;font-weight:800;color:#64748b;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Calendrier</div>
+        <div class="financial-card" style="background:#fff;border-radius:12px;padding:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:2.5px solid #64748b;">
+          <div style="font-size:1.1rem;font-weight:900;color:#64748b;margin-bottom:0.8rem;text-align:center;border-bottom:2px solid #64748b;padding-bottom:0.5rem;">Calendrier</div>
         <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Date d'achat</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{inputsBusinessPlan.date_achat}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Durée (jours)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{inputsBusinessPlan.duree_projet}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Date de vente</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{inputsBusinessPlan.date_vente}}</td></tr>
+            <tr><td style="width:55%;padding:0.3rem 0.2rem;color:#2d3748;font-weight:700;font-size:0.9rem;">Date d'achat</td><td style="width:45%;text-align:right;padding:0.3rem 0.2rem;color:#64748b;font-weight:900;font-size:1rem;">{{inputsBusinessPlan.date_achat}}</td></tr>
+            <tr><td style="width:55%;padding:0.3rem 0.2rem;color:#2d3748;font-weight:700;font-size:0.9rem;">Durée</td><td style="width:45%;text-align:right;padding:0.3rem 0.2rem;color:#64748b;font-weight:900;font-size:1rem;">{{inputsBusinessPlan.duree_projet}} <span style="font-size:0.8rem;font-weight:600;">jours</span></td></tr>
+            <tr><td style="width:55%;padding:0.3rem 0.2rem;color:#2d3748;font-weight:700;font-size:0.9rem;">Date de vente</td><td style="width:45%;text-align:right;padding:0.3rem 0.2rem;color:#64748b;font-weight:900;font-size:1rem;">{{inputsBusinessPlan.date_vente}}</td></tr>
         </table>
       </div>
       <!-- Prix de vente -->
-      <div style="flex:1 1 220px;min-width:220px;background:#fff;border-radius:14px;padding:1.3rem 1.1rem 1.1rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 12px #0a6c9d10;border:2.5px solid #d32f2f;">
-        <div style="font-size:1.15rem;font-weight:800;color:#d32f2f;margin-bottom:1.1rem;display:flex;align-items:center;"><span style='font-size:1.1rem;margin-right:0.5rem;'>●</span>Prix de vente</div>
+        <div class="financial-card" style="background:#fff;border-radius:12px;padding:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:2.5px solid #d32f2f;">
+          <div style="font-size:1.1rem;font-weight:900;color:#d32f2f;margin-bottom:0.8rem;text-align:center;border-bottom:2px solid #d32f2f;padding-bottom:0.5rem;">Prix de vente</div>
         <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Prix vente réel pondéré (€/m²)</td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#d32f2f;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber inputsBusinessPlan.prix_vente_reel_pondere_m2}}</td></tr>
-          <tr><td style="width:60%;padding:0.22rem 0.2rem;color:#2d3748;font-weight:600;">Prix vente théorique (€/m²) <span style="font-size:0.8rem;color:#64748b;font-style: italic;">(benchmark * ponderation)</span></td><td style="width:40%;text-align:right;padding:0.22rem 0.2rem;color:#d32f2f;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{formatNumber (multiply resultsDvfMetadata.sel_final_avg resultsDescriptionBien.coef_ponderation 0)}}</td></tr>
+            <tr><td style="width:55%;padding:0.3rem 0.2rem;color:#2d3748;font-weight:700;font-size:0.85rem;">Réel pondéré</td><td style="width:45%;text-align:right;padding:0.3rem 0.2rem;color:#d32f2f;font-weight:900;font-size:1.1rem;">{{formatNumber inputsBusinessPlan.prix_vente_reel_pondere_m2}} <span style="font-size:0.75rem;font-weight:600;">€/m²</span></td></tr>
+            <tr><td style="width:55%;padding:0.3rem 0.2rem;color:#2d3748;font-weight:700;font-size:0.85rem;">Théorique</td><td style="width:45%;text-align:right;padding:0.3rem 0.2rem;color:#d32f2f;font-weight:900;font-size:1.1rem;">{{formatNumber (multiply resultsDvfMetadata.sel_final_avg resultsDescriptionBien.coef_ponderation 0)}} <span style="font-size:0.75rem;font-weight:600;">€/m²</span></td></tr>
         </table>
+        </div>
       </div>
     </div>
   </div>
-  <div style="page-break-after:always;"></div>
 
   <!-- PAGE 2 : Détail des coûts et prix de revient -->
-  <div style="padding:2.2rem 1.5rem 1.2rem 1.5rem; font-family:Arial,sans-serif; background:#f8fafc;">
-    <!-- Bloc prix de revient total -->
-    <div style="background:#fff;border-radius:18px;padding:2.1rem 2.2rem 1.5rem 2.2rem;box-shadow:0 2px 16px #0a6c9d10;border:2.5px solid #0a6c9d;max-width:520px;margin:0 auto 2.5rem auto;text-align:center;">
-      <div style="font-size:2.1rem;font-weight:900;color:#0a6c9d;display:flex;align-items:center;justify-content:center;margin-bottom:0.7rem;"><span style='font-size:2.1rem;margin-right:0.7rem;'>💰</span>{{formatKCurrency resultsBusinessPlan.couts_total}}</div>
-      <div style="font-size:1.15rem;color:#64748b;font-weight:600;">Total du projet</div>
+  <div class="financial-section" style="padding:0.8rem 1rem; font-family:Arial,sans-serif; background:#f8fafc; height:100vh; display:flex; flex-direction:column; overflow:hidden;">
+    <!-- SECTION 1 : COÛTS -->
+    <div style="flex:0 0 auto;margin-bottom:0.8rem;">
+      <!-- Titre et total -->
+      <div style="background:#fff;border-radius:10px;padding:0.8rem;box-shadow:0 2px 8px rgba(0,0,0,0.05);margin-bottom:0.7rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;">
+          <div style="display:flex;align-items:center;gap:0.6rem;">
+            <span style="font-size:1.5rem;color:#0a6c9d;background:#e0f7fa;border-radius:50%;padding:0.25em 0.4em;display:inline-block;line-height:1;min-width:1.8em;text-align:center;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#0a6c9d" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+              </svg>
+            </span>
+            <h2 style="font-weight:800;font-size:1.2rem;margin:0;color:#1a3557;">Coûts</h2>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:1.5rem;font-weight:900;color:#0a6c9d;letter-spacing:-0.5px;line-height:1;">{{formatKCurrency resultsBusinessPlan.couts_total}}</div>
+            <div style="font-size:0.75rem;color:#64748b;">Total</div>
+          </div>
+        </div>
+        <!-- Barres de progression et pie chart -->
+        <div style="display:flex;align-items:flex-start;gap:1rem;">
+          <!-- Barres de progression par catégorie -->
+          <div style="flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;">
+            {{#each synthese_couts}}
+            <div style="display:flex;align-items:center;margin-bottom:0.5rem;min-height:24px;">
+              <div style="min-width:120px;max-width:120px;font-weight:600;color:#1a3557;font-size:0.8rem;white-space:nowrap;padding-right:1.2rem;flex-shrink:0;overflow:visible;">{{categorie}}</div>
+              <div style="flex:1 1 auto;min-width:180px;max-width:220px;margin-left:0.8rem;margin-right:0.8rem;background:#f1f5f9;border-radius:5px;height:20px;position:relative;display:flex;align-items:center;">
+                <div style="width: {{pct}}%; height: 100%; background: {{color}}; border-radius: 5px;"></div>
+              </div>
+              <div style="width:75px;text-align:right;color:#0a6c9d;font-weight:700;font-size:0.8rem;white-space:nowrap;flex-shrink:0;">
+                {{formatKCurrency montant}}
+                <span style="font-size:0.75em;font-style:italic;color:#64748b;margin-left:3px;">{{pct}}%</span>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+          <!-- Pie chart -->
+          {{#if couts_pie_chart_url}}
+          <div style="flex:0 0 auto;display:flex;align-items:center;justify-content:center;">
+            <img src="{{couts_pie_chart_url}}" alt="Répartition des coûts" style="width:180px;height:180px;object-fit:contain;" />
+          </div>
+          {{/if}}
+        </div>
     </div>
-    <!-- Tableaux des coûts -->
-    <div style="display:flex;flex-wrap:wrap;gap:2.2rem 1.5rem;align-items:flex-start;justify-content:center;">
+      <!-- Tableaux des coûts détaillés -->
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.6rem;max-width:100%;margin:0 auto;">
       <!-- Coût d'acquisition -->
-      <div style="flex:1 1 320px;min-width:260px;background:#fff;border-radius:10px;padding:1.1rem 1.1rem 0.7rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #bfa77a;">
-        <div style="font-size:1.13rem;font-weight:800;color:#bfa77a;margin-bottom:0.7rem;">Coût d'acquisition</div>
-        <table style="width:100%;border-collapse:collapse;font-size:1.07rem;">
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Acquisition</td><td style="text-align:right;padding:0.18rem 0.2rem;">{{formatKCurrency resultsBusinessPlan.couts_acquisition.prix_achat}}</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Commission</td><td style="text-align:right;padding:0.18rem 0.2rem;">{{formatKCurrency resultsBusinessPlan.couts_acquisition.frais_agence_achat_output_amount}}</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Frais notaire</td><td style="text-align:right;padding:0.18rem 0.2rem;">{{formatKCurrency resultsBusinessPlan.couts_acquisition.frais_notaire_output_amount}}</td></tr>
-          <tr><td style="font-weight:800;color:#0a6c9d;padding:0.18rem 0.2rem;">Total achat</td><td style="text-align:right;padding:0.18rem 0.2rem;font-weight:800;color:#0a6c9d;">{{formatKCurrency resultsBusinessPlan.couts_acquisition.total_acquisition}}</td></tr>
+        <div class="financial-card" style="background:#fff;border-radius:8px;padding:0.6rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #bfa77a;display:flex;flex-direction:column;">
+          <div style="font-size:0.85rem;font-weight:800;color:#bfa77a;margin-bottom:0.35rem;">Coût d'acquisition</div>
+          <table style="width:100%;border-collapse:collapse;font-size:0.75rem;flex:1 1 auto;">
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Acquisition</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency resultsBusinessPlan.couts_acquisition.prix_achat}}</td></tr>
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Commission</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency resultsBusinessPlan.couts_acquisition.frais_agence_achat_output_amount}}</td></tr>
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Frais notaire</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency resultsBusinessPlan.couts_acquisition.frais_notaire_output_amount}}</td></tr>
+            <tr style="background:#fef3c7;"><td style="font-weight:800;color:#bfa77a;padding:0.15rem 0.12rem;border-radius:4px 0 0 4px;">Total achat</td><td style="text-align:right;padding:0.15rem 0.12rem;font-weight:800;color:#bfa77a;border-radius:0 4px 4px 0;">{{formatKCurrency resultsBusinessPlan.couts_acquisition.total_acquisition}}</td></tr>
         </table>
       </div>
       <!-- Coût travaux -->
-      <div style="flex:1 1 320px;min-width:260px;background:#fff;border-radius:10px;padding:1.1rem 1.1rem 0.7rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #c97c2b;">
-        <div style="font-size:1.13rem;font-weight:800;color:#c97c2b;margin-bottom:0.7rem;">Coût travaux</div>
-        <table style="width:100%;border-collapse:collapse;font-size:1.07rem;">
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Intérieur habitable</td><td style="text-align:right;padding:0.18rem 0.2rem;">{{formatKCurrency resultsBusinessPlan.couts_travaux.total_output_amount}}</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Terrasse</td><td style="text-align:right;padding:0.18rem 0.2rem;">{{formatKCurrency resultsBusinessPlan.couts_travaux.terrasse_output_amount}}</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Mobilier</td><td style="text-align:right;padding:0.18rem 0.2rem;">{{formatKCurrency resultsBusinessPlan.couts_travaux.mobilier_output_amount}}</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Démolition</td><td style="text-align:right;padding:0.18rem 0.2rem;">{{formatKCurrency resultsBusinessPlan.couts_travaux.demolition_output_amount}}</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Aléa</td><td style="text-align:right;padding:0.18rem 0.2rem;">{{formatKCurrency resultsBusinessPlan.couts_travaux.alea_output_amount}}</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">MOE suivi</td><td style="text-align:right;padding:0.18rem 0.2rem;">{{formatKCurrency resultsBusinessPlan.couts_travaux.maitrise_oeuvre_output_amount}}</td></tr>
-          <tr><td style="font-weight:800;color:#c97c2b;padding:0.18rem 0.2rem;">Total travaux</td><td style="text-align:right;padding:0.18rem 0.2rem;font-weight:800;color:#c97c2b;">{{formatKCurrency resultsBusinessPlan.couts_travaux.total_travaux}}</td></tr>
+        <div class="financial-card" style="background:#fff;border-radius:8px;padding:0.6rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #c97c2b;display:flex;flex-direction:column;">
+          <div style="font-size:0.85rem;font-weight:800;color:#c97c2b;margin-bottom:0.35rem;">Coût travaux</div>
+          <table style="width:100%;border-collapse:collapse;font-size:0.75rem;flex:1 1 auto;">
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Intérieur habitable</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency resultsBusinessPlan.couts_travaux.total_output_amount}}</td></tr>
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Terrasse</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency resultsBusinessPlan.couts_travaux.terrasse_output_amount}}</td></tr>
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Mobilier</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency resultsBusinessPlan.couts_travaux.mobilier_output_amount}}</td></tr>
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Démolition</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency resultsBusinessPlan.couts_travaux.demolition_output_amount}}</td></tr>
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Aléa</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency resultsBusinessPlan.couts_travaux.alea_output_amount}}</td></tr>
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">MOE suivi</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency resultsBusinessPlan.couts_travaux.maitrise_oeuvre_output_amount}}</td></tr>
+            <tr style="background:#fed7aa;"><td style="font-weight:800;color:#c97c2b;padding:0.15rem 0.12rem;border-radius:4px 0 0 4px;">Total travaux</td><td style="text-align:right;padding:0.15rem 0.12rem;font-weight:800;color:#c97c2b;border-radius:0 4px 4px 0;">{{formatKCurrency resultsBusinessPlan.couts_travaux.total_travaux}}</td></tr>
         </table>
       </div>
       <!-- Frais financement -->
-      <div style="flex:1 1 320px;min-width:260px;background:#fff;border-radius:10px;padding:1.1rem 1.1rem 0.7rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #0a6c9d;">
-        <div style="font-size:1.13rem;font-weight:800;color:#0a6c9d;margin-bottom:0.7rem;">Frais financement</div>
-        <table style="width:100%;border-collapse:collapse;font-size:1.07rem;">
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Intérêts prêt</td><td style="text-align:right;padding:0.18rem 0.2rem;">{{formatKCurrency resultsBusinessPlan.financement.couts.interets_pret_output_amount}}</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Accompagnement prêt</td><td style="text-align:right;padding:0.18rem 0.2rem;">{{formatKCurrency resultsBusinessPlan.financement.couts.commission_accompagnement_output_amount}}</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Frais dossier</td><td style="text-align:right;padding:0.18rem 0.2rem;">{{formatKCurrency resultsBusinessPlan.financement.couts.frais_dossier_output_amount}}</td></tr>
-          <tr><td style="font-weight:800;color:#0a6c9d;padding:0.18rem 0.2rem;">Total financement</td><td style="text-align:right;padding:0.18rem 0.2rem;font-weight:800;color:#0a6c9d;">{{formatKCurrency resultsBusinessPlan.financement.couts.total_couts_financiers}}</td></tr>
+        <div class="financial-card" style="background:#fff;border-radius:8px;padding:0.6rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #0a6c9d;display:flex;flex-direction:column;">
+          <div style="font-size:0.85rem;font-weight:800;color:#0a6c9d;margin-bottom:0.35rem;">Frais financement</div>
+          <table style="width:100%;border-collapse:collapse;font-size:0.75rem;flex:1 1 auto;">
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Intérêts prêt</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency resultsBusinessPlan.financement.couts.interets_pret_output_amount}}</td></tr>
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Accompagnement prêt</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency resultsBusinessPlan.financement.couts.commission_accompagnement_output_amount}}</td></tr>
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Frais dossier</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency resultsBusinessPlan.financement.couts.frais_dossier_output_amount}}</td></tr>
+            <tr style="background:#dbeafe;"><td style="font-weight:800;color:#0a6c9d;padding:0.15rem 0.12rem;border-radius:4px 0 0 4px;">Total financement</td><td style="text-align:right;padding:0.15rem 0.12rem;font-weight:800;color:#0a6c9d;border-radius:0 4px 4px 0;">{{formatKCurrency resultsBusinessPlan.financement.couts.total_couts_financiers}}</td></tr>
         </table>
       </div>
       <!-- Frais divers -->
-      <div style="flex:1 1 320px;min-width:260px;background:#fff;border-radius:10px;padding:1.1rem 1.1rem 0.7rem 1.1rem;margin-bottom:0.7rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #64748b;">
-        <div style="font-size:1.13rem;font-weight:800;color:#64748b;margin-bottom:0.7rem;">Frais divers</div>
-        <table style="width:100%;border-collapse:collapse;font-size:1.07rem;">
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Hon. techniques</td><td style="text-align:right;padding:0.18rem 0.2rem;">{{formatKCurrency resultsBusinessPlan.couts_divers.honoraires_tech_output_amount}}</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Prorata foncier</td><td style="text-align:right;padding:0.18rem 0.2rem;">{{formatKCurrency resultsBusinessPlan.couts_divers.prorata_foncier_output_amount}}</td></tr>
-          <tr><td style="font-weight:700;color:#2d3748;padding:0.18rem 0.2rem;">Diagnostics</td><td style="text-align:right;padding:0.18rem 0.2rem;">{{formatKCurrency resultsBusinessPlan.couts_divers.diagnostics_output_amount}}</td></tr>
-          <tr><td style="font-weight:800;color:#64748b;padding:0.18rem 0.2rem;">Total frais divers</td><td style="text-align:right;padding:0.18rem 0.2rem;font-weight:800;color:#64748b;">{{formatKCurrency resultsBusinessPlan.couts_divers.total_divers}}</td></tr>
+        <div class="financial-card" style="background:#fff;border-radius:8px;padding:0.6rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #64748b;display:flex;flex-direction:column;">
+          <div style="font-size:0.85rem;font-weight:800;color:#64748b;margin-bottom:0.35rem;">Frais divers</div>
+          <table style="width:100%;border-collapse:collapse;font-size:0.75rem;flex:1 1 auto;">
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Hon. techniques</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency resultsBusinessPlan.couts_divers.honoraires_tech_output_amount}}</td></tr>
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Prorata foncier</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency resultsBusinessPlan.couts_divers.prorata_foncier_output_amount}}</td></tr>
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Diagnostics</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency resultsBusinessPlan.couts_divers.diagnostics_output_amount}}</td></tr>
+            <tr style="background:#f1f5f9;"><td style="font-weight:800;color:#64748b;padding:0.15rem 0.12rem;border-radius:4px 0 0 4px;">Total frais divers</td><td style="text-align:right;padding:0.15rem 0.12rem;font-weight:800;color:#64748b;border-radius:0 4px 4px 0;">{{formatKCurrency resultsBusinessPlan.couts_divers.total_divers}}</td></tr>
         </table>
+        </div>
       </div>
     </div>
-    <!-- Bloc financement utilisé -->
-    <div style="margin:2.5rem auto 0 auto;max-width:700px;display:flex;gap:1.5rem;justify-content:center;align-items:center;">
-      <div style="background:#e0f2fe;border-radius:12px;padding:1.1rem 2.2rem;text-align:center;font-size:1.18rem;font-weight:800;color:#0a6c9d;box-shadow:0 2px 8px #0a6c9d10;">Foncier<br><span style='font-size:1.5rem;'>{{formatKCurrency resultsBusinessPlan.financement.montants_utilises.credit_foncier_output_amount}}</span></div>
-      <div style="background:#fef9c3;border-radius:12px;padding:1.1rem 2.2rem;text-align:center;font-size:1.18rem;font-weight:800;color:#c97c2b;box-shadow:0 2px 8px #c97c2b10;">FP<br><span style='font-size:1.5rem;'>{{formatKCurrency resultsBusinessPlan.financement.montants_utilises.fonds_propres_output_amount}}</span></div>
-      <div style="background:#fef3c7;border-radius:12px;padding:1.1rem 2.2rem;text-align:center;font-size:1.18rem;font-weight:800;color:#d97706;box-shadow:0 2px 8px #d9770610;">Acc.<br><span style='font-size:1.5rem;'>{{formatKCurrency resultsBusinessPlan.financement.montants_utilises.credit_accompagnement_output_amount}}</span></div>
+    
+    <!-- SECTION 2 : FINANCEMENT -->
+    <div style="flex:0 0 auto;margin-top:0.8rem;">
+      <!-- Titre et total -->
+      <div style="background:#fff;border-radius:10px;padding:0.8rem;box-shadow:0 2px 8px rgba(0,0,0,0.05);margin-bottom:0.7rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;">
+          <div style="display:flex;align-items:center;gap:0.6rem;">
+            <span style="font-size:1.5rem;color:#0a6c9d;background:#e0f7fa;border-radius:50%;padding:0.25em 0.4em;display:inline-block;line-height:1;min-width:1.8em;text-align:center;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#0a6c9d" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+              </svg>
+            </span>
+            <h2 style="font-weight:800;font-size:1.2rem;margin:0;color:#1a3557;">Financement</h2>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:1.5rem;font-weight:900;color:#0a6c9d;letter-spacing:-0.5px;line-height:1;">{{formatKCurrency financement_total}}</div>
+            <div style="font-size:0.75rem;color:#64748b;">Total</div>
+          </div>
+        </div>
+        <!-- Barres de progression et pie chart -->
+        <div style="display:flex;align-items:flex-start;gap:1rem;">
+          <!-- Barres de progression financement -->
+          <div style="flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;">
+            {{#each synthese_financement}}
+            <div style="display:flex;align-items:center;margin-bottom:0.5rem;min-height:24px;">
+              <div style="min-width:140px;max-width:140px;font-weight:600;color:#1a3557;font-size:0.8rem;white-space:nowrap;padding-right:1.2rem;flex-shrink:0;overflow:visible;">{{categorie}}</div>
+              <div style="flex:1 1 auto;min-width:180px;max-width:220px;margin-left:0.8rem;margin-right:0.8rem;background:#f1f5f9;border-radius:5px;height:20px;position:relative;display:flex;align-items:center;">
+                <div style="width: {{pct}}%; height: 100%; background: {{color}}; border-radius: 5px;"></div>
+              </div>
+              <div style="width:75px;text-align:right;color:#0a6c9d;font-weight:700;font-size:0.8rem;white-space:nowrap;flex-shrink:0;">
+                {{formatKCurrency montant}}
+                <span style="font-size:0.75em;font-style:italic;color:#64748b;margin-left:3px;">{{pct}}%</span>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+          <!-- Pie chart -->
+          {{#if financement_pie_chart_url}}
+          <div style="flex:0 0 auto;display:flex;align-items:center;justify-content:center;">
+            <img src="{{financement_pie_chart_url}}" alt="Répartition du financement" style="width:180px;height:180px;object-fit:contain;" />
+          </div>
+          {{/if}}
+        </div>
+      </div>
+      <!-- Tableaux financement détaillés -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;max-width:100%;margin:0 auto;">
+        <!-- Crédit foncier -->
+        <div class="financial-card" style="background:#fff;border-radius:8px;padding:0.6rem 0.6rem 0.4rem 0.6rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #0a6c9d;">
+          <div style="font-size:0.85rem;font-weight:800;color:#0a6c9d;margin-bottom:0.35rem;">Crédit foncier</div>
+          <table style="width:100%;border-collapse:collapse;font-size:0.75rem;">
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Alloué</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency credit_foncier_alloue}}</td></tr>
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Utilisé</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency credit_foncier_utilise}}</td></tr>
+            <tr><td style="font-weight:800;color:#0a6c9d;padding:0.1rem 0.12rem;">Taux</td><td style="text-align:right;padding:0.1rem 0.12rem;font-weight:800;color:#0a6c9d;">{{#if credit_foncier_alloue}}{{round (multiply (divide credit_foncier_utilise credit_foncier_alloue) 100)}}%{{else}}0%{{/if}}</td></tr>
+          </table>
+        </div>
+        <!-- Fonds propres -->
+        <div class="financial-card" style="background:#fff;border-radius:8px;padding:0.6rem 0.6rem 0.4rem 0.6rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #64748b;">
+          <div style="font-size:0.85rem;font-weight:800;color:#64748b;margin-bottom:0.35rem;">Fonds propres</div>
+          <table style="width:100%;border-collapse:collapse;font-size:0.75rem;">
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Alloué</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency fonds_propres_alloue}}</td></tr>
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Utilisé</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency fonds_propres_utilise}}</td></tr>
+            <tr><td style="font-weight:800;color:#64748b;padding:0.1rem 0.12rem;">Taux</td><td style="text-align:right;padding:0.1rem 0.12rem;font-weight:800;color:#64748b;">{{#if fonds_propres_alloue}}{{round (multiply (divide fonds_propres_utilise fonds_propres_alloue) 100)}}%{{else}}0%{{/if}}</td></tr>
+          </table>
+        </div>
+        <!-- Crédit accompagnement -->
+        <div class="financial-card" style="background:#fff;border-radius:8px;padding:0.6rem 0.6rem 0.4rem 0.6rem;box-shadow:0 2px 8px #0a6c9d10;border:1.5px solid #f59e42;">
+          <div style="font-size:0.85rem;font-weight:800;color:#f59e42;margin-bottom:0.35rem;">Crédit accompagnement</div>
+          <table style="width:100%;border-collapse:collapse;font-size:0.75rem;">
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Alloué</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency credit_accompagnement_alloue}}</td></tr>
+            <tr><td style="font-weight:700;color:#2d3748;padding:0.1rem 0.12rem;">Utilisé</td><td style="text-align:right;padding:0.1rem 0.12rem;">{{formatKCurrency credit_accompagnement_utilise}}</td></tr>
+            <tr><td style="font-weight:800;color:#f59e42;padding:0.1rem 0.12rem;">Taux</td><td style="text-align:right;padding:0.1rem 0.12rem;font-weight:800;color:#f59e42;">{{#if credit_accompagnement_alloue}}{{round (multiply (divide credit_accompagnement_utilise credit_accompagnement_alloue) 100)}}%{{else}}0%{{/if}}</td></tr>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
-  <div style="page-break-after:always;"></div>
-
-  <!-- PAGE UNIQUE : Synthèse financière et comparatif vente -->
-  <div style="padding:2.5rem 2rem; background:#f8fafc; min-height:100vh; font-family:Arial,sans-serif;">
-    <h1 style="font-size:1.7rem;font-weight:700;color:#0a6c9d;margin-bottom:2.2rem;">Synthèse financière</h1>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2.2rem 2.2rem;margin-bottom:2.5rem;max-width:700px;margin-left:auto;margin-right:auto;">
-      <div style="background:#fff;border-radius:16px;padding:2.1rem 1.1rem;text-align:center;box-shadow:0 2px 12px #0a6c9d10;display:flex;flex-direction:column;align-items:center;">
-        <div style="font-size:1.13rem;font-weight:700;color:#64748b;margin-bottom:0.7rem;">💰 Prix de revient</div>
-        <div style="font-size:2.1rem;font-weight:900;color:#0a6c9d;">{{formatKCurrency resultsBusinessPlan.couts_total}}</div>
-      </div>
-      <div style="background:#fff;border-radius:16px;padding:2.1rem 1.1rem;text-align:center;box-shadow:0 2px 12px #0a6c9d10;display:flex;flex-direction:column;align-items:center;">
-        <div style="font-size:1.13rem;font-weight:700;color:#64748b;margin-bottom:0.7rem;">💰 Marge nette</div>
-        <div style="font-size:2.1rem;font-weight:900;color:#0a6c9d;">{{formatKCurrency resultsBusinessPlan.resultats.marge_nette}}</div>
-      </div>
-      <div style="background:#fff;border-radius:16px;padding:2.1rem 1.1rem;text-align:center;box-shadow:0 2px 12px #0a6c9d10;display:flex;flex-direction:column;align-items:center;">
-        <div style="font-size:1.13rem;font-weight:700;color:#64748b;margin-bottom:0.7rem;">📊 Rentabilité</div>
-        <div style="font-size:2.1rem;font-weight:900;color:#0a6c9d;">{{formatPercentage resultsBusinessPlan.resultats.rentabilite}}</div>
-      </div>
-      <div style="background:#fff;border-radius:16px;padding:2.1rem 1.1rem;text-align:center;box-shadow:0 2px 12px #0a6c9d10;display:flex;flex-direction:column;align-items:center;">
-        <div style="font-size:1.13rem;font-weight:700;color:#64748b;margin-bottom:0.7rem;">📈 Rendement fonds propres</div>
-        <div style="font-size:2.1rem;font-weight:900;color:#0a6c9d;">{{formatPercentage (multiply resultsBusinessPlan.resultats.retour_fonds_propres 100)}}</div>
-      </div>
-    </div>
-    {{#if vente_chart_url}}
-    <div style="margin:2.5rem 0 2.5rem 0;">
-      <img src="{{vente_chart_url}}" alt="Comparatif prix" style="width:100%;max-width:700px;display:block;margin:0 auto;border-radius:10px;box-shadow:0 2px 8px #0001;">
-    </div>
-    {{/if}}
-    <div style="max-width:420px;margin:2.5rem auto 0 auto;">
-      <table style="width:100%;border-collapse:collapse;font-size:1.25rem;color:#b0b7c3;background:transparent;text-align:center;">
-        <thead>
-          <tr>
-            <th style="font-weight:700;font-size:1.15rem;color:#b0b7c3;background:transparent;border:none;"></th>
-            <th style="font-weight:700;font-size:1.15rem;color:#b0b7c3;background:transparent;border:none;">Pondéré</th>
-            <th style="font-weight:700;font-size:1.15rem;color:#b0b7c3;background:transparent;border:none;">Carrez</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="font-weight:600;color:#b0b7c3;background:transparent;border:none;text-align:right;">Achat</td>
-            <td style="background:transparent;border:none;">{{formatKCurrency resultsBusinessPlan.prix_m2.prix_achat_pondere_m2 1}}</td>
-            <td style="background:transparent;border:none;">{{formatKCurrency resultsBusinessPlan.prix_m2.prix_achat_carrez_m2 1}}</td>
-          </tr>
-          <tr>
-            <td style="font-weight:600;color:#b0b7c3;background:transparent;border:none;text-align:right;">Revient</td>
-            <td style="background:transparent;border:none;">{{formatKCurrency resultsBusinessPlan.prix_m2.prix_revient_pondere_m2 1}}</td>
-            <td style="background:transparent;border:none;">{{formatKCurrency resultsBusinessPlan.prix_m2.prix_revient_carrez_m2 1}}</td>
-          </tr>
-          <tr>
-            <td style="font-weight:600;color:#b0b7c3;background:transparent;border:none;text-align:right;">Vente</td>
-            <td style="background:transparent;border:none;">{{formatKCurrency resultsBusinessPlan.prix_m2.prix_vente_pondere_m2 1}}</td>
-            <td style="background:transparent;border:none;">{{formatKCurrency resultsBusinessPlan.prix_m2.prix_vente_carrez_m2 1}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div style="page-break-after:always;"></div>
 </body>
 </html> 

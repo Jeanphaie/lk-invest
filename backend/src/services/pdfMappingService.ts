@@ -89,12 +89,19 @@ export class PdfMappingService {
     if (Array.isArray(pdfDataAny.selectedAfterPhotosForPdf)) {
       pdfDataAny.selectedAfterPhotosForPdf = pdfDataAny.selectedAfterPhotosForPdf.map(toHttpUrl);
     }
-    // Correction : alimenter surface_ponderee_apres_travaux si absent dans le business plan
-    if (pdfData.inputsBusinessPlan && pdfData.inputsRenovationBien && pdfData.inputsGeneral) {
-      if (typeof pdfData.inputsBusinessPlan.surface_ponderee_apres_travaux !== 'number' || isNaN(pdfData.inputsBusinessPlan.surface_ponderee_apres_travaux)) {
-        const { superficie_apres = 0, superficie_exterieur_apres = 0 } = pdfData.inputsRenovationBien;
-        const ponderation = pdfData.inputsGeneral.ponderation_terrasse || 0;
-        pdfData.inputsBusinessPlan.surface_ponderee_apres_travaux = superficie_apres + (superficie_exterieur_apres * ponderation);
+    // Correction : alimenter/recalculer surface_ponderee_apres_travaux si absente, NaN ou égale à 0
+    // Priorité aux champs du Business Plan; fallback sur Rénovation si nécessaire
+    if (pdfData.inputsBusinessPlan && pdfData.inputsGeneral) {
+      const current = pdfData.inputsBusinessPlan.surface_ponderee_apres_travaux as unknown as number;
+      const needsRecompute = (typeof current !== 'number') || isNaN(current) || current === 0;
+      if (needsRecompute) {
+        const bpCarrez = Number(pdfData.inputsBusinessPlan.surface_carrez_apres_travaux || 0);
+        const bpTerrasse = Number(pdfData.inputsBusinessPlan.surface_terrasse_apres_travaux || 0);
+        // Utiliser uniquement les données du business plan (pas de fallback renovation)
+        const carrez = bpCarrez;
+        const terrasse = bpTerrasse;
+        const ponderation = Number(pdfData.inputsGeneral.ponderation_terrasse || 0);
+        pdfData.inputsBusinessPlan.surface_ponderee_apres_travaux = carrez + (terrasse * ponderation);
       }
     }
     // Validation finale de l'objet complet

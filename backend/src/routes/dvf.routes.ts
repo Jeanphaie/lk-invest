@@ -10,9 +10,13 @@ const prisma = new PrismaClient();
 const projectService = new ProjectService();
 const router: Router = express.Router();
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+function createOpenAIClient(): OpenAI | null {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey || apiKey.trim() === '') {
+    return null;
+  }
+  return new OpenAI({ apiKey });
+}
 
 // Schéma de validation pour la requête DVF (uniquement les filtres)
 const dvfAnalyseRequestSchema = InputsDvfSchema.extend({ code_postal: z.string().optional() });
@@ -192,10 +196,31 @@ router.post('/:projectId/analyse', async (req, res) => {
     const premium_final_avg = premium_surface_weighted ? premium_sum_weighted / premium_surface_weighted : 0;
 
     // 7. Séries temporelles (yearly, exponential decay)
+    const yearsSet = new Set<number>();
+    const minSupportedYear = 2019;
+    const currentYear = new Date().getFullYear();
+
+    const collectYear = (dateValue?: string | null) => {
+      if (!dateValue) return;
+      const year = Number.parseInt(dateValue.slice(0, 4), 10);
+      if (!Number.isNaN(year) && year >= minSupportedYear && year <= currentYear + 1) {
+        yearsSet.add(year);
+      }
+    };
+
+    rawRowsNoOutliers.forEach(row => collectYear(row.date_mutation));
+    selection_no_outliers.forEach(row => collectYear(row.date_mutation));
+
+    let sortedYears = Array.from(yearsSet).sort((a, b) => a - b);
+    if (!sortedYears.length) {
+      sortedYears = Array.from({ length: Math.max(1, currentYear - minSupportedYear + 1) }, (_, idx) => minSupportedYear + idx);
+    }
+
     const trend_series = [];
-    for (let year = 2019; year <= 2024; year++) {
-      const year_sel_data = selection_no_outliers.filter(row => row.date_mutation.startsWith(year.toString()));
-      const year_arr_data = rawRowsNoOutliers.filter(row => row.date_mutation.startsWith(year.toString()));
+    for (const year of sortedYears) {
+      const yearStr = year.toString();
+      const year_sel_data = selection_no_outliers.filter(row => row.date_mutation.startsWith(yearStr));
+      const year_arr_data = rawRowsNoOutliers.filter(row => row.date_mutation.startsWith(yearStr));
       const year_premium_data = [...year_arr_data].sort((a, b) => b.prix_m2 - a.prix_m2).slice(0, Math.max(1, Math.floor(year_arr_data.length * 0.1)));
       const sel_sum_valeur = year_sel_data.reduce((sum, row) => sum + (row.valeur_fonciere || 0), 0);
       const sel_sum_surface = year_sel_data.reduce((sum, row) => sum + (row.surface_reelle_bati || 0), 0);
@@ -436,6 +461,11 @@ router.post('/:id/generate-quartier-description', async (req: Request, res: Resp
     // Préparer le prompt pour OpenAI
     const prompt = `Décris le quartier de ${project.inputsGeneral.adresseBien} en mettant en avant ses caractéristiques, son ambiance, ses atouts et ses points d'intérêt. La description doit être concise mais détaillée, en français, et ne pas dépasser 60 mots.`;
 
+    const openai = createOpenAIClient();
+    if (!openai) {
+      console.error('[OpenAI] OPENAI_API_KEY manquant: génération désactivée');
+      return res.status(503).json({ error: 'Service indisponible: clé OpenAI absente' });
+    }
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
@@ -458,12 +488,7 @@ router.post('/:id/generate-quartier-description', async (req: Request, res: Resp
       throw new Error('Pas de réponse de l\'API OpenAI');
     }
 
-    console.log('[DVF][GENERATE][BEFORE_UPDATE] Données avant mise à jour:', {
-      description,
-      photos: project.photos,
-      inputsGeneral: project.inputsGeneral
-    });
-
+    
     // Sauvegarder la description dans le projet
     const updatedProject = await projectService.updateProject(projectId, {
       inputsGeneral: {
@@ -472,11 +497,7 @@ router.post('/:id/generate-quartier-description', async (req: Request, res: Resp
       }
     });
 
-    console.log('[DVF][GENERATE][AFTER_UPDATE] Projet mis à jour:', {
-      description: updatedProject.inputsGeneral?.description_quartier,
-      photos: updatedProject.photos
-    });
-
+    
     res.json({ description });
   } catch (error) {
     console.error('[OpenAI] Erreur lors de la génération de la description du quartier:', error);

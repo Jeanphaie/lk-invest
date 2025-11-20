@@ -14,7 +14,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-console.log('[DEBUG] businessPlanController chargé');
+// businessPlanController chargé
 
 const cleanNumeric = (value: any, defaultValue: number = 0): number => {
   
@@ -91,7 +91,6 @@ const applyDefaultIfNullOrUndefined = (value: any, fallback: number) => {
 };
 
 export const calculateBusinessPlan = async (req: Request, res: Response) => {
-  console.log('[DEBUG][BP PREV] === Appel du contrôleur calculateBusinessPlan ===');
 
   try {
     const projectId = parseInt(req.params.projectId);
@@ -107,7 +106,6 @@ export const calculateBusinessPlan = async (req: Request, res: Response) => {
     }
 
     // Validation des inputs
-    console.log('Validation des inputs...');
     const validationResult = BusinessPlanInputsSchema.safeParse(inputs);
     if (!validationResult.success) {
       console.error('Erreur de validation des inputs:', validationResult.error.errors);
@@ -116,10 +114,9 @@ export const calculateBusinessPlan = async (req: Request, res: Response) => {
         details: validationResult.error.errors
       });
     }
-    console.log('Validation des inputs réussie');
+    
 
     // Récupération du projet avec les inputs généraux
-    console.log('Récupération du projet...');
     const project = await prisma.project.findUnique({
       where: { project_id: projectId }
     });
@@ -128,7 +125,7 @@ export const calculateBusinessPlan = async (req: Request, res: Response) => {
       console.error('Projet non trouvé');
       return res.status(404).json({ error: 'Projet non trouvé' });
     }
-    console.log('Projet trouvé:', projectId);
+    
 
     // Récupération de la pondération terrasse depuis les inputs généraux
     const generalInputs = project.inputsGeneral as InputsGeneral;

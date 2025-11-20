@@ -113,7 +113,6 @@ export class ProjectService {
 
   // Mettre à jour un projet
   async updateProject(id: number, data: any): Promise<Project> {
-    console.log('[LOG][updateProject] Appelée avec id:', id, 'et data:', JSON.stringify(data, null, 2));
     // Récupérer le projet existant pour préserver les photos
     const existingProject = await prisma.project.findUnique({
       where: { project_id: id },
@@ -139,7 +138,6 @@ export class ProjectService {
     
     // Normaliser les données
     const normalizedData = this.normalizeProjectData(data);
-    console.log('[LOG][updateProject] normalizedData:', JSON.stringify(normalizedData, null, 2));
     
     // Préserver les sélections PDF existantes
     const existingPhotos = existingProject.photos as unknown as ProjectPhotos;
@@ -216,6 +214,31 @@ export class ProjectService {
 
     // Construction stricte de updateData :
     const updateData: any = {};
+    // Champs description / généraux / DVF / PDF / rénovation
+    if ('inputsGeneral' in normalizedData) {
+      updateData.inputsGeneral = normalizedData.inputsGeneral;
+    }
+    if ('inputsDescriptionBien' in normalizedData) {
+      updateData.inputsDescriptionBien = normalizedData.inputsDescriptionBien;
+    }
+    if ('resultsDescriptionBien' in normalizedData) {
+      updateData.resultsDescriptionBien = normalizedData.resultsDescriptionBien;
+    }
+    if ('inputsDvf' in normalizedData) {
+      updateData.inputsDvf = normalizedData.inputsDvf;
+    }
+    if ('resultsDvfMetadata' in normalizedData) {
+      updateData.resultsDvfMetadata = normalizedData.resultsDvfMetadata;
+    }
+    if ('pdfConfig' in normalizedData) {
+      updateData.pdfConfig = normalizedData.pdfConfig;
+    }
+    if ('inputsRenovationBien' in normalizedData) {
+      updateData.inputsRenovationBien = normalizedData.inputsRenovationBien;
+    }
+    if ('resultsRenovationBien' in normalizedData) {
+      updateData.resultsRenovationBien = normalizedData.resultsRenovationBien;
+    }
     if ('inputsBusinessPlan' in normalizedData) {
       updateData.inputsBusinessPlan = normalizedData.inputsBusinessPlan;
     }
@@ -231,18 +254,13 @@ export class ProjectService {
     if ('photos' in normalizedData) {
       updateData.photos = mergedPhotos;
     }
-    console.log('[LOG][updateProject] updateData envoyé à Prisma:', JSON.stringify(updateData, null, 2));
 
-    if (updateData.inputsBusinessPlan) {
-      console.trace('[ALERTE][SERVICE] updateData.inputsBusinessPlan va être modifié !', JSON.stringify(updateData.inputsBusinessPlan, null, 2));
-    }
 
     // Mettre à jour le projet avec les données normalisées et les photos fusionnées
     const updatedProject = await prisma.project.update({
       where: { project_id: id },
       data: updateData
     });
-    console.log('[LOG][updateProject] Résultat complet retourné par Prisma:', JSON.stringify(updatedProject, null, 2));
 
     const projectData = {
       ...updatedProject,
@@ -283,13 +301,6 @@ export class ProjectService {
       dvfDistributions: [],
       dvfPremiumTransactions: []
     };
-    console.log('[LOG][updateProject] projectData retourné au contrôleur:', JSON.stringify({
-      id: projectData.id,
-      inputsBusinessPlan: projectData.inputsBusinessPlan,
-      inputsBusinessPlanRealises: projectData.inputsBusinessPlanRealises,
-      resultsBusinessPlan: projectData.resultsBusinessPlan,
-      resultsBusinessPlanRealises: projectData.resultsBusinessPlanRealises
-    }, null, 2));
 
     // Filtrer les clés undefined avant de retourner le projet
     Object.keys(projectData).forEach(key => {
@@ -360,7 +371,7 @@ export class ProjectService {
 
     if (!project) return null;
 
-    console.log('[LOG][getProjectById] id:', id, 'inputsBusinessPlan:', project.inputsBusinessPlan, 'inputsBusinessPlanRealises:', project.inputsBusinessPlanRealises);
+  
 
     // Parse photos with default values
     let photos: Photos;

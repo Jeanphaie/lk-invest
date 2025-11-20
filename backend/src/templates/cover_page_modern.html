@@ -6,7 +6,8 @@
     <style>
         .cover-page {
             min-height: 100vh;
-            background: linear-gradient(120deg, var(--color-background) 60%, #e0f2fe 100%);
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 25%, #f0f9ff 50%, #e0f2fe 75%, #f0f9ff 100%);
+            background-size: 200% 200%;
             display: flex;
             flex-direction: column;
             padding: 2rem;
@@ -26,9 +27,10 @@
 
         .cover-contacts {
             text-align: right;
-            font-size: 1.15rem;
-            color: var(--color-text-light);
-            line-height: 1.4;
+            font-size: var(--font-size-lg);
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+            font-weight: 500;
         }
 
         .cover-content {
@@ -42,15 +44,17 @@
         }
 
         .cover-title {
-            font-size: 2.2rem;
+            font-size: var(--font-size-4xl);
             font-weight: 800;
             color: var(--color-primary);
             margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
         }
 
         .cover-subtitle {
-            font-size: 1.1rem;
-            color: var(--color-text-light);
+            font-size: var(--font-size-lg);
+            color: var(--color-text-secondary);
             font-weight: 500;
             margin-bottom: 2rem;
         }
@@ -73,7 +77,8 @@
         @media print {
             .cover-page {
                 height: 100vh;
-                page-break-after: always;
+                page-break-after: always !important;
+                page-break-inside: avoid !important;
             }
         }
     </style>

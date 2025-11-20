@@ -3,99 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    .photos-section {
-      position: relative;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #fff;
+    }
+    .photos-3d-page {
       width: 100vw;
       height: 100vh;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem 1.2rem;
+      page-break-after: always;
       background: #fff;
-      overflow: hidden;
-      box-sizing: border-box;
-      padding: 0;
-      margin: 0;
     }
-    .section-title {
+    .photos-3d-title {
       font-size: 1.7rem;
       font-weight: 700;
       color: #1a202c;
-      margin: 1.2rem 0 0.7rem 2.2rem;
-      padding-bottom: 0.3rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
       border-bottom: 2px solid #e2e8f0;
-      z-index: 2;
-      position: relative;
+      flex-shrink: 0;
+      text-align: center;
     }
-    .text-block {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 1.5rem;
-      margin: 0 2.2rem 1.5rem 2.2rem;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .text-block p {
-      margin: 0;
-      line-height: 1.6;
-      color: #4a5568;
-    }
-    .photos-table-container {
+    .photos-3d-list {
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 18px;
-      width: 100%;
-      padding: 1.2rem 2vw 2rem 2vw;
-      box-sizing: border-box;
-      background: #fff;
-      align-items: center;
+      gap: 1.5rem;
+      min-height: 0;
     }
-    .photo-item {
-      width: 100%;
-      max-width: 900px;
-      aspect-ratio: 16/9;
-      border-radius: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-      overflow: hidden;
-      background: #fff;
-      border: 1.5px solid #e2e8f0;
+    .photo-3d-item {
+      flex: 1 1 0;
+      min-height: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 18px auto;
+      overflow: hidden;
+      border-radius: 16px;
+      background: #f8fafc;
     }
-    .photo-item img {
+    .photo-3d-item img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       display: block;
-      border-radius: 14px;
+      border-radius: 16px;
     }
     @media print {
-      .photos-section, .photos-table-container {
-        width: 100vw;
+      .photos-3d-page {
         height: 100vh;
         min-height: 100vh;
-        padding: 0;
-        margin: 0;
+        page-break-after: always;
       }
-      .photo-item {
-        box-shadow: none;
-        border: 1px solid #e2e8f0;
+      .photo-3d-item {
+        page-break-inside: avoid;
+        break-inside: avoid;
       }
     }
   </style>
 </head>
 <body>
-  <div class="photos-section">
-    <div class="section-title">Vues 3D du projet</div>
-    <div class="text-block">
-      <p>{{explication_3d}}</p>
-    </div>
-    <div class="photos-table-container">
+  <div class="photos-3d-page">
+    <div class="photos-3d-title">Vues 3D du projet</div>
+    <div class="photos-3d-list">
       {{#each images}}
-      <div class="photo-item">
-        <img src="{{url}}" alt="Vue 3D">
-      </div>
+        <div class="photo-3d-item">
+          <img src="{{url}}" alt="Vue 3D">
+        </div>
       {{/each}}
     </div>
   </div>
 </body>
-</html> 
+</html>

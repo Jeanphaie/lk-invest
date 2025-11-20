@@ -1,16 +1,20 @@
-<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f2f6fa;padding:60px 40px 40px 40px;border-radius:18px;box-shadow:0 8px 32px rgba(10,108,157,0.10);border-left:8px solid #0a6c9d;margin:0 0 2.5rem 0;">
-  <h2 style="font-size:2.5em;font-weight:800;color:#0a6c9d;margin-bottom:1.3em;letter-spacing:0.01em;text-shadow:0 2px 8px #0a6c9d11;">{{title}}</h2>
-  <div style="font-size:1.28em;color:#2d3748;max-width:700px;text-align:center;line-height:1.7;margin:0 auto 1.5em auto;background:#f7fafd;border-radius:8px;padding:1.2em 1.5em;box-shadow:0 2px 8px #0a6c9d08; font-style:italic;">
-    {{description}}
-    <br>
-    {{description_2}}
-  </div>
-  <br> <br> <br>
-  {{#if summary}}
-    <div style="margin-top:1.2em;background:#e3f2fd;border-left:5px solid #bfa77a;border-radius:6px;padding:1.2em 2em;font-size:1.18em;color:#0a6c9d;font-weight:700;box-shadow:0 2px 8px #bfa77a22;max-width:600px;text-align:center;">
-      {{!-- On met le résumé en valeur --}}
-      <span style="font-size:1.1em;display:block;margin-bottom:0.4em;">Résumé</span>
-      <span style="font-size:1.25em;font-weight:900;color:#bfa77a;">{{{summary}}}</span>
+<div class="section-intro">
+  <div class="section-intro-content">
+    <h2>{{title}}</h2>
+    <div class="section-description">
+      {{{description}}}
+      {{#if description_2}}
+      <p>{{description_2}}</p>
+      {{/if}}
     </div>
+  </div>
+  {{#if summary}}
+    <div class="section-summary">
+      <span>RÉSUMÉ</span>
+      <div class="summary-content">{{{summary}}}</div>
+    </div>
+  {{/if}}
+  {{#if footer_note}}
+    <div class="section-footer-note">{{{footer_note}}}</div>
   {{/if}}
 </div>

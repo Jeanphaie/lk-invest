@@ -3,13 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    .photos-section {
+    .photos-before-section {
       display: flex;
       flex-direction: column;
+      width: 100vw;
       height: 100vh;
+      min-height: 100vh;
+      max-height: 100vh;
       box-sizing: border-box;
+      page-break-after: always;
+      overflow: hidden;
+      padding-bottom: 1.5rem;
     }
-    .section-title {
+    .photos-before-section .section-title {
       font-size: 1.7rem;
       font-weight: 700;
       color: #1a202c;
@@ -18,22 +24,25 @@
       border-bottom: 2px solid #e2e8f0;
       z-index: 2;
       position: relative;
+      flex-shrink: 0;
     }
-    .photos-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 18px;
-      justify-content: center;
+    .photos-before-grid {
+      display: grid;
+      grid-template-columns: repeat({{cols}}, {{photoWidthVw}}vw);
+      grid-auto-rows: {{photoHeightVh}}vh;
+      gap: {{gapVh}}vh {{gapVw}}vw;
       width: 100%;
-      padding: 1.2rem 24px 2rem 24px;
+      padding: 1.2rem 24px 1.5rem 24px;
       box-sizing: border-box;
       background: #fff;
+      flex: 1;
+      overflow: hidden;
+      justify-content: center;
+      align-content: start;
     }
-    .photo-item {
-      flex: 1 1 320px;
-      max-width: 320px;
-      min-width: 220px;
-      height: 200px;
+    .photo-before-item {
+      width: {{photoWidthVw}}vw;
+      height: {{photoHeightVh}}vh;
       border-radius: 14px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.07);
       overflow: hidden;
@@ -43,7 +52,7 @@
       align-items: center;
       justify-content: center;
     }
-    .photo-item img {
+    .photo-before-item img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -51,14 +60,19 @@
       border-radius: 14px;
     }
     @media print {
-      .photos-section, .photos-grid {
+      .photos-before-section {
         width: 100vw;
         height: 100vh;
         min-height: 100vh;
+        max-height: 100vh;
         padding: 0;
         margin: 0;
+        page-break-after: always;
       }
-      .photo-item {
+      .photos-before-grid {
+        padding: 1.2rem 24px 1.2rem 24px;
+      }
+      .photo-before-item {
         box-shadow: none;
         border: 1px solid #e2e8f0;
       }
@@ -66,15 +80,15 @@
   </style>
 </head>
 <body>
-  <div class="photos-section">
+  <div class="photos-before-section">
     <div class="section-title">Photos avant travaux</div>
-    <div class="photos-grid">
+    <div class="photos-before-grid">
       {{#each images}}
-        <div class="photo-item">
+        <div class="photo-before-item">
           <img src="{{url}}" alt="Photo avant travaux">
         </div>
       {{/each}}
     </div>
   </div>
 </body>
-</html> 
+</html>

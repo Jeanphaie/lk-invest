@@ -48,8 +48,26 @@ next-env.d.ts
 ehthumbs.db
 Thumbs.db
 
-# DVF datas
+# DVF datas (fichiers CSV volumineux uniquement)
 /data/lki/uploads/dvf_data
-
 /uploads/dvf_data/*.csv
 uploads/dvf_data/*.csv
+
+# Debug files
+pdf_debug*.html
+*.html.debug
+
+# Build outputs
+backend/dist/
+backend/build/
+frontend/.next/
+frontend/out/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

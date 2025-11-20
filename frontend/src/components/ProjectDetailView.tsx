@@ -7,13 +7,13 @@ import DvfAnalysis from './project-sections/DvfAnalysis';
 import BusinessPlanTab from './project-sections/BusinessPlanTab';
 import PdfReport from './project-sections/PdfReport';
 import PhotosTab from './project-sections/PhotosTab';
-import RenovationTab from './project-sections/RenovationTab';
+import PlansTab from './project-sections/PlansTab';
 import { Project, ProjectSchema } from '../../../shared/types/project';
 import { useAppStore } from '../store/appStore';
 import { z } from 'zod';
 
 
-type TabType = 'description' | 'renovation' | 'photos' | 'dvf' | 'business-plan' | 'pdf';
+type TabType = 'description' | 'photos' | 'plans' | 'dvf' | 'business-plan' | 'pdf';
 
 export default function ProjectDetailView({ projectId }: { projectId: string }) {
   const [activeTab, setActiveTab] = useState<TabType>('description');
@@ -106,8 +106,8 @@ export default function ProjectDetailView({ projectId }: { projectId: string }) 
 
   const tabs = [
     { key: 'description', label: 'Description du bien' },
-    { key: 'renovation', label: 'Rénovation' },
     { key: 'photos', label: 'Photos' },
+    { key: 'plans', label: 'Plans' },
     { key: 'dvf', label: 'Analyse DVF' },
     { key: 'business-plan', label: 'Business Plan' },
     { key: 'pdf', label: 'Rapport PDF' },
@@ -252,12 +252,6 @@ export default function ProjectDetailView({ projectId }: { projectId: string }) 
             handleUpdateProject={handleUpdateProject}
           />
         )}
-        {activeTab === 'renovation' && (
-          <RenovationTab
-            project={project}
-            handleUpdateProject={handleUpdateProject}
-          />
-        )}
         {activeTab === 'dvf' && (
           <DvfAnalysis
             project={project}
@@ -281,6 +275,9 @@ export default function ProjectDetailView({ projectId }: { projectId: string }) 
         )}
         {activeTab === 'photos' && (
           <PhotosTab projectId={String(project.id)} />
+        )}
+        {activeTab === 'plans' && (
+          <PlansTab projectId={String(project.id)} />
         )}
       </div>
     </div>

@@ -190,10 +190,7 @@ BEGIN
     END IF;
 
     RETURN QUERY
-    WITH years AS (
-        SELECT generate_series(2019, 2024) as year
-    ),
-    filtered_dvf AS (
+    WITH filtered_dvf AS (
         SELECT 
             d.id,
             EXTRACT(YEAR FROM TO_DATE(d.date_mutation, 'YYYY-MM-DD'))::int as year,
@@ -203,7 +200,19 @@ BEGIN
         FROM "DVF" d
         WHERE d.prix_m2 BETWEEN v_outlier_lower_bound AND v_outlier_upper_bound
         AND d.prix_m2 > 0
-        AND EXTRACT(YEAR FROM TO_DATE(d.date_mutation, 'YYYY-MM-DD'))::int BETWEEN 2019 AND 2024
+        AND EXTRACT(YEAR FROM TO_DATE(d.date_mutation, 'YYYY-MM-DD'))::int >= 2019
+    ),
+    year_bounds AS (
+        SELECT 
+            COALESCE(MIN(year), EXTRACT(YEAR FROM CURRENT_DATE)::int) as min_year,
+            COALESCE(MAX(year), EXTRACT(YEAR FROM CURRENT_DATE)::int) as max_year
+        FROM filtered_dvf
+    ),
+    years AS (
+        SELECT generate_series(
+            GREATEST(2019, (SELECT min_year FROM year_bounds)),
+            GREATEST(2019, LEAST(EXTRACT(YEAR FROM CURRENT_DATE)::int, (SELECT max_year FROM year_bounds)))
+        ) as year
     ),
     yearly_percentiles AS (
         SELECT 

@@ -837,8 +837,12 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
     // Pas de return de JSX ici !
   }, [localInputs.date_achat, localInputs.duree_projet]);
 
-  // Ajout d'un état local pour les valeurs réalisées
-  const [realisedInputs, setRealisedInputs] = useState<Partial<BusinessPlanInputs>>((project as any).inputsBusinessPlanRealises || {});
+  // Ajout d'un état local pour les valeurs réalisées (prérempli pour éviter spinner bloquant)
+  const [realisedInputs, setRealisedInputs] = useState<Partial<BusinessPlanInputs>>(
+    ((project as any).inputsBusinessPlanRealises && Object.keys((project as any).inputsBusinessPlanRealises || {}).length > 0)
+      ? (project as any).inputsBusinessPlanRealises
+      : (project.inputsBusinessPlan || DEFAULT_INPUTS)
+  );
 
   // Gestion des changements pour les valeurs réalisées
   const handleRealisedInputChange = (field: keyof BusinessPlanInputs, value: string | number) => {
@@ -870,8 +874,9 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
     const { surface_ponderee_apres_travaux, ...realisedInputsSansPonderee } = realisedInputs;
     const fullRealised: BusinessPlanInputs = {
       ...DEFAULT_INPUTS,
-      ...realisedInputsSansPonderee
-    };
+      ...(project.inputsBusinessPlan || {}),
+      ...(realisedInputsSansPonderee as Partial<BusinessPlanInputs>)
+    } as BusinessPlanInputs;
     await onUpdate({ inputsBusinessPlanRealises: fullRealised });
   };
 
@@ -891,8 +896,9 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
     const { surface_ponderee_apres_travaux, ...realisedInputsSansPonderee } = updatedInputs;
     const fullRealised: BusinessPlanInputs = {
       ...DEFAULT_INPUTS,
-      ...realisedInputsSansPonderee
-    };
+      ...(project.inputsBusinessPlan || {}),
+      ...(realisedInputsSansPonderee as Partial<BusinessPlanInputs>)
+    } as BusinessPlanInputs;
     await onUpdate({ inputsBusinessPlanRealises: fullRealised });
 
     setIsRealisedLoading(true);
@@ -925,8 +931,8 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
     }
   };
 
-  // Affichage du spinner si loading ou si les inputs réalisés ne sont pas encore chargés
-  const showRealisedSpinner = isRealisedLoading || !realisedInputs || Object.keys(realisedInputs).length === 0;
+  // Affiche le spinner uniquement pendant un calcul en cours
+  const showRealisedSpinner = isRealisedLoading;
 
   // Calcul surface pondérée réalisée
   const realisedCarrez = parseFloat(realisedInputs.surface_carrez_apres_travaux as any) || 0;
@@ -944,8 +950,15 @@ const BusinessPlanTab: React.FC<BusinessPlanTabProps> = ({ project, onUpdate }) 
   }
 
   useEffect(() => {
-    setRealisedInputs((project as any).inputsBusinessPlanRealises || {});
-  }, [project.inputsBusinessPlanRealises]);
+    const fromRealises = (project as any).inputsBusinessPlanRealises;
+    if (fromRealises && Object.keys(fromRealises || {}).length > 0) {
+      setRealisedInputs(fromRealises);
+    } else if (project.inputsBusinessPlan) {
+      setRealisedInputs(project.inputsBusinessPlan);
+    } else {
+      setRealisedInputs(DEFAULT_INPUTS);
+    }
+  }, [project.inputsBusinessPlanRealises, project.inputsBusinessPlan]);
 
   return (
     <div className={styles['bp-tab-main-grid']}>

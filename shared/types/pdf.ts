@@ -32,10 +32,7 @@ const DEFAULT_DYNAMIC_FIELDS = {
   contact2_nom: 'Simon Lecoy',
   contact2_email: 'simon@lk-invest.fr',
   contact2_tel: '+33 6 22 56 23 84',
-  description_general: "Niché au coeur du Marais, cet appartement est une opportunité rare pour une rénovation d'exception. Aucun mur porteur dans la zone principale - liberté totale pour repenser l'espace. Avec 3,1 m de hauteur sous plafond, ce bien allie charme historique et potentiel moderne.",
-  titre_renovation: 'Rénovation élégante',
-  projet_renovation: "L'ensemble des pièces sera repensé pour offrir une organisation plus fonctionnelle et harmonieuse : Toutes les chambres seront repositionnées côté cour, garantissant calme et intimité. Le salon et la cuisine seront ouverts sur toute la façade côté rue, créant un vaste espace de vie lumineux et convivial d'environ 40 m². Création d'une suite parentale de 15 m² avec une salle de bain attenante de 8 m², équipée d'une baignoire, et d'une double douche.",
-  detail_renovation: "Aménagements prévus Aménagement d'une chambre supplémentaire de 10 m² pouvant servir de chambre d'enfant ou de chambre d'ami. Ajout d'une salle de bain dédiée à la chambre d'ami pour un confort optimal. Installation d'un second WC, améliorant la praticité du bien."
+  description_general: "Niché au coeur du Marais, cet appartement est une opportunité rare pour une rénovation d'exception. Aucun mur porteur dans la zone principale - liberté totale pour repenser l'espace. Avec 3,1 m de hauteur sous plafond, ce bien allie charme historique et potentiel moderne."
 } as const;
 
 // Schéma des sections à inclure dans le PDF
@@ -61,10 +58,7 @@ export const PdfDynamicFieldsSchema = z.object({
   contact2_nom: z.string().optional().default(DEFAULT_DYNAMIC_FIELDS.contact2_nom),
   contact2_email: z.string().optional().default(DEFAULT_DYNAMIC_FIELDS.contact2_email),
   contact2_tel: z.string().optional().default(DEFAULT_DYNAMIC_FIELDS.contact2_tel),
-  description_general: z.string().optional().default(DEFAULT_DYNAMIC_FIELDS.description_general),
-  titre_renovation: z.string().optional().default(DEFAULT_DYNAMIC_FIELDS.titre_renovation),
-  projet_renovation: z.string().optional().default(DEFAULT_DYNAMIC_FIELDS.projet_renovation),
-  detail_renovation: z.string().optional().default(DEFAULT_DYNAMIC_FIELDS.detail_renovation)
+  description_general: z.string().optional().default(DEFAULT_DYNAMIC_FIELDS.description_general)
 });
 
 // Schéma de personnalisation optionnelle

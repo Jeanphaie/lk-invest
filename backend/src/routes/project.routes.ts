@@ -120,10 +120,7 @@ router.post('/', async (req: Request, res: Response) => {
 
 // PUT /api/projects/:id - Met à jour un projet
 router.put('/:id', async (req: Request, res: Response) => {
-  if (req.body.inputsBusinessPlan) {
-    console.trace('[ALERTE][ROUTE][PUT] Body contient inputsBusinessPlan:', JSON.stringify(req.body.inputsBusinessPlan, null, 2));
-  }
-  console.log('[LOG][PUT] Appelée avec id:', req.params.id, 'et body:', JSON.stringify(req.body, null, 2));
+  // Logs verbeux supprimés (ne garder que l'essentiel)
   try {
     const projectId = parseInt(req.params.id);
     if (isNaN(projectId)) {
@@ -235,24 +232,10 @@ router.put('/:id', async (req: Request, res: Response) => {
       delete data.resultsBusinessPlan;
     }
 
-    console.log('[LOG][PUT] Data mergée (avant update):', JSON.stringify(data, null, 2));
-    console.log('[LOG][PUT] Champs BP:', {
-      inputsBusinessPlan: data.inputsBusinessPlan,
-      inputsBusinessPlanRealises: data.inputsBusinessPlanRealises,
-      resultsBusinessPlan: data.resultsBusinessPlan,
-      resultsBusinessPlanRealises: data.resultsBusinessPlanRealises
-    });
-    if (data.inputsBusinessPlan) {
-      console.trace('[ALERTE][ROUTE][PUT] Data envoyé à updateProject contient inputsBusinessPlan:', JSON.stringify(data.inputsBusinessPlan, null, 2));
-    }
+    // Logs détaillés supprimés
     const project = await projectService.updateProject(projectId, data);
-    console.log('[LOG][PUT] Résultat updateProject:', JSON.stringify({
-      id: project.id,
-      inputsBusinessPlan: project.inputsBusinessPlan,
-      inputsBusinessPlanRealises: project.inputsBusinessPlanRealises,
-      resultsBusinessPlan: project.resultsBusinessPlan,
-      resultsBusinessPlanRealises: project.resultsBusinessPlanRealises
-    }, null, 2));
+    // Log synthétique
+    console.log('[PUT] Projet mis à jour', { id: project.id });
     res.json(project);
   } catch (error) {
     console.error('Erreur lors de la mise à jour du projet:', error);
@@ -284,10 +267,7 @@ router.put('/:id', async (req: Request, res: Response) => {
 
 // PATCH /api/projects/:id - Mise à jour partielle d'un projet (coverPhoto, photos, etc.)
 router.patch('/:id', async (req: Request, res: Response) => {
-  if (req.body.inputsBusinessPlan) {
-    console.trace('[ALERTE][ROUTE][PATCH] Body contient inputsBusinessPlan:', JSON.stringify(req.body.inputsBusinessPlan, null, 2));
-  }
-  console.log('[LOG][PATCH] Appelée avec id:', req.params.id, 'et body:', JSON.stringify(req.body, null, 2));
+  // Logs verbeux supprimés (ne garder que l'essentiel)
   try {
     const projectId = parseInt(req.params.id);
     if (isNaN(projectId)) {
@@ -303,24 +283,9 @@ router.patch('/:id', async (req: Request, res: Response) => {
     const filtered = Object.fromEntries(
       Object.entries(req.body).filter(([key]) => allowedFields.includes(key))
     );
-    console.log('[LOG][PATCH] filtered envoyé à updateProject:', JSON.stringify(filtered, null, 2));
-    console.log('[LOG][PATCH] Champs BP:', {
-      inputsBusinessPlan: filtered.inputsBusinessPlan,
-      inputsBusinessPlanRealises: filtered.inputsBusinessPlanRealises,
-      resultsBusinessPlan: filtered.resultsBusinessPlan,
-      resultsBusinessPlanRealises: filtered.resultsBusinessPlanRealises
-    });
-    if (filtered.inputsBusinessPlan) {
-      console.trace('[ALERTE][ROUTE][PATCH] filtered envoyé à updateProject contient inputsBusinessPlan:', JSON.stringify(filtered.inputsBusinessPlan, null, 2));
-    }
+    // Logs détaillés supprimés
     const updatedProject = await projectService.updateProject(projectId, filtered);
-    console.log('[LOG][PATCH] Résultat updateProject:', JSON.stringify({
-      id: updatedProject.id,
-      inputsBusinessPlan: updatedProject.inputsBusinessPlan,
-      inputsBusinessPlanRealises: updatedProject.inputsBusinessPlanRealises,
-      resultsBusinessPlan: updatedProject.resultsBusinessPlan,
-      resultsBusinessPlanRealises: updatedProject.resultsBusinessPlanRealises
-    }, null, 2));
+    console.log('[PATCH] Projet mis à jour', { id: updatedProject.id });
     res.json(updatedProject);
   } catch (error) {
     console.error('[PATCH /api/projects/:id] Error:', error);

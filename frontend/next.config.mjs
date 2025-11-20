@@ -1,9 +1,8 @@
 /** @type {import('next').NextConfig} */
-import withTM from 'next-transpile-modules';
-
 const nextConfig = {
   reactStrictMode: true,
   pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
+  transpilePackages: ['shared'],
   images: {
     remotePatterns: [
       {
@@ -37,4 +36,4 @@ const nextConfig = {
   },
 };
 
-export default withTM(['shared'])(nextConfig); 
+export default nextConfig;

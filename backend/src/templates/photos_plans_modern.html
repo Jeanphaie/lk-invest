@@ -3,121 +3,374 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    .photos-section {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      min-height: 100vh;
-      background: #fff;
-      overflow: hidden;
-      box-sizing: border-box;
-      padding: 0;
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #fff;
+      color: #1a202c;
+    }
+    .plans-page {
+      width: 100%;
+      min-height: 100vh;
+      max-height: 100vh;
+      padding: 0.4rem 1.2rem;
+      page-break-before: always;
+      page-break-after: always;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
     .section-title {
-      font-size: 1.7rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: #1a202c;
-      margin: 1.2rem 0 0.7rem 2.2rem;
-      padding-bottom: 0.3rem;
+      margin-bottom: 0.25rem;
+      padding-bottom: 0.15rem;
       border-bottom: 2px solid #e2e8f0;
-      z-index: 2;
-      position: relative;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-title .floor-label {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #4a5568;
     }
     .text-block {
       background: rgba(255, 255, 255, 0.95);
       padding: 1.5rem;
-      margin: 0 2.2rem 1.5rem 2.2rem;
+      margin-bottom: 1rem;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      flex-shrink: 0;
     }
     .text-block p {
       margin: 0;
       line-height: 1.6;
       color: #4a5568;
     }
-    .plans-table {
-      width: 100%;
-      border: none;
-      border-spacing: 24px 0;
-      margin: 0 auto 0.5rem auto;
-    }
-    .plan-item {
-      width: 48%;
-      max-width: 520px;
-      height: 500px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-      text-align: center;
-      border: 1.5px solid #e2e8f0;
-      vertical-align: middle;
-      padding: 0;
-    }
-    .plan-inner {
-      height: 100%;
+    .plans-content {
+      flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      overflow: hidden;
+      min-height: 0;
     }
-    .plan-item img {
+    .floor-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .floor-title {
+      display: none; /* Supprimé car maintenant dans le titre */
+    }
+    /* Si un seul étage : affichage vertical (un au-dessus de l'autre) */
+    .single-floor-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      flex: 1;
+      min-height: 0;
+    }
+    .single-floor-layout .plan-card {
+      flex: 1 1 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      height: 0;
+    }
+    /* Si deux étages : affichage vertical */
+    .multi-floor-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      flex: 1;
+      min-height: 0;
+    }
+    .multi-floor-layout .plans-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      flex: 1 1 0;
+      min-height: 0;
+      height: 0;
+    }
+    .multi-floor-layout .plan-card {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      height: 0;
+    }
+    /* Bloc texte entre avant et après */
+    .floor-description-block {
+      background: #f7fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 0.4rem 0.7rem;
+      flex-shrink: 0;
+      flex: 0 0 auto;
+      max-height: 15%;
+      overflow-y: auto;
+    }
+    .floor-description-block p {
+      margin: 0;
+      font-size: 0.75rem;
+      line-height: 1.4;
+      color: #4a5568;
+      text-align: justify;
+    }
+    .plan-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      min-height: 0;
+    }
+    .plan-card .plans-type-title {
+      flex-shrink: 0;
+    }
+    .plan-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      padding: 0.25rem;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+    .plan-content img {
       max-width: 100%;
-      max-height: 95%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
       object-fit: contain;
-      border-radius: 8px;
+      object-position: center;
       display: block;
-      margin: 0 0 8px 0;
+      margin: 0 auto;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
+    .plan-content iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #fff;
+      min-height: 0;
+      object-fit: contain;
+      flex-shrink: 0;
     }
     .plan-label {
-      margin-top: 8px;
+      display: none; /* Supprimé car redondant avec le titre de section */
+    }
+    .plans-type-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #0a6c9d;
+      margin-bottom: 0.2rem;
+      flex-shrink: 0;
+      padding: 0.15rem 0;
     }
     @media print {
-      .photos-section, .plans-table {
-        width: 100vw;
-        height: 100vh;
-        min-height: 100vh;
-        padding: 0;
-        margin: 0;
+      .plans-page {
+        page-break-after: always;
       }
-      .plan-item {
+      .plan-card {
         box-shadow: none;
-        border: 1px solid #e2e8f0;
       }
     }
   </style>
 </head>
 <body>
-  <div class="photos-section">
-    <div class="section-title">Plans du bien</div>
-    <div class="text-block">
-      <p>{{plan_renovation}}</p>
+  {{#if hasMultipleFloors}}
+  <!-- CAS AVEC DEUX ÉTAGES : une page par étage -->
+  
+  {{#if hasFloor1}}
+  <!-- PAGE 1 : ÉTAGE 1 -->
+  <div class="plans-page">
+    <div class="section-title">
+      Evolution des plans avant et après travaux
+      <span class="floor-label">- {{#if plans.before.floor1}}{{plans.before.floor1.[0].floorLabel}}{{else}}{{plans.after.floor1.[0].floorLabel}}{{/if}}</span>
     </div>
-    <table class="plans-table" style="width:100%; border:none; border-spacing:24px 0; margin-bottom: 0.5rem;">
-      <tr>
-        <td class="plan-item">
-          <div class="plan-inner">
-            {{#if images.[0]}}
-              <img src="{{images.[0].url}}" alt="Plan avant">
-            {{else}}
-              <div>Aucun plan avant</div>
-            {{/if}}
-            <div class="plan-label">Plan avant</div>
+    
+    
+    <div class="plans-content">
+      <div class="floor-section">
+        
+        <!-- Layout pour deux étages : avant et après l'un au-dessus de l'autre -->
+        <div class="multi-floor-layout">
+          {{#if plans.before.floor1}}
+          <div class="plans-type-title">AVANT</div>
+          <div class="plans-row">
+            {{#each plans.before.floor1}}
+            <div class="plan-card">
+              <div class="plan-content">
+                {{#if (contains url ".pdf")}}
+                  <iframe src="{{url}}#toolbar=0&navpanes=0&scrollbar=0&view=FitV&zoom=page-fit" type="application/pdf"></iframe>
+                {{else}}
+                  <img src="{{url}}" alt="Plan avant - {{floorLabel}}" />
+                {{/if}}
+              </div>
+            </div>
+            {{/each}}
           </div>
-        </td>
-        <td class="plan-item">
-          <div class="plan-inner">
-            {{#if images.[1]}}
-              <img src="{{images.[1].url}}" alt="Plan après">
-            {{else}}
-              <div>Aucun plan après</div>
-            {{/if}}
-            <div class="plan-label">Plan après</div>
+          {{/if}}
+          
+          {{#if floor1Description}}
+          <div class="floor-description-block">
+            <p>{{floor1Description}}</p>
           </div>
-        </td>
-      </tr>
-    </table>
+          {{/if}}
+          
+          {{#if plans.after.floor1}}
+          <div class="plans-type-title">APRÈS</div>
+          <div class="plans-row">
+            {{#each plans.after.floor1}}
+            <div class="plan-card">
+              <div class="plan-content">
+                {{#if (contains url ".pdf")}}
+                  <iframe src="{{url}}#toolbar=0&navpanes=0&scrollbar=0&view=FitV&zoom=page-fit" type="application/pdf"></iframe>
+                {{else}}
+                  <img src="{{url}}" alt="Plan après - {{floorLabel}}" />
+                {{/if}}
+              </div>
+            </div>
+            {{/each}}
+          </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
   </div>
+  {{/if}}
+  
+  {{#if hasFloor2}}
+  <!-- PAGE 2 : ÉTAGE 2 (saut de page automatique via page-break-before) -->
+  <div class="plans-page">
+    <div class="section-title">
+      Evolution des plans avant et après travaux
+      <span class="floor-label">- {{#if plans.before.floor2}}{{plans.before.floor2.[0].floorLabel}}{{else}}{{plans.after.floor2.[0].floorLabel}}{{/if}}</span>
+    </div>
+    
+    <div class="plans-content">
+      <div class="floor-section">
+        
+        <!-- Layout pour deux étages : avant et après l'un au-dessus de l'autre -->
+        <div class="multi-floor-layout">
+          {{#if plans.before.floor2}}
+          <div class="plans-type-title">AVANT</div>
+          <div class="plans-row">
+            {{#each plans.before.floor2}}
+            <div class="plan-card">
+              <div class="plan-content">
+                {{#if (contains url ".pdf")}}
+                  <iframe src="{{url}}#toolbar=0&navpanes=0&scrollbar=0&view=FitV&zoom=page-fit" type="application/pdf"></iframe>
+                {{else}}
+                  <img src="{{url}}" alt="Plan avant - {{floorLabel}}" />
+                {{/if}}
+              </div>
+            </div>
+            {{/each}}
+          </div>
+          {{/if}}
+          
+          {{#if floor2Description}}
+          <div class="floor-description-block">
+            <p>{{floor2Description}}</p>
+          </div>
+          {{/if}}
+          
+          {{#if plans.after.floor2}}
+          <div class="plans-type-title">APRÈS</div>
+          <div class="plans-row">
+            {{#each plans.after.floor2}}
+            <div class="plan-card">
+              <div class="plan-content">
+                {{#if (contains url ".pdf")}}
+                  <iframe src="{{url}}#toolbar=0&navpanes=0&scrollbar=0&view=FitV&zoom=page-fit" type="application/pdf"></iframe>
+                {{else}}
+                  <img src="{{url}}" alt="Plan après - {{floorLabel}}" />
+                {{/if}}
+              </div>
+            </div>
+            {{/each}}
+          </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </div>
+  {{/if}}
+  
+  {{else}}
+  <!-- CAS AVEC UN SEUL ÉTAGE : une seule page -->
+  <div class="plans-page">
+    <div class="section-title">
+      Plans du bien
+      <span class="floor-label">- {{#if plans.before.floor1}}{{plans.before.floor1.[0].floorLabel}}{{else}}{{plans.after.floor1.[0].floorLabel}}{{/if}}</span>
+    </div>
+    
+    
+    <div class="plans-content">
+      {{#if hasFloor1}}
+      <div class="floor-section">
+        
+        <!-- Layout pour un seul étage : avant et après l'un au-dessus de l'autre -->
+        <div class="single-floor-layout">
+          {{#if plans.before.floor1}}
+          {{#each plans.before.floor1}}
+          <div class="plan-card">
+            <div class="plans-type-title" style="padding: 0.3rem; background: #f7fafc; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem;">AVANT</div>
+            <div class="plan-content">
+              {{#if (contains url ".pdf")}}
+                <iframe src="{{url}}#toolbar=0&navpanes=0&scrollbar=0&view=FitV&zoom=page-fit" type="application/pdf"></iframe>
+            {{else}}
+                <img src="{{url}}" alt="Plan avant" />
+            {{/if}}
+            </div>
+          </div>
+          {{/each}}
+          {{/if}}
+          
+          {{#if floor1Description}}
+          <div class="floor-description-block">
+            <p>{{floor1Description}}</p>
+          </div>
+          {{/if}}
+          
+          {{#if plans.after.floor1}}
+          {{#each plans.after.floor1}}
+          <div class="plan-card">
+            <div class="plans-type-title" style="padding: 0.3rem; background: #f7fafc; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem;">APRÈS</div>
+            <div class="plan-content">
+              {{#if (contains url ".pdf")}}
+                <iframe src="{{url}}#toolbar=0&navpanes=0&scrollbar=0&view=FitV&zoom=page-fit" type="application/pdf"></iframe>
+            {{else}}
+                <img src="{{url}}" alt="Plan après" />
+            {{/if}}
+            </div>
+          </div>
+          {{/each}}
+          {{/if}}
+        </div>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+  {{/if}}
 </body>
 </html> 

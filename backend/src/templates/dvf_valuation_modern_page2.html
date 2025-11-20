@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8fafc; color: #222; margin: 0; }
-    .section { padding: 2.2rem 1.5rem 1.2rem 1.5rem; max-width: 900px; margin: 0 auto; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8fafc; color: #222; margin: 0; padding: 0; }
+    .dvf-page-wrapper {
+      padding: 0 60px;
+      box-sizing: border-box;
+    }
+    .section { padding: 2rem 0; max-width: 750px; margin: 0 auto; box-sizing: border-box; }
     .section-title { font-size: 2rem; font-weight: 700; color: #0a6c9d; margin-bottom: 2rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
     .outlier-phrase { margin: 0.7rem 0 1.5rem 0; font-size: 0.95rem; color: #2d3748; text-align: center; font-style: italic; }
     .chart-block { margin-bottom: 2rem; }
@@ -21,11 +25,11 @@
   </style>
 </head>
 <body>
-  <div class="section">
+  <div class="dvf-page-wrapper">
+    <div class="section">
     <div class="section-title">Analyse DVF</div>
     <div class="outlier-phrase">
-      Les bornes d'outliers sont calculées à partir de la moyenne arrondissement brute ({{formatKCurrency resultsDvfMetadata.arrondissement_avg_for_outliers 1}}).<br>Les transactions avec un prix inferieur à <b>{{resultsDvfMetadata.outlier_lower_bound}}</b> et supérieur à <b>{{resultsDvfMetadata.outlier_upper_bound}}</b> ont été exclues.
-      
+      Les transactions avec un prix inférieur à <b>{{resultsDvfMetadata.outlier_lower_bound}}</b> et supérieur à <b>{{resultsDvfMetadata.outlier_upper_bound}}</b> ont été exclues. Nous avons calculé ces limites en prenant le prix moyen de l'arrondissement (<b>{{formatKCurrency resultsDvfMetadata.arrondissement_avg_for_outliers 1}}</b>) et appliqué limite basse (<b>{{formatPercentage inputsDvf.outlierLowerBoundPercent}}</b>) et limite haute (<b>{{inputsDvf.outlierUpperBoundCoeff}}x</b>).
     </div>
     
     <div style="display:flex;flex-direction:row;gap:1.5rem;margin-bottom:1.5rem;justify-content:center;align-items:stretch;width:100%;min-width:0;">
@@ -71,6 +75,7 @@
           {{/each}}
         </tbody>
       </table>
+    </div>
     </div>
   </div>
 </body>

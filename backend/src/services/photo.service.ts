@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { Photos, Photo, PhotosSchema } from '../../../shared/types/photos';
+import { PlansMigrationService } from './plansMigration.service';
 
 const prisma = new PrismaClient();
 
@@ -28,12 +29,37 @@ export class PhotoService {
       selectedAfterPhotosForPdf: [],
       coverPhoto: undefined
     };
+    
     // Validation stricte
     const parsed = PhotosSchema.safeParse(photos);
     if (!parsed.success) {
       throw new Error('Invalid photos data: ' + parsed.error.message);
     }
-    return parsed.data;
+    
+    // Migration automatique : synchroniser plansStructured si nécessaire
+    const syncedPhotos = PlansMigrationService.syncPlansData(parsed.data);
+    
+    // Sauvegarder la structure synchronisée si elle a été créée ET si des plans existent
+    // Vérifier si plansStructured a été créé (n'existait pas avant mais existe maintenant)
+    const hadPlansStructured = !!(photos as any).plansStructured;
+    const hasPlansStructured = !!syncedPhotos.plansStructured;
+    const hasPlans = ((photos as any).plans?.length || 0) > 0;
+    
+    if (hasPlansStructured && !hadPlansStructured && hasPlans) {
+      await this.savePhotos(projectId, syncedPhotos);
+      // Recharger pour avoir la version à jour
+      return await this.getProjectPhotos(projectId);
+    }
+    
+    return syncedPhotos;
+  }
+  
+  // Méthode privée pour sauvegarder les photos
+  private async savePhotos(projectId: number, photos: Photos): Promise<void> {
+    await prisma.project.update({
+      where: { project_id: projectId },
+      data: { photos: photos as any }
+    });
   }
 
   // Ajouter une photo à une catégorie
@@ -47,7 +73,7 @@ export class PhotoService {
     if (!photos || typeof photos !== 'object') {
       photos = {};
     }
-    // Initialiser les champs si absents
+    // Initialiser les champs si absents et PRÉSERVER tous les champs existants
     const currentSelectedBefore = (photos as any).selectedBeforePhotosForPdf || [];
     const currentSelected3d = (photos as any).selected3dPhotosForPdf || [];
     const currentSelectedPlans = (photos as any).selectedPlansPhotosForPdf || [];
@@ -58,12 +84,17 @@ export class PhotoService {
       during: (photos as any).during || [],
       after: (photos as any).after || [],
       plans: (photos as any).plans || [],
+      plansStructured: (photos as any).plansStructured || undefined, // PRÉSERVER la structure des plans
       selectedBeforePhotosForPdf: currentSelectedBefore,
       selected3dPhotosForPdf: currentSelected3d,
       selectedPlansPhotosForPdf: currentSelectedPlans,
       selectedDuringPhotosForPdf: (photos as any).selectedDuringPhotosForPdf || [],
       selectedAfterPhotosForPdf: (photos as any).selectedAfterPhotosForPdf || [],
       coverPhoto: currentCover,
+      floor1Description: (photos as any).floor1Description || undefined, // PRÉSERVER les descriptions
+      floor2Description: (photos as any).floor2Description || undefined,
+      floor1Prompt: (photos as any).floor1Prompt || undefined, // PRÉSERVER les prompts
+      floor2Prompt: (photos as any).floor2Prompt || undefined,
     };
     // Ajouter la photo à la bonne catégorie
     if (isPhotoCategory(category)) {
@@ -79,7 +110,7 @@ export class PhotoService {
     }
     await prisma.project.update({
       where: { project_id: projectId },
-      data: { photos: parsed.data }
+      data: { photos: parsed.data as any }
     });
     return parsed.data;
   }
@@ -97,7 +128,6 @@ export class PhotoService {
     if (deletedPhoto) {
       // Remove from coverPhoto if needed
       if (photos.coverPhoto && deletedPhoto.url === photos.coverPhoto) {
-        console.log('[BACK][DELETE][COVER] Removing coverPhoto reference');
         photos.coverPhoto = undefined;
       }
       // Remove from selected*PhotosForPdf if needed
@@ -112,10 +142,9 @@ export class PhotoService {
     if (!parsed.success) {
       throw new Error('Invalid photos data: ' + parsed.error.message);
     }
-    console.log('[BACK][DELETE][BEFORE SAVE]', JSON.stringify(parsed.data, null, 2));
     await prisma.project.update({
       where: { project_id: projectId },
-      data: { photos: parsed.data }
+      data: { photos: parsed.data as any }
     });
     return { photos: parsed.data, deletedPhoto };
   }
@@ -129,28 +158,44 @@ export class PhotoService {
   // Sélectionner/désélectionner une photo pour le PDF (par id)
   async togglePhotoForPdf(projectId: number, photoId: number, selected: boolean, type: 'selectedBeforePhotosForPdf' | 'selected3dPhotosForPdf' | 'selectedPlansPhotosForPdf' | 'selectedDuringPhotosForPdf' | 'selectedAfterPhotosForPdf'): Promise<void> {
     const photos = await this.getProjectPhotos(projectId);
-    console.log('[BACK][PDF][BEFORE]', { photoId, selected, type, current: photos[type] });
     if (selected && !photos[type].includes(photoId)) {
       photos[type] = [...photos[type], photoId];
     } else if (!selected) {
       photos[type] = photos[type].filter(id => id !== photoId);
     }
+    
+    // Si c'est pour les plans, synchroniser aussi selectedForPdf dans plansStructured
+    if (type === 'selectedPlansPhotosForPdf' && photos.plansStructured) {
+      const updatePlanSelectedForPdf = (plan: any) => {
+        if (plan.id === photoId) {
+          plan.selectedForPdf = selected;
+        }
+      };
+      
+      // Mettre à jour dans plansStructured
+      if (photos.plansStructured.before) {
+        photos.plansStructured.before.floor1?.forEach(updatePlanSelectedForPdf);
+        photos.plansStructured.before.floor2?.forEach(updatePlanSelectedForPdf);
+      }
+      if (photos.plansStructured.after) {
+        photos.plansStructured.after.floor1?.forEach(updatePlanSelectedForPdf);
+        photos.plansStructured.after.floor2?.forEach(updatePlanSelectedForPdf);
+      }
+      
+      // Mettre à jour aussi dans plans (ancien format) pour rétrocompatibilité
+      if (photos.plans) {
+        photos.plans.forEach(updatePlanSelectedForPdf);
+      }
+    }
+    
     // Validation stricte
     const parsed = PhotosSchema.safeParse(photos);
     if (!parsed.success) {
       throw new Error('Invalid photos data: ' + parsed.error.message);
     }
-    console.log('[BACK][PDF][BEFORE SAVE]', JSON.stringify(parsed.data, null, 2));
-    console.log('[BACK][PDF][TYPES]', {
-      selectedBeforePhotosForPdf: parsed.data.selectedBeforePhotosForPdf.map(x => typeof x),
-      selected3dPhotosForPdf: parsed.data.selected3dPhotosForPdf.map(x => typeof x),
-      selectedPlansPhotosForPdf: parsed.data.selectedPlansPhotosForPdf.map(x => typeof x),
-      selectedDuringPhotosForPdf: parsed.data.selectedDuringPhotosForPdf.map(x => typeof x),
-      selectedAfterPhotosForPdf: parsed.data.selectedAfterPhotosForPdf.map(x => typeof x),
-    });
     await prisma.project.update({
       where: { project_id: projectId },
-      data: { photos: parsed.data }
+      data: { photos: parsed.data as any }
     });
   }
 
@@ -183,7 +228,7 @@ export class PhotoService {
       photos = {};
     }
 
-    // Récupérer toutes les données existantes d'abord
+    // Récupérer toutes les données existantes d'abord et PRÉSERVER tous les champs
     const existingData = {
       before: (photos as any).before || [],
       '3d': (photos as any)['3d'] || [],
@@ -195,6 +240,11 @@ export class PhotoService {
       selectedPlansPhotosForPdf: (photos as any).selectedPlansPhotosForPdf || [],
       selectedDuringPhotosForPdf: (photos as any).selectedDuringPhotosForPdf || [],
       selectedAfterPhotosForPdf: (photos as any).selectedAfterPhotosForPdf || [],
+      plansStructured: (photos as any).plansStructured || undefined, // PRÉSERVER la structure des plans
+      floor1Description: (photos as any).floor1Description || undefined, // PRÉSERVER les descriptions
+      floor2Description: (photos as any).floor2Description || undefined,
+      floor1Prompt: (photos as any).floor1Prompt || undefined, // PRÉSERVER les prompts
+      floor2Prompt: (photos as any).floor2Prompt || undefined,
       ...photos // merge tout le reste au cas où
     };
 
@@ -204,24 +254,15 @@ export class PhotoService {
       coverPhoto: photoUrl
     };
 
-    console.log('[BACK][COVER][UPDATE] Updating cover photo:', {
-      projectId,
-      newCoverPhoto: photoUrl,
-      existingCoverPhoto: (photos as any).coverPhoto,
-      finalCoverPhoto: updatedPhotos.coverPhoto
-    });
-
     // Validation stricte
     const parsed = PhotosSchema.safeParse(updatedPhotos);
     if (!parsed.success) {
       throw new Error('Invalid photos data: ' + parsed.error.message);
     }
 
-    console.log('[BACK][COVER][BEFORE SAVE]', JSON.stringify(parsed.data, null, 2));
-
     await prisma.project.update({
       where: { project_id: projectId },
-      data: { photos: parsed.data }
+      data: { photos: parsed.data as any }
     });
 
     return parsed.data;
@@ -231,14 +272,36 @@ export class PhotoService {
   async setSelectedPhotosForPdf(projectId: number, type: 'selectedBeforePhotosForPdf' | 'selected3dPhotosForPdf' | 'selectedPlansPhotosForPdf' | 'selectedDuringPhotosForPdf' | 'selectedAfterPhotosForPdf', ids: number[]): Promise<void> {
     const photos = await this.getProjectPhotos(projectId);
     photos[type] = ids;
+    
+    // Si c'est pour les plans, synchroniser aussi selectedForPdf dans plansStructured
+    if (type === 'selectedPlansPhotosForPdf' && photos.plansStructured) {
+      const updatePlanSelectedForPdf = (plan: any) => {
+        plan.selectedForPdf = ids.includes(plan.id);
+      };
+      
+      // Mettre à jour dans plansStructured
+      if (photos.plansStructured.before) {
+        photos.plansStructured.before.floor1?.forEach(updatePlanSelectedForPdf);
+        photos.plansStructured.before.floor2?.forEach(updatePlanSelectedForPdf);
+      }
+      if (photos.plansStructured.after) {
+        photos.plansStructured.after.floor1?.forEach(updatePlanSelectedForPdf);
+        photos.plansStructured.after.floor2?.forEach(updatePlanSelectedForPdf);
+      }
+      
+      // Mettre à jour aussi dans plans (ancien format) pour rétrocompatibilité
+      if (photos.plans) {
+        photos.plans.forEach(updatePlanSelectedForPdf);
+      }
+    }
+    
     const parsed = PhotosSchema.safeParse(photos);
     if (!parsed.success) {
       throw new Error('Invalid photos data: ' + parsed.error.message);
     }
-    console.log('[BACK][PDF][SET][BEFORE SAVE]', type, ids);
     await prisma.project.update({
       where: { project_id: projectId },
-      data: { photos: parsed.data }
+      data: { photos: parsed.data as any }
     });
   }
 } 
